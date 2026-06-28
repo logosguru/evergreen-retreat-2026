@@ -1,0 +1,119 @@
+{
+  "Common": {
+    "appName": "늘푸른교회 하계 수련회 2026",
+    "save": "저장",
+    "cancel": "취소",
+    "submit": "제출",
+    "edit": "수정",
+    "loading": "불러오는 중…",
+    "submitting": "제출 중…",
+    "required": "필수",
+    "optional": "선택",
+    "yes": "예",
+    "no": "아니오",
+    "back": "뒤로",
+    "langKo": "한국어",
+    "langEn": "English"
+  },
+  "Nav": {
+    "home": "홈",
+    "register": "등록",
+    "edit": "내 등록 수정",
+    "admin": "관리자"
+  },
+  "Home": {
+    "title": "늘푸른교회 전교인 하계 수련회",
+    "dates": "2026년 9월 5일(토) – 7일(월)",
+    "location": "Honor's Haven Resort & Conference",
+    "intro": "온 교우가 함께 모여 은혜를 나누는 하계 수련회에 여러분을 초대합니다.",
+    "registerCta": "수련회 등록하기",
+    "editCta": "등록 정보 수정하기"
+  },
+  "Register": {
+    "title": "수련회 등록",
+    "subtitle": "로그인 없이 등록할 수 있습니다. 등록 후 입력하신 이메일로 수정 링크를 받으실 수 있습니다.",
+    "mode": "등록 방식",
+    "modeIndividual": "개인 등록",
+    "modeHousehold": "가구주 일괄 등록 (가족 함께)",
+    "householderSection": "가구주 (대표자)",
+    "familySection": "가족 구성원",
+    "addMember": "가족 추가",
+    "removeMember": "삭제",
+    "contactNote": "수정 링크를 받을 이메일은 가구주(대표자) 기준으로 사용됩니다.",
+    "success": "등록이 완료되었습니다. 감사합니다!",
+    "successEditHint": "입력하신 이메일로 수정 링크를 보내드릴 수 있습니다. ‘내 등록 수정’에서 요청하세요.",
+    "error": "등록 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+    "validationName": "한글 이름은 필수입니다.",
+    "validationEmail": "유효한 이메일을 입력해 주세요.",
+    "validationPartial": "부분 참석은 도착/출발 시간을 입력해 주세요."
+  },
+  "Edit": {
+    "title": "내 등록 수정",
+    "enterEmail": "등록 시 입력한 이메일을 입력하시면 수정 링크를 보내드립니다.",
+    "emailLabel": "이메일",
+    "sendLink": "수정 링크 받기",
+    "sending": "전송 중…",
+    "linkSent": "수정 링크를 이메일로 보냈습니다. 메일함을 확인해 주세요. (링크는 1시간 동안 유효합니다)",
+    "linkSentNote": "메일이 보이지 않으면 스팸함도 확인해 주세요. 요청은 60초에 한 번만 가능합니다.",
+    "verifying": "확인 중…",
+    "notFound": "해당 이메일로 등록된 정보를 찾을 수 없습니다.",
+    "yourRegistration": "내 등록 정보",
+    "updateSuccess": "수정이 저장되었습니다.",
+    "updateError": "수정 중 문제가 발생했습니다.",
+    "signOut": "로그아웃"
+  },
+  "Admin": {
+    "title": "관리자 — 참석자 관리",
+    "loginTitle": "관리자 로그인",
+    "loginWithGoogle": "Google 계정으로 로그인",
+    "loginHint": "허가된 교역자·준비위원 계정만 접근할 수 있습니다.",
+    "notAdmin": "이 계정은 관리자 권한이 없습니다.",
+    "signOut": "로그아웃",
+    "total": "총 {count}명",
+    "paidCount": "회비 납부 {count}명",
+    "colName": "이름",
+    "colDistrict": "구역",
+    "colRole": "직분",
+    "colGender": "성별",
+    "colHousehold": "가구",
+    "colAttendance": "참석",
+    "colGroup": "수련회조",
+    "colPaid": "회비",
+    "markPaid": "납부 처리",
+    "markUnpaid": "미납 처리",
+    "householder": "가구주",
+    "empty": "아직 등록된 참석자가 없습니다."
+  },
+  "Fields": {
+    "korean_name": "한글 이름",
+    "english_name": "영어 이름",
+    "district": "소속구역",
+    "gender": "성별",
+    "role": "직분",
+    "email": "이메일",
+    "phone": "연락처",
+    "attendance": "참석 형태",
+    "arrival_at": "도착 일시",
+    "departure_at": "출발 일시",
+    "note": "비고"
+  },
+  "Gender": {
+    "male": "남",
+    "female": "여"
+  },
+  "Role": {
+    "pastor": "목사",
+    "elder": "장로",
+    "gwonsa": "권사",
+    "deacon": "집사",
+    "seogyosa": "서리집사",
+    "member": "성도",
+    "student": "학생",
+    "child": "유년",
+    "other": "기타"
+  },
+  "Attendance": {
+    "full": "전일 참석",
+    "partial": "부분 참석"
+  }
+}

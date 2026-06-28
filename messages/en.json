@@ -1,0 +1,119 @@
+{
+  "Common": {
+    "appName": "Neulpureun Church Summer Retreat 2026",
+    "save": "Save",
+    "cancel": "Cancel",
+    "submit": "Submit",
+    "edit": "Edit",
+    "loading": "Loading…",
+    "submitting": "Submitting…",
+    "required": "Required",
+    "optional": "Optional",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "langKo": "한국어",
+    "langEn": "English"
+  },
+  "Nav": {
+    "home": "Home",
+    "register": "Register",
+    "edit": "Edit my registration",
+    "admin": "Admin"
+  },
+  "Home": {
+    "title": "Neulpureun Church Summer Retreat",
+    "dates": "September 5 (Sat) – 7 (Mon), 2026",
+    "location": "Honor's Haven Resort & Conference",
+    "intro": "Join us as the whole congregation gathers for a time of grace and fellowship.",
+    "registerCta": "Register for the retreat",
+    "editCta": "Edit your registration"
+  },
+  "Register": {
+    "title": "Retreat Registration",
+    "subtitle": "No login required. After registering, you can request an edit link sent to your email.",
+    "mode": "Registration type",
+    "modeIndividual": "Individual",
+    "modeHousehold": "Household (register family together)",
+    "householderSection": "Head of household",
+    "familySection": "Family members",
+    "addMember": "Add family member",
+    "removeMember": "Remove",
+    "contactNote": "The edit link will be sent to the head of household's email.",
+    "success": "Registration complete. Thank you!",
+    "successEditHint": "We can send an edit link to your email. Request it from ‘Edit my registration’.",
+    "error": "Something went wrong during registration. Please try again shortly.",
+    "validationName": "Korean name is required.",
+    "validationEmail": "Please enter a valid email.",
+    "validationPartial": "For partial attendance, please provide arrival and departure times."
+  },
+  "Edit": {
+    "title": "Edit my registration",
+    "enterEmail": "Enter the email you registered with and we'll send you an edit link.",
+    "emailLabel": "Email",
+    "sendLink": "Send edit link",
+    "sending": "Sending…",
+    "linkSent": "We've emailed you an edit link. Please check your inbox. (The link is valid for 1 hour.)",
+    "linkSentNote": "If you don't see it, check your spam folder. You can request once every 60 seconds.",
+    "verifying": "Verifying…",
+    "notFound": "No registration was found for that email.",
+    "yourRegistration": "Your registration",
+    "updateSuccess": "Your changes have been saved.",
+    "updateError": "Something went wrong while saving.",
+    "signOut": "Sign out"
+  },
+  "Admin": {
+    "title": "Admin — Attendee Management",
+    "loginTitle": "Admin login",
+    "loginWithGoogle": "Sign in with Google",
+    "loginHint": "Only authorized pastoral staff and committee members can access this.",
+    "notAdmin": "This account does not have admin access.",
+    "signOut": "Sign out",
+    "total": "{count} attendees",
+    "paidCount": "{count} paid",
+    "colName": "Name",
+    "colDistrict": "District",
+    "colRole": "Position",
+    "colGender": "Gender",
+    "colHousehold": "Household",
+    "colAttendance": "Attendance",
+    "colGroup": "Group",
+    "colPaid": "Fee",
+    "markPaid": "Mark paid",
+    "markUnpaid": "Mark unpaid",
+    "householder": "Head",
+    "empty": "No attendees registered yet."
+  },
+  "Fields": {
+    "korean_name": "Korean name",
+    "english_name": "English name",
+    "district": "District",
+    "gender": "Gender",
+    "role": "Position",
+    "email": "Email",
+    "phone": "Phone",
+    "attendance": "Attendance",
+    "arrival_at": "Arrival",
+    "departure_at": "Departure",
+    "note": "Note"
+  },
+  "Gender": {
+    "male": "Male",
+    "female": "Female"
+  },
+  "Role": {
+    "pastor": "Pastor",
+    "elder": "Elder",
+    "gwonsa": "Gwonsa",
+    "deacon": "Deacon",
+    "seogyosa": "Associate deacon",
+    "member": "Member",
+    "student": "Student",
+    "child": "Child",
+    "other": "Other"
+  },
+  "Attendance": {
+    "full": "Full",
+    "partial": "Partial"
+  }
+}
