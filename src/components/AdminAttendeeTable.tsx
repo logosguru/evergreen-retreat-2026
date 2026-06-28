@@ -56,6 +56,11 @@ export function AdminAttendeeTable({ attendees }: { attendees: Attendee[] }) {
                 {a.english_name && (
                   <div className="text-xs text-slate-500">{a.english_name}</div>
                 )}
+                {a.is_under_6 && (
+                  <span className="mt-0.5 inline-block rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-medium text-amber-700">
+                    {t("under6")}
+                  </span>
+                )}
               </td>
               <td className="px-3 py-2.5 text-slate-600">{a.district ?? "—"}</td>
               <td className="px-3 py-2.5 text-slate-600">

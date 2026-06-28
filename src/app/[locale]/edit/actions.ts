@@ -35,6 +35,7 @@ export async function updateMyAttendee(
       gender: input.gender ? input.gender : null,
       role: input.role ? input.role : "member",
       phone: clean(input.phone),
+      is_under_6: !!input.is_under_6,
       attendance: input.attendance,
       arrival_at: input.attendance === "partial" ? clean(input.arrival_at) : null,
       departure_at:

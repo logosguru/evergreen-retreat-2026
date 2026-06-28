@@ -110,6 +110,17 @@ export function PersonFields({
       )}
 
       <div className="sm:col-span-2">
+        <label className="flex items-center gap-2 text-sm text-slate-700">
+          <input
+            type="checkbox"
+            checked={!!value.is_under_6}
+            onChange={(e) => onChange({ is_under_6: e.target.checked })}
+          />
+          {t("is_under_6")}
+        </label>
+      </div>
+
+      <div className="sm:col-span-2">
         <label className={labelClass}>{t("attendance")}</label>
         <div className="mt-1 flex gap-4">
           {(["full", "partial"] as Attendance[]).map((a) => (
@@ -173,6 +184,7 @@ export const emptyPerson = (): PersonInput => ({
   gender: "",
   role: "",
   phone: "",
+  is_under_6: false,
   attendance: "full",
   arrival_at: "",
   departure_at: "",

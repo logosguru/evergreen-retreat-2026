@@ -10,6 +10,7 @@ export type PersonInput = {
   gender?: Gender | "";
   role?: Role | "";
   phone?: string;
+  is_under_6?: boolean;
   attendance: Attendance;
   arrival_at?: string; // datetime-local 문자열
   departure_at?: string;
@@ -62,6 +63,7 @@ function rowFor(
     gender: p.gender ? p.gender : null,
     role: p.role ? p.role : "member",
     phone: clean(p.phone),
+    is_under_6: !!p.is_under_6,
     attendance: p.attendance,
     arrival_at: p.attendance === "partial" ? toTimestamp(p.arrival_at) : null,
     departure_at:

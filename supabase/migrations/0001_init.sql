@@ -42,6 +42,7 @@ create table public.attendees (
   note            text,
   email           text,                          -- 본인 수정 scoping 용
   phone           text,
+  is_under_6      boolean not null default false, -- 6세 미만(회비 면제·객실 인원 제외)
   -- 출석
   attendance      attendance_t not null default 'full',
   arrival_at      timestamptz,                   -- partial 일 때 필수

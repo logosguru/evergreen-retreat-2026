@@ -86,6 +86,7 @@
     "markPaid": "납부 처리",
     "markUnpaid": "미납 처리",
     "householder": "가구주",
+    "under6": "6세 미만",
     "empty": "아직 등록된 참석자가 없습니다."
   },
   "Fields": {
@@ -99,6 +100,7 @@
     "attendance": "참석 형태",
     "arrival_at": "도착 일시",
     "departure_at": "출발 일시",
+    "is_under_6": "6세 미만 (등록비 면제·객실 인원 미집계)",
     "note": "비고"
   },
   "Gender": {

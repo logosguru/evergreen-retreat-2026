@@ -32,6 +32,7 @@ export interface Attendee {
   note: string | null;
   email: string | null; // 본인 수정 scoping 용
   phone: string | null;
+  is_under_6: boolean; // 6세 미만 (회비 면제·객실 인원 제외)
   attendance: Attendance;
   arrival_at: string | null; // partial 일 때 필수
   departure_at: string | null; // partial 일 때 필수
@@ -50,6 +51,7 @@ export interface AttendeeInput {
   role?: Role;
   email?: string | null;
   phone?: string | null;
+  is_under_6?: boolean;
   attendance: Attendance;
   arrival_at?: string | null;
   departure_at?: string | null;
