@@ -82,6 +82,22 @@ as $$
   select coalesce(auth.jwt() -> 'app_metadata' ->> 'app_role', 'member') = 'admin';
 $$;
 
+-- ============ 내(현재 세션 이메일) 행 id 목록 ============
+-- SECURITY DEFINER 로 RLS 를 우회한다. attendees 정책 안에서 attendees 를
+-- 직접 서브쿼리하면 무한 재귀가 나므로, 이 함수로 우회해서 본인/가구 행을 찾는다.
+create or replace function public.my_attendee_ids()
+returns setof uuid
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select id from public.attendees
+  where lower(email) = lower(auth.jwt() ->> 'email')
+    and auth.jwt() ->> 'email' is not null;
+$$;
+grant execute on function public.my_attendee_ids to authenticated;
+
 -- ============ 관리자 전용 컬럼 보호 (비관리자 UPDATE 시 OLD 값으로 복원) ============
 create or replace function public.guard_privileged_cols()
 returns trigger language plpgsql as $$
@@ -161,15 +177,12 @@ create policy "attendees_select_admin" on public.attendees
   for select to authenticated
   using (public.is_admin());
 
--- 성도: 본인 이메일 + 그 가구(householder) 행만 조회
+-- 성도: 본인 이메일 + 그 가구(householder) 행만 조회 (재귀 방지: my_attendee_ids 사용)
 create policy "attendees_select_own" on public.attendees
   for select to authenticated
   using (
-    lower(email) = lower(auth.jwt() ->> 'email')
-    or householder_id in (
-      select id from public.attendees
-      where lower(email) = lower(auth.jwt() ->> 'email')
-    )
+    id in (select public.my_attendee_ids())
+    or householder_id in (select public.my_attendee_ids())
   );
 
 -- 관리자: 전체 수정
@@ -178,22 +191,16 @@ create policy "attendees_update_admin" on public.attendees
   using (public.is_admin())
   with check (public.is_admin());
 
--- 성도: 본인 가구 행만 수정 (관리자 전용 컬럼은 트리거가 보호)
+-- 성도: 본인 가구 행만 수정 (관리자 전용 컬럼은 트리거가 보호. 재귀 방지: my_attendee_ids 사용)
 create policy "attendees_update_own" on public.attendees
   for update to authenticated
   using (
-    lower(email) = lower(auth.jwt() ->> 'email')
-    or householder_id in (
-      select id from public.attendees
-      where lower(email) = lower(auth.jwt() ->> 'email')
-    )
+    id in (select public.my_attendee_ids())
+    or householder_id in (select public.my_attendee_ids())
   )
   with check (
-    lower(email) = lower(auth.jwt() ->> 'email')
-    or householder_id in (
-      select id from public.attendees
-      where lower(email) = lower(auth.jwt() ->> 'email')
-    )
+    id in (select public.my_attendee_ids())
+    or householder_id in (select public.my_attendee_ids())
   );
 
 -- 삭제: 관리자만

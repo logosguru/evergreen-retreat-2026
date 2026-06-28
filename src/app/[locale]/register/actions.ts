@@ -51,12 +51,14 @@ function validatePerson(p: PersonInput): string | null {
 function rowFor(
   p: PersonInput,
   opts: {
+    id: string;
     is_householder: boolean;
     email: string | null;
     householder_id: string | null;
   },
 ) {
   return {
+    id: opts.id,
     korean_name: clean(p.korean_name)!,
     english_name: clean(p.english_name),
     district: clean(p.district),
@@ -95,37 +97,30 @@ export async function insertRegistration(
 
   const supabase = await createClient();
 
-  // 가구주(또는 개인) 행을 먼저 삽입해 id 확보. 개인 등록도 1인 가구로 처리.
-  const { data: head, error: insertHeadErr } = await supabase
-    .from("attendees")
-    .insert(
-      rowFor(payload.householder, {
-        is_householder: true,
-        email,
-        householder_id: null,
-      }),
-    )
-    .select("id")
-    .single();
-
-  if (insertHeadErr || !head) {
-    return { ok: false, error: "error" };
-  }
-
-  if (members.length > 0) {
-    const rows = members.map((m) =>
+  // 가구주 id를 서버에서 미리 생성해 가구주+가족을 한 번의 insert로 처리.
+  // anon 역할은 SELECT 정책이 없어(.select() 불가) insert-후-select-back이 막히므로
+  // id를 미리 만들어 select-back 없이 삽입한다. 개인 등록도 1인 가구로 처리.
+  const headId = crypto.randomUUID();
+  const rows = [
+    rowFor(payload.householder, {
+      id: headId,
+      is_householder: true,
+      email,
+      householder_id: null,
+    }),
+    ...members.map((m) =>
       rowFor(m, {
+        id: crypto.randomUUID(),
         is_householder: false,
         email: null,
-        householder_id: head.id,
+        householder_id: headId,
       }),
-    );
-    const { error: insertMembersErr } = await supabase
-      .from("attendees")
-      .insert(rows);
-    if (insertMembersErr) {
-      return { ok: false, error: "error" };
-    }
+    ),
+  ];
+
+  const { error: insertErr } = await supabase.from("attendees").insert(rows);
+  if (insertErr) {
+    return { ok: false, error: "error" };
   }
 
   return { ok: true };
