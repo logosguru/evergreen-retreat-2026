@@ -5,7 +5,50 @@
 
 ---
 
-## 1. Supabase 프로젝트
+## 0. 로컬 개발 (호스팅 Supabase 없이) — 권장 시작점
+
+Docker + Supabase CLI로 Postgres/Auth/Studio/메일함을 로컬에 모두 띄웁니다.
+호스팅 프로젝트 없이 전체 플로우를 테스트할 수 있고, **매직링크 이메일은 로컬 메일함(Mailpit)에 잡혀** SMTP가 필요 없습니다.
+
+```bash
+# 1) Docker Desktop 실행 (open -a Docker), 그 다음:
+supabase start        # 첫 실행은 이미지 다운로드로 몇 분. 마이그레이션 자동 적용 + 첫 관리자 시드
+supabase status       # 로컬 키/URL 확인 (이미 .env.local 에 입력돼 있음)
+npm run dev           # http://localhost:3000
+```
+
+로컬 서비스 URL:
+| 서비스 | URL |
+|---|---|
+| 앱 | http://localhost:3000 (영어 `/en`) |
+| Supabase API | http://127.0.0.1:54321 |
+| Studio (DB 관리 UI) | http://127.0.0.1:54323 |
+| **메일함 Mailpit** (매직링크 확인) | http://127.0.0.1:54324 |
+| Postgres | postgresql://postgres:postgres@127.0.0.1:54322/postgres |
+
+### 로컬에서 플로우 테스트
+1. **등록**: `/register` → 개인 또는 가구주 일괄 등록 제출. Studio의 `attendees` 테이블에서 행 확인.
+2. **성도 본인 수정**: `/edit` → 등록한 이메일 입력 → **Mailpit(54324)** 에서 메일 열기 →
+   "등록 정보 수정하기" 클릭 → `/edit/manage`에서 본인 가구 행만 보이고 수정 가능.
+3. **관리자**: 로컬에선 Google 버튼 대신 **관리자 이메일(`joey.kim@bridgerockcap.com`)로 매직링크 로그인**
+   (`/edit`에서 요청 → Mailpit 링크 클릭) → 로그인 후 주소창에 `/admin` 입력.
+   `app_role=admin` 클레임이 부여돼 전체 명단 + 회비 토글이 동작합니다.
+   - Google OAuth 자체를 로컬에서 테스트하려면 Google Cloud OAuth 클라이언트에
+     `http://127.0.0.1:54321/auth/v1/callback` 리디렉션을 등록해야 합니다(선택).
+
+### 유용한 명령
+```bash
+supabase stop                 # 스택 중지 (데이터 유지)
+supabase stop --no-backup     # 중지 + 데이터 삭제
+supabase db reset             # 마이그레이션 처음부터 재적용 (DB 초기화, 첫 관리자 재시드)
+supabase migration new <name> # 새 마이그레이션 파일 생성
+```
+
+> 마이그레이션을 바꾸면 `supabase db reset`로 로컬에 반영하세요. 이후 호스팅 단계(§1~)로 넘어가면 됩니다.
+
+---
+
+## 1. Supabase 프로젝트 (호스팅 — 배포 시)
 
 1. https://supabase.com → 새 프로젝트 생성 (무료 티어).
 2. **SQL Editor**에서 `supabase/migrations/0001_init.sql` 전체를 붙여넣고 실행.
