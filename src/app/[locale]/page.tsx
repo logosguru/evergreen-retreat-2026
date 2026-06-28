@@ -16,11 +16,29 @@ export default function HomePage({
   return (
     <div className="mx-auto max-w-3xl px-4 py-16">
       <div className="rounded-2xl bg-white p-8 shadow-sm ring-1 ring-slate-200 sm:p-12">
-        <p className="text-sm font-medium text-emerald-700">{t("dates")}</p>
-        <h1 className="mt-2 text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl">
-          {t("title")}
+        <p className="text-sm font-medium text-emerald-700">{t("title")}</p>
+        <h1 className="mt-2 text-4xl font-bold tracking-tight text-slate-900 sm:text-5xl">
+          {t("theme")}
         </h1>
-        <p className="mt-1 text-base text-slate-500">{t("location")}</p>
+        <blockquote className="mt-4 border-l-4 border-emerald-200 pl-4 text-base italic leading-relaxed text-slate-600">
+          “{t("verse")}”
+          <footer className="mt-1 text-sm not-italic text-slate-400">
+            — {t("verseRef")}
+          </footer>
+        </blockquote>
+        <dl className="mt-6 space-y-1 text-sm text-slate-600">
+          <div className="flex gap-2">
+            <dt className="font-medium text-slate-500">📅</dt>
+            <dd>{t("dates")}</dd>
+          </div>
+          <div className="flex gap-2">
+            <dt className="font-medium text-slate-500">📍</dt>
+            <dd>
+              {t("location")}
+              <span className="block text-slate-400">{t("address")}</span>
+            </dd>
+          </div>
+        </dl>
         <p className="mt-6 text-lg leading-relaxed text-slate-700">
           {t("intro")}
         </p>

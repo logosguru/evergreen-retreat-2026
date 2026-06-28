@@ -23,9 +23,13 @@
   },
   "Home": {
     "title": "Evergreen Church Summer Retreat",
+    "theme": "Blessed Encounter",
+    "verse": "I will meet there with the sons of Israel, and it shall be consecrated by My glory.",
+    "verseRef": "Exodus 29:43",
     "dates": "September 5 (Sat) – 7 (Mon), 2026",
-    "location": "Honor's Haven Resort & Conference",
-    "intro": "Join us as the whole congregation gathers for a time of grace and fellowship.",
+    "location": "Honor's Haven Retreat & Conference",
+    "address": "1195 Arrowhead Rd, Ellenville, NY 12428",
+    "intro": "Join us as the whole congregation gathers to meet the Lord in this blessed time.",
     "registerCta": "Register for the retreat",
     "editCta": "Edit your registration"
   },

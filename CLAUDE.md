@@ -8,7 +8,9 @@
 ## 프로젝트
 
 뉴욕 **늘푸른교회(Evergreen Church, https://nyevergreen.com)** 전교인 하계 수련회 web app.
-- 수련회: **2026-09-05 ~ 09-07**, Honor's Haven Resort & Conference (NY)
+- **주제**: 복된 만남 / Blessed Encounter (출 29:43)
+- 수련회: **2026-09-05(토) ~ 09-07(월)**, Honor's Haven Retreat & Conference (1195 Arrowhead Rd, Ellenville, NY 12428)
+- **회비(객실 인원별, 1인 기준, 2박3일 숙박+식사 포함)**: 2인실 $300 / 3인실 $250 / 4인실 $200. **6세 미만 면제 + 객실 인원 미집계**. 가정당 1부만 제출.
 - 두 사용자군:
   - **성도(Member)**: 등록, 본인 정보 수정, (추후) 수련회 소개·스케줄·강사·공지·연락처 열람
   - **관리자(교역자/준비위원)**: 대시보드, 참석자 관리, 방 배치, 스케줄 관리

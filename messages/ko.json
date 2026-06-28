@@ -23,9 +23,13 @@
   },
   "Home": {
     "title": "늘푸른교회 전교인 하계 수련회",
+    "theme": "복된 만남",
+    "verse": "내가 거기서 이스라엘 자손을 만나리니 내 영광으로 인하여 회막이 거룩하게 될지라",
+    "verseRef": "출애굽기 29:43",
     "dates": "2026년 9월 5일(토) – 7일(월)",
-    "location": "Honor's Haven Resort & Conference",
-    "intro": "온 교우가 함께 모여 은혜를 나누는 하계 수련회에 여러분을 초대합니다.",
+    "location": "Honor's Haven Retreat & Conference",
+    "address": "1195 Arrowhead Rd, Ellenville, NY 12428",
+    "intro": "온 교우가 함께 모여 주님을 만나는 복된 시간에 여러분을 초대합니다.",
     "registerCta": "수련회 등록하기",
     "editCta": "등록 정보 수정하기"
   },
