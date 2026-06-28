@@ -7,7 +7,7 @@
 
 ## 프로젝트
 
-뉴욕 **늘푸른교회(Neulpureun Church)** 전교인 하계 수련회 web app.
+뉴욕 **늘푸른교회(Evergreen Church, https://nyevergreen.com)** 전교인 하계 수련회 web app.
 - 수련회: **2026-09-05 ~ 09-07**, Honor's Haven Resort & Conference (NY)
 - 두 사용자군:
   - **성도(Member)**: 등록, 본인 정보 수정, (추후) 수련회 소개·스케줄·강사·공지·연락처 열람
