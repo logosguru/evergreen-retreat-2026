@@ -142,6 +142,12 @@ create policy "admins_all_admin" on public.admins
   using (public.is_admin())
   with check (public.is_admin());
 
+-- access token hook(supabase_auth_admin 역할로 실행)가 admins 를 읽을 수 있도록 허용.
+-- 이 정책이 없으면 RLS가 hook의 조회를 막아 모두 'member'로 떨어진다.
+create policy "admins_select_auth_admin" on public.admins
+  for select to supabase_auth_admin
+  using (true);
+
 -- attendees ----------------------------------------------------------
 
 -- 공개 등록 (anon + 로그인 사용자 INSERT 허용) — 유일하게 열린 문
