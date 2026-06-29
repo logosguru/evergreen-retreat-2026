@@ -25,13 +25,20 @@ export function groupByDay(items: ScheduleItem[]): ScheduleDay[] {
 }
 
 // "2026-09-05" → 로케일별 날짜+요일. 정오 기준으로 파싱해 타임존 경계 흔들림 방지.
+// 일요일은 교회 관례에 따라 "주일" / "Lord's Day" 로 표기(주변 포맷·괄호는 유지).
 export function formatDayLabel(day: string, locale: string): string {
   const d = new Date(`${day}T12:00:00`);
-  return new Intl.DateTimeFormat(locale === "en" ? "en-US" : "ko-KR", {
+  const fmt = new Intl.DateTimeFormat(locale === "en" ? "en-US" : "ko-KR", {
     month: "long",
     day: "numeric",
     weekday: "short",
-  }).format(d);
+  });
+  if (d.getDay() !== 0) return fmt.format(d);
+  const lordsDay = locale === "en" ? "Lord's Day" : "주일";
+  return fmt
+    .formatToParts(d)
+    .map((p) => (p.type === "weekday" ? lordsDay : p.value))
+    .join("");
 }
 
 // "18:00:00" 또는 "18:00" → "18:00"

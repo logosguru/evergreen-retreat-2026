@@ -12,8 +12,7 @@ export function SiteHeader() {
     { href: "/about", label: t("about") },
     { href: "/schedule", label: t("schedule") },
     { href: "/speakers", label: t("speakers") },
-    { href: "/announcements", label: t("announcements") },
-    { href: "/contact", label: t("contact") },
+    { href: "/faq", label: t("faq") },
   ] as const;
 
   return (

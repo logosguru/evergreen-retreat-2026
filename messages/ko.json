@@ -23,8 +23,7 @@
     "about": "소개",
     "schedule": "일정",
     "speakers": "강사",
-    "announcements": "공지",
-    "contact": "연락처"
+    "faq": "FAQ"
   },
   "Home": {
     "title": "늘푸른교회 전교인 하계 수련회",
@@ -97,7 +96,7 @@
     "navRooms": "객실",
     "navAssignments": "방 배치",
     "navSchedule": "일정",
-    "navAnnouncements": "공지"
+    "navFaq": "FAQ"
   },
   "Fields": {
     "korean_name": "한글 이름",
@@ -188,10 +187,11 @@
     "when": "2026년 9월 5일(토)부터 7일(월)까지 2박 3일간 진행됩니다.",
     "whereTitle": "장소",
     "where": "Honor's Haven Retreat & Conference (1195 Arrowhead Rd, Ellenville, NY 12428)에서 모입니다.",
+    "whereLink": "리조트 홈페이지",
     "feeTitle": "회비",
     "fee": "회비는 배정된 객실 인원에 따라 1인 기준으로 책정됩니다.\n• 2인실 $300 / 3인실 $250 / 4인실 $200 (2박 3일 숙박·식사 포함)\n• 6세 미만은 회비가 면제됩니다.\n• 가정당 1부만 제출해 주세요.",
-    "expectTitle": "무엇을 기대할 수 있나요",
-    "expect": "온 교우가 함께 모여 말씀과 기도, 교제 가운데 주님을 만나는 복된 시간이 준비되어 있습니다."
+    "prepareTitle": "준비물",
+    "prepare": "• 성경, 필기구\n• 세면도구, 수건\n• 편한 복장과 운동화\n• 개인 상비약\n• 2박 3일 일정에 필요한 개인 물품"
   },
   "Schedule": {
     "pageTitle": "전체 일정",
@@ -214,34 +214,20 @@
     "tbaName": "추후 공개",
     "tbaNote": "초청 강사 정보가 확정되는 대로 안내해 드리겠습니다."
   },
-  "Announcements": {
-    "pageTitle": "공지사항",
-    "emptyPublic": "아직 공지사항이 없습니다.",
-    "manageTitle": "공지 관리",
-    "empty": "작성된 공지가 없습니다.",
-    "addItem": "공지 작성",
-    "editItem": "공지 수정",
-    "titleField": "제목",
-    "bodyField": "내용",
-    "pinned": "고정",
-    "hidden": "숨김",
-    "pin": "고정",
-    "unpin": "고정 해제",
-    "publish": "게시",
-    "hide": "숨기기",
-    "publishedLabel": "게시",
-    "add": "작성",
+  "Faq": {
+    "pageTitle": "자주 묻는 질문",
+    "emptyPublic": "등록된 질문이 없습니다.",
+    "manageTitle": "FAQ 관리",
+    "empty": "작성된 질문이 없습니다.",
+    "addItem": "질문 추가",
+    "editItem": "질문 수정",
+    "questionField": "질문",
+    "answerField": "답변",
+    "sortOrder": "정렬",
+    "add": "추가",
     "save": "저장",
     "cancel": "취소",
     "edit": "수정",
     "delete": "삭제"
-  },
-  "Contact": {
-    "title": "연락처",
-    "venueTitle": "수련회 장소",
-    "churchTitle": "교회 본부",
-    "phoneLabel": "전화",
-    "emailLabel": "이메일",
-    "viewMap": "지도 보기"
   }
 }
