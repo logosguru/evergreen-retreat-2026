@@ -86,6 +86,14 @@ export async function insertRegistration(
     return { ok: false, error: "validationEmail" };
   }
 
+  const supabaseCheck = await createClient();
+  const { data: already } = await supabaseCheck.rpc("email_registered", {
+    check_email: email,
+  });
+  if (already) {
+    return { ok: false, error: "alreadyRegistered" };
+  }
+
   const headErr = validatePerson(payload.householder);
   if (headErr) return { ok: false, error: headErr };
 
@@ -124,4 +132,22 @@ export async function insertRegistration(
   }
 
   return { ok: true };
+}
+
+export type CheckEmailResult =
+  | { ok: true; registered: boolean }
+  | { ok: false; error: string };
+
+// 이메일 형식 검증 후, 명단 비노출 RPC로 등록 여부(boolean)만 확인한다.
+export async function checkEmail(emailRaw: string): Promise<CheckEmailResult> {
+  const email = clean(emailRaw);
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, error: "validationEmail" };
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("email_registered", {
+    check_email: email,
+  });
+  if (error) return { ok: false, error: "error" };
+  return { ok: true, registered: !!data };
 }
