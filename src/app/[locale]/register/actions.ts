@@ -128,6 +128,10 @@ export async function insertRegistration(
 
   const { error: insertErr } = await supabase.from("attendees").insert(rows);
   if (insertErr) {
+    // 23505 = unique_violation → 이메일 중복(경합으로 1단계 확인을 통과한 경우)
+    if (insertErr.code === "23505") {
+      return { ok: false, error: "alreadyRegistered" };
+    }
     return { ok: false, error: "error" };
   }
 
