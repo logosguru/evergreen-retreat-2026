@@ -241,5 +241,10 @@
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete"
+  },
+  "Language": {
+    "ko": "Korean",
+    "en": "English",
+    "es": "Spanish"
   }
 }

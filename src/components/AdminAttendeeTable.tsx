@@ -3,7 +3,8 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { setPaid } from "@/app/[locale]/admin/actions";
+import { setPaid, setLanguage } from "@/app/[locale]/admin/actions";
+import { LANGUAGES, type Language } from "@/lib/types";
 import {
   personFee,
   formatUSD,
@@ -16,6 +17,7 @@ export function AdminAttendeeTable({ households }: { households: Household[] }) 
   const tr = useTranslations("Role");
   const tf = useTranslations("Fee");
   const trm = useTranslations("Rooms");
+  const tl = useTranslations("Language");
   const router = useRouter();
   const [, start] = useTransition();
   const [busy, setBusy] = useState<string | null>(null);
@@ -25,6 +27,13 @@ export function AdminAttendeeTable({ households }: { households: Household[] }) 
     start(async () => {
       await setPaid(headId, !current);
       setBusy(null);
+      router.refresh();
+    });
+  }
+
+  function changeLang(id: string, language: Language) {
+    start(async () => {
+      await setLanguage(id, language);
       router.refresh();
     });
   }
@@ -91,6 +100,21 @@ export function AdminAttendeeTable({ households }: { households: Household[] }) 
                     </td>
                     <td className="px-4 py-2 text-slate-600">
                       {a.role ? tr(a.role) : "—"}
+                    </td>
+                    <td className="px-4 py-2">
+                      <select
+                        value={a.language}
+                        onChange={(e) =>
+                          changeLang(a.id, e.target.value as Language)
+                        }
+                        className="rounded-md border border-slate-300 px-1.5 py-1 text-xs focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                      >
+                        {LANGUAGES.map((l) => (
+                          <option key={l} value={l}>
+                            {tl(l)}
+                          </option>
+                        ))}
+                      </select>
                     </td>
                     <td className="px-4 py-2 text-slate-600">
                       {a.rooms?.label ?? trm("unassigned")}
