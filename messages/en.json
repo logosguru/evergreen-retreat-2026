@@ -53,7 +53,18 @@
     "error": "Something went wrong during registration. Please try again shortly.",
     "validationName": "Korean name is required.",
     "validationEmail": "Please enter a valid email.",
-    "validationPartial": "For partial attendance, please provide arrival and departure times."
+    "validationPartial": "For partial attendance, please provide arrival and departure times.",
+    "emailStepTitle": "Check your email",
+    "emailStepHint": "Enter your email first. If you have already registered, you can edit your registration.",
+    "next": "Next",
+    "checking": "Checking…",
+    "alreadyTitle": "This email is already registered",
+    "alreadyHint": "You have already registered with this email. To update your registration, continue below.",
+    "goToEdit": "Edit my registration",
+    "useAnotherEmail": "Use a different email",
+    "changeEmail": "Change email",
+    "emailReadonlyNote": "Registering with this email",
+    "alreadyRegistered": "This email is already registered. Please update your info under 'Edit my registration'."
   },
   "Edit": {
     "title": "Edit my registration",
