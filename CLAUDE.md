@@ -86,7 +86,7 @@ src/
       about|speakers/page.tsx    # 정적 콘텐츠(소개·강사, i18n). about에 장소 사진(public/honors-haven.webp)+홈페이지 링크·준비물
       schedule/page.tsx          # 공개 일정(날짜별 그룹, ScheduleView) — schedule_items 공개읽기. 일요일=주일/Lord's Day
       faq/page.tsx               # 공개 FAQ(질문/답변, 정렬순) — faqs 공개읽기
-      register/{page,actions}.tsx   # 공개 등록 + insertRegistration() 서버 액션
+      register/{page,actions}.tsx   # 공개 등록(이메일 먼저 확인 단계: 중복이면 차단+/edit 안내) + insertRegistration()/checkEmail() 서버 액션
       edit/
         page.tsx                 # 매직링크 요청 (EditRequestForm)
         manage/page.tsx          # 링크 검증 후 본인 가구 행 수정 (EditForm)
@@ -114,6 +114,8 @@ supabase/migrations/
   0002_rooms.sql                 # room_types/rooms + attendees.room_id + my_household_fee() RPC + RLS
   0003_content.sql               # schedule_items/announcements + 공개읽기 RLS + 관리자쓰기 (announcements는 0004에서 제거)
   0004_faq.sql                   # faqs(공개읽기 RLS + 관리자쓰기) 신설 + announcements 제거(공지→FAQ 교체)
+  0005_email_check.sql           # email_registered(text) SECURITY DEFINER RPC (등록 이메일 중복 확인, 명단 비노출)
+  0006_email_unique.sql          # attendees.email partial unique 인덱스(lower(email), 중복 등록 DB 차단)
 ```
 
 > **회비/방 규칙**: 회비 금액은 저장하지 않고 배정 호실의 타입 단가로 계산(6세미만 $0, 미배정 미산정). 납부는 가구주(head) 행의 `paid`를 가구 단위로 사용. 방 테이블(room_types/rooms)·`attendees.room_id`는 관리자 전용(RLS + guard 트리거), 성도는 `my_household_fee()` RPC로 금액만.
