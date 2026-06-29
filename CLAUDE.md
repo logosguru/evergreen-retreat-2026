@@ -7,9 +7,8 @@
 
 ## ▶ 현재 상태 / 다음 작업 (이어서 시작)
 
-- **완료**: Phase 1(기반) ✅, Phase 2(방 배치 + 회비) ✅ — `main`에 병합·푸시됨.
-- **다음**: **Phase 3 — 스케줄 + 콘텐츠 페이지**(수련회 소개·강사 소개·공지사항·Contact us, 전체 스케줄 보기). 새 기능이므로 **brainstorming → 설계 spec → writing-plans → subagent-driven 실행** 순서로 진행(Phase 2와 동일 패턴).
-  - Contact us 데이터: 주소 20 Andrews Road, Hicksville, NY 11801 / (516) 822-6464 / info@nyevergreen.com (교회 본부) — 수련회 장소는 §프로젝트 참고.
+- **완료**: Phase 1(기반) ✅, Phase 2(방 배치 + 회비) ✅ — `main`에 병합·푸시됨. Phase 3(스케줄 + 콘텐츠) ✅ — 브랜치 `phase3-schedule-content`(병합 대기).
+- **다음**: **Phase 4 — 대시보드/현황**(등록·회비·방 배치 집계). 새 기능이므로 **brainstorming → 설계 spec → writing-plans → subagent-driven 실행** 순서로 진행(Phase 2·3과 동일 패턴).
 - **개발 환경 재기동** (로컬): `supabase start` → `npm run dev` (http://localhost:3000). 로컬 키는 `.env.local`에 이미 있음(재시작해도 동일). 매직링크 메일은 Mailpit http://127.0.0.1:54324.
 - **미완/배포 전 할 일**: `SETUP.md` 참고 (실제 Supabase 프로젝트, Google OAuth, Custom SMTP, Turnstile, keep-alive cron).
 
@@ -39,7 +38,7 @@
 
 - **Phase 1 — 기반 ✅ (완료)**: 데이터 모델, 인증·권한, 공개 등록(가구주+개인), 성도 본인 수정, 관리자 참석자 관리(목록·출석·회비 토글), i18n.
 - **Phase 2 — 방 배치 + 회비 ✅ (완료)**: 객실 타입/호실 관리(`/admin/rooms`), 참석자 호실 배치 + 정원 초과 경고 + 현황표(`/admin/assignments`), 사람별 회비 계산(6세미만 $0·미배정 미산정), 가구 단위 납부, 성도 회비 카드(`my_household_fee()` RPC).
-- **Phase 3 — 스케줄 + 콘텐츠**: 스케줄 관리/보기, 수련회 소개, 강사 소개, 공지사항, Contact us.
+- **Phase 3 — 스케줄 + 콘텐츠 ✅ (완료)**: 공개 콘텐츠(`/about`·`/speakers`·`/contact` 정적 i18n) + 스케줄(`/schedule`, `schedule_items`)·공지(`/announcements`, `announcements`) DB(공개읽기 RLS + 관리자쓰기), 관리자 `/admin/schedule`·`/admin/announcements`(고정/게시 토글), 반응형 헤더 + 모바일 햄버거.
 - **Phase 4 — 대시보드/현황**: 등록·회비·방 배치 집계.
 
 > 데이터 모델/인증은 후속 단계를 수용하도록 설계됨.
@@ -76,13 +75,17 @@ src/
   proxy.ts                       # Next 16 미들웨어: next-intl 라우팅 + Supabase 세션 갱신
   i18n/{routing,request,navigation}.ts   # ko 기본, localePrefix: 'as-needed'
   lib/
-    types.ts                     # Attendee, enum(Gender/Role/Attendance), DISTRICTS, RoomType, Room
+    types.ts                     # Attendee, enum, DISTRICTS, RoomType, Room, ScheduleItem, Announcement
     fees.ts                      # 회비 계산: personFee, groupHouseholds, formatUSD, AttendeeWithRoom
+    schedule.ts                  # 스케줄 날짜 그룹/요일·시간 포맷: groupByDay, formatDayLabel, formatTime
     supabase/{client,server,middleware}.ts  # 브라우저/서버/proxy용 클라이언트
   app/
     [locale]/
       layout.tsx                 # <html> + NextIntlClientProvider + SiteHeader (루트 레이아웃)
-      page.tsx                   # 홈/소개
+      page.tsx                   # 홈 (hero + CTA)
+      about|speakers|contact/page.tsx   # 정적 콘텐츠(소개·강사·Contact, i18n). contact는 Google Maps 링크
+      schedule/page.tsx          # 공개 일정(날짜별 그룹, ScheduleView) — schedule_items 공개읽기
+      announcements/page.tsx     # 공개 공지(게시분·고정먼저) — announcements 공개읽기
       register/{page,actions}.tsx   # 공개 등록 + insertRegistration() 서버 액션
       edit/
         page.tsx                 # 매직링크 요청 (EditRequestForm)
@@ -91,20 +94,25 @@ src/
       admin/
         login/page.tsx           # Google 로그인 (가드 밖)
         (protected)/             # 라우트 그룹: 권한 가드 적용 (URL엔 영향 없음)
-          layout.tsx             # getClaims() → app_role=admin 확인 + 서브내비(참석자/객실/방배치)
+          layout.tsx             # getClaims() → app_role=admin 확인 + 서브내비(참석자/객실/방배치/일정/공지)
           page.tsx               # 참석자 목록(가구 그룹) + 방·회비 + 가구 납부 토글
           rooms/page.tsx         # 객실 타입/호실 관리 (RoomManager)
           assignments/page.tsx   # 호실 배치 보드 + 정원경고 + 현황표 (AssignmentBoard)
+          schedule/page.tsx      # 일정 CRUD (ScheduleManager)
+          announcements/page.tsx # 공지 CRUD + 고정/게시 토글 (AnnouncementManager)
         actions.ts               # setPaid() — 관리자 전용
         rooms-actions.ts         # 객실 타입/호실 CRUD
         assignment-actions.ts    # assignRoom() — 호실 배치
+        schedule-actions.ts      # upsert/deleteScheduleItem — 관리자 전용
+        announcement-actions.ts  # upsert/delete/toggleAnnouncementFlag — 관리자 전용
     edit/manage/page.tsx         # + 성도 회비 카드 (my_household_fee RPC)
     auth/{callback,confirm,signout}/route.ts  # [locale] 밖, proxy matcher에서 제외
-  components/                    # SiteHeader, LocaleSwitcher, *Form, AdminAttendeeTable, PersonFields, RoomManager, AssignmentBoard, HouseholdFeeCard
-messages/{ko,en}.json            # i18n (Common/Nav/Home/Register/Edit/Admin/Fields/Gender/Role/District/Attendance/Rooms/Fee)
+  components/                    # SiteHeader, MobileNav, LocaleSwitcher, *Form, AdminAttendeeTable, PersonFields, RoomManager, AssignmentBoard, HouseholdFeeCard, ScheduleManager, AnnouncementManager, ScheduleView
+messages/{ko,en}.json            # i18n (Common/Nav/Home/Register/Edit/Admin/Fields/Gender/Role/District/Attendance/Rooms/Fee/About/Schedule/Speakers/Announcements/Contact)
 supabase/migrations/
   0001_init.sql                  # attendees/admins + RLS + 트리거 + access token hook + 첫 관리자
   0002_rooms.sql                 # room_types/rooms + attendees.room_id + my_household_fee() RPC + RLS
+  0003_content.sql               # schedule_items/announcements + 공개읽기 RLS(공지는 published만) + 관리자쓰기
 ```
 
 > **회비/방 규칙**: 회비 금액은 저장하지 않고 배정 호실의 타입 단가로 계산(6세미만 $0, 미배정 미산정). 납부는 가구주(head) 행의 `paid`를 가구 단위로 사용. 방 테이블(room_types/rooms)·`attendees.room_id`는 관리자 전용(RLS + guard 트리거), 성도는 `my_household_fee()` RPC로 금액만.
