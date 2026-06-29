@@ -2,9 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { PersonFields, emptyPerson } from "./PersonFields";
 import {
   insertRegistration,
+  checkEmail,
   type PersonInput,
   type RegistrationPayload,
 } from "@/app/[locale]/register/actions";
@@ -18,6 +20,7 @@ export function RegistrationForm() {
   const tc = useTranslations("Common");
   const tf = useTranslations("Fields");
 
+  const [phase, setPhase] = useState<"email" | "form">("email");
   const [mode, setMode] = useState<"individual" | "household">("individual");
   const [email, setEmail] = useState("");
   const [householder, setHouseholder] = useState<PersonInput>(emptyPerson());
@@ -25,6 +28,29 @@ export function RegistrationForm() {
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
+
+  // 1단계: 이메일 확인
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [registered, setRegistered] = useState(false);
+  const [checking, startCheck] = useTransition();
+
+  function submitEmail(e: React.FormEvent) {
+    e.preventDefault();
+    setEmailError(null);
+    setRegistered(false);
+    startCheck(async () => {
+      const res = await checkEmail(email);
+      if (!res.ok) {
+        setEmailError(res.error);
+        return;
+      }
+      if (res.registered) {
+        setRegistered(true);
+        return;
+      }
+      setPhase("form");
+    });
+  }
 
   function patchHouseholder(patch: Partial<PersonInput>) {
     setHouseholder((prev) => ({ ...prev, ...patch }));
@@ -72,8 +98,91 @@ export function RegistrationForm() {
     );
   }
 
+  // ── 1단계: 이메일 확인 ──
+  if (phase === "email") {
+    return (
+      <form onSubmit={submitEmail} className="space-y-4">
+        <div>
+          <label className={labelClass}>
+            {tf("email")} <span className="text-rose-500">*</span>
+          </label>
+          <input
+            type="email"
+            required
+            value={email}
+            onChange={(e) => {
+              setEmail(e.target.value);
+              setRegistered(false);
+              setEmailError(null);
+            }}
+            className={inputClass}
+            placeholder="you@example.com"
+          />
+          <p className="mt-1 text-xs text-slate-500">{t("emailStepHint")}</p>
+        </div>
+
+        {emailError && (
+          <p className="rounded-md bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-200">
+            {t(emailError)}
+          </p>
+        )}
+
+        {registered ? (
+          <div className="rounded-xl bg-amber-50 p-5 ring-1 ring-amber-200">
+            <p className="text-base font-semibold text-amber-900">
+              {t("alreadyTitle")}
+            </p>
+            <p className="mt-1 text-sm text-amber-800">{t("alreadyHint")}</p>
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <Link
+                href="/edit"
+                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+              >
+                {t("goToEdit")}
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setRegistered(false);
+                  setEmail("");
+                }}
+                className="text-sm font-medium text-slate-500 hover:text-slate-700"
+              >
+                {t("useAnotherEmail")}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            type="submit"
+            disabled={checking}
+            className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
+          >
+            {checking ? t("checking") : t("next")}
+          </button>
+        )}
+      </form>
+    );
+  }
+
+  // ── 2단계: 등록 폼 ──
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
+      {/* 확인된 이메일 (읽기전용) */}
+      <div className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3 ring-1 ring-slate-200">
+        <div>
+          <p className="text-xs text-slate-500">{t("emailReadonlyNote")}</p>
+          <p className="text-sm font-medium text-slate-800">{email}</p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setPhase("email")}
+          className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
+        >
+          {t("changeEmail")}
+        </button>
+      </div>
+
       {/* 등록 방식 선택 */}
       <fieldset>
         <legend className={labelClass}>{t("mode")}</legend>
@@ -98,22 +207,6 @@ export function RegistrationForm() {
           </label>
         </div>
       </fieldset>
-
-      {/* 이메일 (수정 링크 발송용) */}
-      <div>
-        <label className={labelClass}>
-          {tf("email")} <span className="text-rose-500">*</span>
-        </label>
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          className={inputClass}
-          placeholder="you@example.com"
-        />
-        <p className="mt-1 text-xs text-slate-500">{t("contactNote")}</p>
-      </div>
 
       {/* 가구주 / 개인 */}
       <section className="rounded-xl bg-white p-5 ring-1 ring-slate-200">
