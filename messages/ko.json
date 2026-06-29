@@ -19,7 +19,12 @@
     "home": "홈",
     "register": "등록",
     "edit": "내 등록 수정",
-    "admin": "관리자"
+    "admin": "관리자",
+    "about": "소개",
+    "schedule": "일정",
+    "speakers": "강사",
+    "announcements": "공지",
+    "contact": "연락처"
   },
   "Home": {
     "title": "늘푸른교회 전교인 하계 수련회",
@@ -90,7 +95,9 @@
     "empty": "아직 등록된 참석자가 없습니다.",
     "navAttendees": "참석자",
     "navRooms": "객실",
-    "navAssignments": "방 배치"
+    "navAssignments": "방 배치",
+    "navSchedule": "일정",
+    "navAnnouncements": "공지"
   },
   "Fields": {
     "korean_name": "한글 이름",
@@ -171,5 +178,70 @@
     "perPerson": "1인",
     "exempt": "면제(6세 미만)",
     "pending": "미산정"
+  },
+  "About": {
+    "title": "수련회 소개",
+    "theme": "복된 만남 / Blessed Encounter",
+    "verse": "내가 거기서 이스라엘 자손을 만나리니 내 영광으로 인하여 회막이 거룩하게 될지라",
+    "verseRef": "출애굽기 29:43",
+    "whenTitle": "일정",
+    "when": "2026년 9월 5일(토)부터 7일(월)까지 2박 3일간 진행됩니다.",
+    "whereTitle": "장소",
+    "where": "Honor's Haven Retreat & Conference (1195 Arrowhead Rd, Ellenville, NY 12428)에서 모입니다.",
+    "feeTitle": "회비",
+    "fee": "회비는 배정된 객실 인원에 따라 1인 기준으로 책정됩니다.\n• 2인실 $300 / 3인실 $250 / 4인실 $200 (2박 3일 숙박·식사 포함)\n• 6세 미만은 회비가 면제됩니다.\n• 가정당 1부만 제출해 주세요.",
+    "expectTitle": "무엇을 기대할 수 있나요",
+    "expect": "온 교우가 함께 모여 말씀과 기도, 교제 가운데 주님을 만나는 복된 시간이 준비되어 있습니다."
+  },
+  "Schedule": {
+    "pageTitle": "전체 일정",
+    "comingSoon": "일정이 곧 공개됩니다.",
+    "manageTitle": "일정 관리",
+    "empty": "등록된 일정이 없습니다.",
+    "addItem": "일정 추가",
+    "editItem": "일정 수정",
+    "titleField": "제목",
+    "descField": "설명 (선택)",
+    "locationField": "장소 (선택)",
+    "add": "추가",
+    "save": "저장",
+    "cancel": "취소",
+    "edit": "수정",
+    "delete": "삭제"
+  },
+  "Speakers": {
+    "title": "강사 소개",
+    "tbaName": "추후 공개",
+    "tbaNote": "초청 강사 정보가 확정되는 대로 안내해 드리겠습니다."
+  },
+  "Announcements": {
+    "pageTitle": "공지사항",
+    "emptyPublic": "아직 공지사항이 없습니다.",
+    "manageTitle": "공지 관리",
+    "empty": "작성된 공지가 없습니다.",
+    "addItem": "공지 작성",
+    "editItem": "공지 수정",
+    "titleField": "제목",
+    "bodyField": "내용",
+    "pinned": "고정",
+    "hidden": "숨김",
+    "pin": "고정",
+    "unpin": "고정 해제",
+    "publish": "게시",
+    "hide": "숨기기",
+    "publishedLabel": "게시",
+    "add": "작성",
+    "save": "저장",
+    "cancel": "취소",
+    "edit": "수정",
+    "delete": "삭제"
+  },
+  "Contact": {
+    "title": "연락처",
+    "venueTitle": "수련회 장소",
+    "churchTitle": "교회 본부",
+    "phoneLabel": "전화",
+    "emailLabel": "이메일",
+    "viewMap": "지도 보기"
   }
 }

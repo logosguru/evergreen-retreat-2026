@@ -19,7 +19,12 @@
     "home": "Home",
     "register": "Register",
     "edit": "Edit my registration",
-    "admin": "Admin"
+    "admin": "Admin",
+    "about": "About",
+    "schedule": "Schedule",
+    "speakers": "Speakers",
+    "announcements": "News",
+    "contact": "Contact"
   },
   "Home": {
     "title": "Evergreen Church Summer Retreat",
@@ -90,7 +95,9 @@
     "empty": "No attendees registered yet.",
     "navAttendees": "Attendees",
     "navRooms": "Rooms",
-    "navAssignments": "Assignments"
+    "navAssignments": "Assignments",
+    "navSchedule": "Schedule",
+    "navAnnouncements": "Announcements"
   },
   "Fields": {
     "korean_name": "Korean name",
@@ -171,5 +178,70 @@
     "perPerson": "per person",
     "exempt": "Exempt (under 6)",
     "pending": "Pending"
+  },
+  "About": {
+    "title": "About the Retreat",
+    "theme": "Blessed Encounter",
+    "verse": "There I will meet with the Israelites, and the place will be consecrated by my glory.",
+    "verseRef": "Exodus 29:43",
+    "whenTitle": "When",
+    "when": "September 5 (Sat) to 7 (Mon), 2026 — two nights and three days.",
+    "whereTitle": "Where",
+    "where": "We gather at Honor's Haven Retreat & Conference (1195 Arrowhead Rd, Ellenville, NY 12428).",
+    "feeTitle": "Fees",
+    "fee": "Fees are per person based on room occupancy.\n• Double $300 / Triple $250 / Quad $200 (2 nights, meals included)\n• Children under 6 are exempt.\n• One submission per household.",
+    "expectTitle": "What to Expect",
+    "expect": "A blessed time for the whole congregation to gather and meet the Lord through the Word, prayer, and fellowship."
+  },
+  "Schedule": {
+    "pageTitle": "Full Schedule",
+    "comingSoon": "The schedule will be announced soon.",
+    "manageTitle": "Manage Schedule",
+    "empty": "No schedule items yet.",
+    "addItem": "Add Item",
+    "editItem": "Edit Item",
+    "titleField": "Title",
+    "descField": "Description (optional)",
+    "locationField": "Location (optional)",
+    "add": "Add",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "Speakers": {
+    "title": "Speakers",
+    "tbaName": "To Be Announced",
+    "tbaNote": "Speaker information will be shared once confirmed."
+  },
+  "Announcements": {
+    "pageTitle": "Announcements",
+    "emptyPublic": "No announcements yet.",
+    "manageTitle": "Manage Announcements",
+    "empty": "No announcements yet.",
+    "addItem": "New Announcement",
+    "editItem": "Edit Announcement",
+    "titleField": "Title",
+    "bodyField": "Body",
+    "pinned": "Pinned",
+    "hidden": "Hidden",
+    "pin": "Pin",
+    "unpin": "Unpin",
+    "publish": "Publish",
+    "hide": "Hide",
+    "publishedLabel": "Published",
+    "add": "Post",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "Contact": {
+    "title": "Contact Us",
+    "venueTitle": "Retreat Venue",
+    "churchTitle": "Church Office",
+    "phoneLabel": "Phone",
+    "emailLabel": "Email",
+    "viewMap": "View Map"
   }
 }
