@@ -30,7 +30,7 @@
 ## 단계 로드맵
 
 - **Phase 1 — 기반 ✅ (완료)**: 데이터 모델, 인증·권한, 공개 등록(가구주+개인), 성도 본인 수정, 관리자 참석자 관리(목록·출석·회비 토글), i18n.
-- **Phase 2 — 방 배치**: 방 종류/분류 관리, 참석자 방 배치, 배치 현황표.
+- **Phase 2 — 방 배치 + 회비 ✅ (완료)**: 객실 타입/호실 관리(`/admin/rooms`), 참석자 호실 배치 + 정원 초과 경고 + 현황표(`/admin/assignments`), 사람별 회비 계산(6세미만 $0·미배정 미산정), 가구 단위 납부, 성도 회비 카드(`my_household_fee()` RPC).
 - **Phase 3 — 스케줄 + 콘텐츠**: 스케줄 관리/보기, 수련회 소개, 강사 소개, 공지사항, Contact us.
 - **Phase 4 — 대시보드/현황**: 등록·회비·방 배치 집계.
 
@@ -68,7 +68,8 @@ src/
   proxy.ts                       # Next 16 미들웨어: next-intl 라우팅 + Supabase 세션 갱신
   i18n/{routing,request,navigation}.ts   # ko 기본, localePrefix: 'as-needed'
   lib/
-    types.ts                     # Attendee, enum(Gender/Role/Attendance), PersonInput
+    types.ts                     # Attendee, enum(Gender/Role/Attendance), DISTRICTS, RoomType, Room
+    fees.ts                      # 회비 계산: personFee, groupHouseholds, formatUSD, AttendeeWithRoom
     supabase/{client,server,middleware}.ts  # 브라우저/서버/proxy용 클라이언트
   app/
     [locale]/
@@ -82,14 +83,23 @@ src/
       admin/
         login/page.tsx           # Google 로그인 (가드 밖)
         (protected)/             # 라우트 그룹: 권한 가드 적용 (URL엔 영향 없음)
-          layout.tsx             # getClaims() → app_role=admin 확인
-          page.tsx               # 참석자 목록 + 회비 토글
+          layout.tsx             # getClaims() → app_role=admin 확인 + 서브내비(참석자/객실/방배치)
+          page.tsx               # 참석자 목록(가구 그룹) + 방·회비 + 가구 납부 토글
+          rooms/page.tsx         # 객실 타입/호실 관리 (RoomManager)
+          assignments/page.tsx   # 호실 배치 보드 + 정원경고 + 현황표 (AssignmentBoard)
         actions.ts               # setPaid() — 관리자 전용
+        rooms-actions.ts         # 객실 타입/호실 CRUD
+        assignment-actions.ts    # assignRoom() — 호실 배치
+    edit/manage/page.tsx         # + 성도 회비 카드 (my_household_fee RPC)
     auth/{callback,confirm,signout}/route.ts  # [locale] 밖, proxy matcher에서 제외
-  components/                    # SiteHeader, LocaleSwitcher, *Form, AdminAttendeeTable, PersonFields
-messages/{ko,en}.json            # i18n 메시지 (네임스페이스: Common/Nav/Home/Register/Edit/Admin/Fields/Gender/Role/Attendance)
-supabase/migrations/0001_init.sql  # 테이블 + RLS + 트리거 + access token hook + 첫 관리자
+  components/                    # SiteHeader, LocaleSwitcher, *Form, AdminAttendeeTable, PersonFields, RoomManager, AssignmentBoard, HouseholdFeeCard
+messages/{ko,en}.json            # i18n (Common/Nav/Home/Register/Edit/Admin/Fields/Gender/Role/District/Attendance/Rooms/Fee)
+supabase/migrations/
+  0001_init.sql                  # attendees/admins + RLS + 트리거 + access token hook + 첫 관리자
+  0002_rooms.sql                 # room_types/rooms + attendees.room_id + my_household_fee() RPC + RLS
 ```
+
+> **회비/방 규칙**: 회비 금액은 저장하지 않고 배정 호실의 타입 단가로 계산(6세미만 $0, 미배정 미산정). 납부는 가구주(head) 행의 `paid`를 가구 단위로 사용. 방 테이블(room_types/rooms)·`attendees.room_id`는 관리자 전용(RLS + guard 트리거), 성도는 `my_household_fee()` RPC로 금액만.
 
 ## 인증·권한 아키텍처 (중요)
 
