@@ -22,6 +22,7 @@ export function SiteHeader() {
           <Link href="/register" className="text-emerald-50/90 hover:text-white">
             {t("register")}
           </Link>
+          <span aria-hidden className="h-4 w-px bg-white/25" />
           <Link href="/edit" className="text-emerald-50/90 hover:text-white">
             {t("edit")}
           </Link>
