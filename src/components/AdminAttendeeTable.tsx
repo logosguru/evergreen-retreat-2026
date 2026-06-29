@@ -105,9 +105,12 @@ export function AdminAttendeeTable({
         <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
           <tr>
             <th className="px-3 py-2 text-left font-medium">{t("colName")}</th>
-            <th className="px-3 py-2 text-left font-medium">
-              {t("colHousehold")}
-            </th>
+            <SortTh
+              k="household"
+              label={t("colHousehold")}
+              sort={sort}
+              onToggle={toggleSort}
+            />
             <th className="px-3 py-2 text-left font-medium">{t("colRole")}</th>
             <th className="px-3 py-2 text-left font-medium">
               {t("colDistrict")}
