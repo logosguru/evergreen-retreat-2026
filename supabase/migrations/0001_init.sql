@@ -212,5 +212,5 @@ create policy "attendees_delete_admin" on public.attendees
 -- 첫 관리자 부트스트랩 (마이그레이션은 RLS 우회 권한으로 실행됨)
 -- =====================================================================
 insert into public.admins (email, name)
-values ('joey.kim@bridgerockcap.com', 'Joey Kim')
+values ('logosguru@gmail.com', 'Joey Kim')
 on conflict (email) do nothing;

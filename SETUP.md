@@ -30,7 +30,7 @@ npm run dev           # http://localhost:3000
 1. **등록**: `/register` → 개인 또는 가구주 일괄 등록 제출. Studio의 `attendees` 테이블에서 행 확인.
 2. **성도 본인 수정**: `/edit` → 등록한 이메일 입력 → **Mailpit(54324)** 에서 메일 열기 →
    "등록 정보 수정하기" 클릭 → `/edit/manage`에서 본인 가구 행만 보이고 수정 가능.
-3. **관리자**: 로컬에선 Google 버튼 대신 **관리자 이메일(`joey.kim@bridgerockcap.com`)로 매직링크 로그인**
+3. **관리자**: 로컬에선 Google 버튼 대신 **관리자 이메일(`logosguru@gmail.com`)로 매직링크 로그인**
    (`/edit`에서 요청 → Mailpit 링크 클릭) → 로그인 후 주소창에 `/admin` 입력.
    `app_role=admin` 클레임이 부여돼 전체 명단 + 회비 토글이 동작합니다.
    - Google OAuth 자체를 로컬에서 테스트하려면 Google Cloud OAuth 클라이언트에
@@ -52,7 +52,7 @@ supabase migration new <name> # 새 마이그레이션 파일 생성
 
 1. https://supabase.com → 새 프로젝트 생성 (무료 티어).
 2. **SQL Editor**에서 `supabase/migrations/0001_init.sql` 전체를 붙여넣고 실행.
-   - 테이블(`attendees`, `admins`), RLS, 트리거, access token hook, 첫 관리자(joey.kim@bridgerockcap.com)가 생성됩니다.
+   - 테이블(`attendees`, `admins`), RLS, 트리거, access token hook, 첫 관리자(logosguru@gmail.com)가 생성됩니다.
 3. **Authentication → Hooks** → *Custom Access Token* → `public.custom_access_token_hook` 선택 후 활성화.
    - ⚠️ 이 단계를 안 하면 관리자 권한 클레임이 토큰에 안 들어가 관리자 화면에 못 들어갑니다.
 4. **Project Settings → API**에서 값 복사 → `.env.local`에 입력:
