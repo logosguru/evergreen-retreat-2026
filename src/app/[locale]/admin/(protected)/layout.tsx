@@ -1,5 +1,6 @@
 import { getTranslations } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 
 // 관리자 가드: 로그인 + app_role=admin 클레임 확인.
@@ -40,5 +41,26 @@ export default async function ProtectedAdminLayout({
     );
   }
 
-  return <>{children}</>;
+  const tn = await getTranslations("Admin");
+  return (
+    <>
+      <nav className="border-b border-slate-200 bg-white">
+        <div className="mx-auto flex max-w-5xl gap-4 px-4 py-2 text-sm">
+          <Link href="/admin" className="text-slate-600 hover:text-slate-900">
+            {tn("navAttendees")}
+          </Link>
+          <Link href="/admin/rooms" className="text-slate-600 hover:text-slate-900">
+            {tn("navRooms")}
+          </Link>
+          <Link
+            href="/admin/assignments"
+            className="text-slate-600 hover:text-slate-900"
+          >
+            {tn("navAssignments")}
+          </Link>
+        </div>
+      </nav>
+      {children}
+    </>
+  );
 }
