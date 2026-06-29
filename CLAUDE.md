@@ -97,7 +97,7 @@ src/
         (protected)/             # 라우트 그룹: 권한 가드 적용 (URL엔 영향 없음)
           layout.tsx             # getClaims() → app_role=admin 확인 + 서브내비(대시보드/참석자/객실/방배치/일정/FAQ)
           page.tsx               # 대시보드 (AdminDashboard, computeDashboard 집계)
-          attendees/page.tsx     # 참석자 목록(가구 그룹) + 방·회비 + 가구 납부 + 언어 지정(AdminAttendeeTable)
+          attendees/page.tsx     # 참석자 정렬 표(사람당 1행, 참석·방타입·언어 정렬, 구역 열, 회비·납부·언어 인라인) — AdminAttendeeTable + lib/attendee-sort
           rooms/page.tsx         # 객실 타입/호실 관리 (RoomManager)
           assignments/page.tsx   # 호실 배치 보드 + 정원경고 + 현황표 (AssignmentBoard)
           schedule/page.tsx      # 일정 CRUD (ScheduleManager)
