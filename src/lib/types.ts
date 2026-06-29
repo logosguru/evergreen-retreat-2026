@@ -105,13 +105,10 @@ export interface ScheduleItem {
   created_at: string;
 }
 
-export interface Announcement {
+export interface Faq {
   id: string;
-  title: string;
-  body: string;
-  pinned: boolean;
-  published: boolean;
-  published_at: string;
+  question: string;
+  answer: string;
+  sort_order: number;
   created_at: string;
-  updated_at: string;
 }

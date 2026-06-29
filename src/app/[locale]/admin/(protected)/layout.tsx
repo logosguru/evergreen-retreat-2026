@@ -65,10 +65,10 @@ export default async function ProtectedAdminLayout({
             {tn("navSchedule")}
           </Link>
           <Link
-            href="/admin/announcements"
+            href="/admin/faq"
             className="text-slate-600 hover:text-slate-900"
           >
-            {tn("navAnnouncements")}
+            {tn("navFaq")}
           </Link>
         </div>
       </nav>

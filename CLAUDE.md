@@ -38,7 +38,7 @@
 
 - **Phase 1 — 기반 ✅ (완료)**: 데이터 모델, 인증·권한, 공개 등록(가구주+개인), 성도 본인 수정, 관리자 참석자 관리(목록·출석·회비 토글), i18n.
 - **Phase 2 — 방 배치 + 회비 ✅ (완료)**: 객실 타입/호실 관리(`/admin/rooms`), 참석자 호실 배치 + 정원 초과 경고 + 현황표(`/admin/assignments`), 사람별 회비 계산(6세미만 $0·미배정 미산정), 가구 단위 납부, 성도 회비 카드(`my_household_fee()` RPC).
-- **Phase 3 — 스케줄 + 콘텐츠 ✅ (완료)**: 공개 콘텐츠(`/about`·`/speakers`·`/contact` 정적 i18n) + 스케줄(`/schedule`, `schedule_items`)·공지(`/announcements`, `announcements`) DB(공개읽기 RLS + 관리자쓰기), 관리자 `/admin/schedule`·`/admin/announcements`(고정/게시 토글), 반응형 헤더 + 모바일 햄버거.
+- **Phase 3 — 스케줄 + 콘텐츠 ✅ (완료)**: 공개 콘텐츠(`/about`·`/speakers` 정적 i18n) + 스케줄(`/schedule`, `schedule_items`)·FAQ(`/faq`, `faqs`) DB(공개읽기 RLS + 관리자쓰기), 관리자 `/admin/schedule`·`/admin/faq`, 반응형 헤더 + 모바일 햄버거. (일요일 일정은 "주일/Lord's Day" 표기. 소개 페이지에 장소 사진/링크·준비물.)
 - **Phase 4 — 대시보드/현황**: 등록·회비·방 배치 집계.
 
 > 데이터 모델/인증은 후속 단계를 수용하도록 설계됨.
@@ -83,9 +83,9 @@ src/
     [locale]/
       layout.tsx                 # <html> + NextIntlClientProvider + SiteHeader (루트 레이아웃)
       page.tsx                   # 홈 (hero + CTA)
-      about|speakers|contact/page.tsx   # 정적 콘텐츠(소개·강사·Contact, i18n). contact는 Google Maps 링크
-      schedule/page.tsx          # 공개 일정(날짜별 그룹, ScheduleView) — schedule_items 공개읽기
-      announcements/page.tsx     # 공개 공지(게시분·고정먼저) — announcements 공개읽기
+      about|speakers/page.tsx    # 정적 콘텐츠(소개·강사, i18n). about에 장소 사진(public/honors-haven.webp)+홈페이지 링크·준비물
+      schedule/page.tsx          # 공개 일정(날짜별 그룹, ScheduleView) — schedule_items 공개읽기. 일요일=주일/Lord's Day
+      faq/page.tsx               # 공개 FAQ(질문/답변, 정렬순) — faqs 공개읽기
       register/{page,actions}.tsx   # 공개 등록 + insertRegistration() 서버 액션
       edit/
         page.tsx                 # 매직링크 요청 (EditRequestForm)
@@ -94,25 +94,26 @@ src/
       admin/
         login/page.tsx           # Google 로그인 (가드 밖)
         (protected)/             # 라우트 그룹: 권한 가드 적용 (URL엔 영향 없음)
-          layout.tsx             # getClaims() → app_role=admin 확인 + 서브내비(참석자/객실/방배치/일정/공지)
+          layout.tsx             # getClaims() → app_role=admin 확인 + 서브내비(참석자/객실/방배치/일정/FAQ)
           page.tsx               # 참석자 목록(가구 그룹) + 방·회비 + 가구 납부 토글
           rooms/page.tsx         # 객실 타입/호실 관리 (RoomManager)
           assignments/page.tsx   # 호실 배치 보드 + 정원경고 + 현황표 (AssignmentBoard)
           schedule/page.tsx      # 일정 CRUD (ScheduleManager)
-          announcements/page.tsx # 공지 CRUD + 고정/게시 토글 (AnnouncementManager)
+          faq/page.tsx           # FAQ CRUD (FaqManager)
         actions.ts               # setPaid() — 관리자 전용
         rooms-actions.ts         # 객실 타입/호실 CRUD
         assignment-actions.ts    # assignRoom() — 호실 배치
         schedule-actions.ts      # upsert/deleteScheduleItem — 관리자 전용
-        announcement-actions.ts  # upsert/delete/toggleAnnouncementFlag — 관리자 전용
+        faq-actions.ts           # upsert/deleteFaq — 관리자 전용
     edit/manage/page.tsx         # + 성도 회비 카드 (my_household_fee RPC)
     auth/{callback,confirm,signout}/route.ts  # [locale] 밖, proxy matcher에서 제외
-  components/                    # SiteHeader, MobileNav, LocaleSwitcher, *Form, AdminAttendeeTable, PersonFields, RoomManager, AssignmentBoard, HouseholdFeeCard, ScheduleManager, AnnouncementManager, ScheduleView
-messages/{ko,en}.json            # i18n (Common/Nav/Home/Register/Edit/Admin/Fields/Gender/Role/District/Attendance/Rooms/Fee/About/Schedule/Speakers/Announcements/Contact)
+  components/                    # SiteHeader, MobileNav, LocaleSwitcher, *Form, AdminAttendeeTable, PersonFields, RoomManager, AssignmentBoard, HouseholdFeeCard, ScheduleManager, FaqManager, ScheduleView
+messages/{ko,en}.json            # i18n (Common/Nav/Home/Register/Edit/Admin/Fields/Gender/Role/District/Attendance/Rooms/Fee/About/Schedule/Speakers/Faq)
 supabase/migrations/
   0001_init.sql                  # attendees/admins + RLS + 트리거 + access token hook + 첫 관리자
   0002_rooms.sql                 # room_types/rooms + attendees.room_id + my_household_fee() RPC + RLS
-  0003_content.sql               # schedule_items/announcements + 공개읽기 RLS(공지는 published만) + 관리자쓰기
+  0003_content.sql               # schedule_items/announcements + 공개읽기 RLS + 관리자쓰기 (announcements는 0004에서 제거)
+  0004_faq.sql                   # faqs(공개읽기 RLS + 관리자쓰기) 신설 + announcements 제거(공지→FAQ 교체)
 ```
 
 > **회비/방 규칙**: 회비 금액은 저장하지 않고 배정 호실의 타입 단가로 계산(6세미만 $0, 미배정 미산정). 납부는 가구주(head) 행의 `paid`를 가구 단위로 사용. 방 테이블(room_types/rooms)·`attendees.room_id`는 관리자 전용(RLS + guard 트리거), 성도는 `my_household_fee()` RPC로 금액만.

@@ -30,6 +30,20 @@ export default function AboutPage({
         <section>
           <h2 className="text-lg font-semibold text-slate-900">{t("whereTitle")}</h2>
           <p>{t("where")}</p>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/honors-haven.webp"
+            alt="Honor's Haven Retreat & Conference"
+            className="mt-3 w-full rounded-xl shadow-sm ring-1 ring-slate-200"
+          />
+          <a
+            href="https://www.honorshaven.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-2 inline-block text-sm font-medium text-emerald-700 hover:text-emerald-800"
+          >
+            {t("whereLink")} →
+          </a>
         </section>
         <section>
           <h2 className="text-lg font-semibold text-slate-900">{t("feeTitle")}</h2>
@@ -37,9 +51,9 @@ export default function AboutPage({
         </section>
         <section>
           <h2 className="text-lg font-semibold text-slate-900">
-            {t("expectTitle")}
+            {t("prepareTitle")}
           </h2>
-          <p>{t("expect")}</p>
+          <p className="whitespace-pre-line">{t("prepare")}</p>
         </section>
       </div>
     </div>
