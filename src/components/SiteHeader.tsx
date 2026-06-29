@@ -3,6 +3,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./LocaleSwitcher";
 import { MobileNav } from "./MobileNav";
+import { RegisterMenu } from "./RegisterMenu";
 import logo from "../../public/evergreen-logo.webp";
 
 export function SiteHeader() {
@@ -33,15 +34,7 @@ export function SiteHeader() {
               {l.label}
             </Link>
           ))}
-          <Link
-            href="/register"
-            className="rounded-md bg-white/15 px-3 py-1.5 font-medium text-white hover:bg-white/25"
-          >
-            {t("register")}
-          </Link>
-          <Link href="/edit" className="text-emerald-50/90 hover:text-white">
-            {t("edit")}
-          </Link>
+          <RegisterMenu />
           <LocaleSwitcher />
         </nav>
 
