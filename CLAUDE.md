@@ -5,6 +5,14 @@
 이 파일은 이 저장소에서 작업하는 Claude(및 개발자)를 위한 컨텍스트 문서입니다.
 (상단 `@AGENTS.md` 는 create-next-app이 관리하는 Next.js 16 규칙 — 유지)
 
+## ▶ 현재 상태 / 다음 작업 (이어서 시작)
+
+- **완료**: Phase 1(기반) ✅, Phase 2(방 배치 + 회비) ✅ — `main`에 병합·푸시됨.
+- **다음**: **Phase 3 — 스케줄 + 콘텐츠 페이지**(수련회 소개·강사 소개·공지사항·Contact us, 전체 스케줄 보기). 새 기능이므로 **brainstorming → 설계 spec → writing-plans → subagent-driven 실행** 순서로 진행(Phase 2와 동일 패턴).
+  - Contact us 데이터: 주소 20 Andrews Road, Hicksville, NY 11801 / (516) 822-6464 / info@nyevergreen.com (교회 본부) — 수련회 장소는 §프로젝트 참고.
+- **개발 환경 재기동** (로컬): `supabase start` → `npm run dev` (http://localhost:3000). 로컬 키는 `.env.local`에 이미 있음(재시작해도 동일). 매직링크 메일은 Mailpit http://127.0.0.1:54324.
+- **미완/배포 전 할 일**: `SETUP.md` 참고 (실제 Supabase 프로젝트, Google OAuth, Custom SMTP, Turnstile, keep-alive cron).
+
 ## 프로젝트
 
 뉴욕 **늘푸른교회(Evergreen Church, https://nyevergreen.com)** 전교인 하계 수련회 web app.
