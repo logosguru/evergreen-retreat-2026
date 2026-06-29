@@ -87,7 +87,10 @@
     "markUnpaid": "Mark unpaid",
     "householder": "Head",
     "under6": "Under 6",
-    "empty": "No attendees registered yet."
+    "empty": "No attendees registered yet.",
+    "navAttendees": "Attendees",
+    "navRooms": "Rooms",
+    "navAssignments": "Assignments"
   },
   "Fields": {
     "korean_name": "Korean name",
@@ -121,5 +124,38 @@
   "Attendance": {
     "full": "Full",
     "partial": "Partial"
+  },
+  "Rooms": {
+    "title": "Room Management",
+    "roomTypes": "Room types",
+    "rooms": "Rooms",
+    "name": "Name",
+    "capacity": "Capacity",
+    "pricePerPerson": "Fee per person",
+    "label": "Room label",
+    "type": "Type",
+    "note": "Note",
+    "add": "Add",
+    "edit": "Edit",
+    "delete": "Delete",
+    "save": "Save",
+    "cancel": "Cancel",
+    "empty": "None yet.",
+    "assignments": "Room assignments",
+    "unassigned": "Unassigned",
+    "occupancy": "{count}/{capacity}",
+    "overCapacity": "Over capacity",
+    "assignTo": "Assign",
+    "noRoom": "— Unassigned —"
+  },
+  "Fee": {
+    "title": "Fee",
+    "total": "Household total",
+    "paid": "Paid",
+    "unpaid": "Unpaid",
+    "unassignedNotice": "{count} not yet calculated (room not assigned).",
+    "perPerson": "per person",
+    "exempt": "Exempt (under 6)",
+    "pending": "Pending"
   }
 }

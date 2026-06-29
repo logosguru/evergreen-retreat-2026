@@ -87,7 +87,10 @@
     "markUnpaid": "미납 처리",
     "householder": "가구주",
     "under6": "6세 미만",
-    "empty": "아직 등록된 참석자가 없습니다."
+    "empty": "아직 등록된 참석자가 없습니다.",
+    "navAttendees": "참석자",
+    "navRooms": "객실",
+    "navAssignments": "방 배치"
   },
   "Fields": {
     "korean_name": "한글 이름",
@@ -121,5 +124,38 @@
   "Attendance": {
     "full": "전일 참석",
     "partial": "부분 참석"
+  },
+  "Rooms": {
+    "title": "객실 관리",
+    "roomTypes": "객실 타입",
+    "rooms": "호실",
+    "name": "이름",
+    "capacity": "정원",
+    "pricePerPerson": "1인 회비",
+    "label": "호실명",
+    "type": "타입",
+    "note": "비고",
+    "add": "추가",
+    "edit": "수정",
+    "delete": "삭제",
+    "save": "저장",
+    "cancel": "취소",
+    "empty": "아직 없습니다.",
+    "assignments": "방 배치",
+    "unassigned": "미배정",
+    "occupancy": "{count}/{capacity}명",
+    "overCapacity": "정원 초과",
+    "assignTo": "배정",
+    "noRoom": "— 미배정 —"
+  },
+  "Fee": {
+    "title": "회비",
+    "total": "가구 회비 합계",
+    "paid": "납부 완료",
+    "unpaid": "미납",
+    "unassignedNotice": "{count}명은 객실 미배정으로 아직 산정되지 않았습니다.",
+    "perPerson": "1인",
+    "exempt": "면제(6세 미만)",
+    "pending": "미산정"
   }
 }
