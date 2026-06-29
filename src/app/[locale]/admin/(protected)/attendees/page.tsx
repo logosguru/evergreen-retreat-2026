@@ -37,7 +37,7 @@ export default async function AdminAttendeesPage({
         <span>${grandTotal.toLocaleString("en-US")}</span>
       </div>
       <div className="mt-6">
-        <AdminAttendeeTable households={households} />
+        <AdminAttendeeTable attendees={attendees} />
       </div>
     </div>
   );
