@@ -58,6 +58,18 @@ export default async function ProtectedAdminLayout({
           >
             {tn("navAssignments")}
           </Link>
+          <Link
+            href="/admin/schedule"
+            className="text-slate-600 hover:text-slate-900"
+          >
+            {tn("navSchedule")}
+          </Link>
+          <Link
+            href="/admin/announcements"
+            className="text-slate-600 hover:text-slate-900"
+          >
+            {tn("navAnnouncements")}
+          </Link>
         </div>
       </nav>
       {children}
