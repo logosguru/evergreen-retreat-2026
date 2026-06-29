@@ -108,7 +108,25 @@
     "navRooms": "Rooms",
     "navAssignments": "Assignments",
     "navSchedule": "Schedule",
-    "navFaq": "FAQ"
+    "navFaq": "FAQ",
+    "navDashboard": "Dashboard",
+    "dashTitle": "Dashboard",
+    "dashRegistration": "Registration",
+    "dashTotal": "Total people",
+    "dashHouseholds": "Households",
+    "dashFull": "Full attendance",
+    "dashPartial": "Partial",
+    "dashLanguage": "By language",
+    "dashRooms": "Room assignment",
+    "dashAssigned": "Assigned",
+    "dashUnassigned": "Unassigned",
+    "dashFees": "Fees",
+    "dashExpected": "Expected total",
+    "dashPaid": "Paid",
+    "dashUnpaid": "Unpaid",
+    "dashPaidHouseholds": "Paid households",
+    "dashByDistrict": "By district",
+    "dashByRole": "By role"
   },
   "Fields": {
     "korean_name": "Korean name",
@@ -241,5 +259,10 @@
     "cancel": "Cancel",
     "edit": "Edit",
     "delete": "Delete"
+  },
+  "Language": {
+    "ko": "Korean",
+    "en": "English",
+    "es": "Spanish"
   }
 }
