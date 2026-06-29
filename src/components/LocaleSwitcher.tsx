@@ -16,7 +16,7 @@ export function LocaleSwitcher() {
     <button
       type="button"
       onClick={() => router.replace(pathname, { locale: other })}
-      className="rounded-md border border-slate-300 px-2.5 py-1 text-sm font-medium text-slate-700 hover:bg-slate-100"
+      className="rounded-md border border-white/30 px-2.5 py-1 text-sm font-medium text-emerald-50 hover:bg-white/10"
     >
       {other === "ko" ? t("langKo") : t("langEn")}
     </button>

@@ -1,22 +1,28 @@
+import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./LocaleSwitcher";
+import logo from "../../public/evergreen-logo.webp";
 
 export function SiteHeader() {
   const t = useTranslations("Nav");
-  const tc = useTranslations("Common");
 
   return (
-    <header className="border-b border-slate-200 bg-white">
+    <header className="bg-emerald-800">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-        <Link href="/" className="font-semibold text-slate-900">
-          {tc("appName")}
+        <Link href="/" className="flex items-center" aria-label="Evergreen Church">
+          <Image
+            src={logo}
+            alt="Evergreen Church"
+            priority
+            className="h-8 w-auto"
+          />
         </Link>
-        <nav className="flex items-center gap-3 text-sm">
-          <Link href="/register" className="text-slate-600 hover:text-slate-900">
+        <nav className="flex items-center gap-4 text-sm">
+          <Link href="/register" className="text-emerald-50/90 hover:text-white">
             {t("register")}
           </Link>
-          <Link href="/edit" className="text-slate-600 hover:text-slate-900">
+          <Link href="/edit" className="text-emerald-50/90 hover:text-white">
             {t("edit")}
           </Link>
           <LocaleSwitcher />

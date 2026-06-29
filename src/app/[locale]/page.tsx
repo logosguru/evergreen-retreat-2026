@@ -26,19 +26,13 @@ export default function HomePage({
             — {t("verseRef")}
           </footer>
         </blockquote>
-        <dl className="mt-6 space-y-1 text-sm text-slate-600">
-          <div className="flex gap-2">
-            <dt className="font-medium text-slate-500">📅</dt>
-            <dd>{t("dates")}</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="font-medium text-slate-500">📍</dt>
-            <dd>
-              {t("location")}
-              <span className="block text-slate-400">{t("address")}</span>
-            </dd>
-          </div>
-        </dl>
+        <ul className="mt-6 list-disc space-y-1 pl-5 text-sm text-slate-600 marker:text-emerald-500">
+          <li>{t("dates")}</li>
+          <li>
+            {t("location")}
+            <span className="block text-slate-400">{t("address")}</span>
+          </li>
+        </ul>
         <p className="mt-6 text-lg leading-relaxed text-slate-700">
           {t("intro")}
         </p>
