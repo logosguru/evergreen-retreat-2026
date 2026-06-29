@@ -32,6 +32,7 @@ export interface Attendee {
   note: string | null;
   email: string | null; // 본인 수정 scoping 용
   phone: string | null;
+  room_id: string | null; // 배정된 호실 (관리자 전용)
   is_under_6: boolean; // 6세 미만 (회비 면제·객실 인원 제외)
   attendance: Attendance;
   arrival_at: string | null; // partial 일 때 필수
@@ -56,4 +57,22 @@ export interface AttendeeInput {
   arrival_at?: string | null;
   departure_at?: string | null;
   note?: string | null;
+}
+
+export interface RoomType {
+  id: string;
+  name: string;
+  capacity: number;
+  price_per_person: number;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface Room {
+  id: string;
+  label: string;
+  room_type_id: string;
+  note: string | null;
+  sort_order: number;
+  created_at: string;
 }
