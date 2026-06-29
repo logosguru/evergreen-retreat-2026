@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { GENDERS, ROLES, type Attendance } from "@/lib/types";
+import { DISTRICTS, GENDERS, ROLES, type Attendance } from "@/lib/types";
 import type { PersonInput } from "@/app/[locale]/register/actions";
 
 const inputClass =
@@ -24,6 +24,7 @@ export function PersonFields({
   const t = useTranslations("Fields");
   const tg = useTranslations("Gender");
   const tr = useTranslations("Role");
+  const td = useTranslations("District");
   const ta = useTranslations("Attendance");
 
   return (
@@ -53,12 +54,18 @@ export function PersonFields({
 
       <div>
         <label className={labelClass}>{t("district")}</label>
-        <input
-          type="text"
+        <select
           value={value.district ?? ""}
           onChange={(e) => onChange({ district: e.target.value })}
           className={inputClass}
-        />
+        >
+          <option value="">—</option>
+          {DISTRICTS.map((d) => (
+            <option key={d} value={d}>
+              {td(d)}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div>

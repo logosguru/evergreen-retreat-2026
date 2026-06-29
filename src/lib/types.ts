@@ -3,17 +3,34 @@ export const GENDERS = ["male", "female"] as const;
 export type Gender = (typeof GENDERS)[number];
 
 export const ROLES = [
-  "pastor", // 목사
+  "pastor", // 교역자 (목사·전도사 등)
   "elder", // 장로
   "gwonsa", // 권사
   "deacon", // 집사
-  "seogyosa", // 서리집사
   "member", // 성도
   "student", // 학생
   "child", // 유년
   "other", // 기타
 ] as const;
 export type Role = (typeof ROLES)[number];
+
+// 소속구역(Cell Group) 토큰. 라벨은 i18n "District" 네임스페이스에서 번역.
+export const DISTRICTS = [
+  "1",
+  "2",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "8",
+  "9",
+  "im", // International Missionary
+  "mahanaim", // 마하나임
+  "michael", // 미가엘
+  "gideon", // 기드온
+] as const;
+export type District = (typeof DISTRICTS)[number];
 
 export const ATTENDANCE = ["full", "partial"] as const;
 export type Attendance = (typeof ATTENDANCE)[number];
