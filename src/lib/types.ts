@@ -35,6 +35,9 @@ export type District = (typeof DISTRICTS)[number];
 export const ATTENDANCE = ["full", "partial"] as const;
 export type Attendance = (typeof ATTENDANCE)[number];
 
+export const LANGUAGES = ["ko", "en", "es"] as const; // 한국어/영어/Spanish (관리자 지정)
+export type Language = (typeof LANGUAGES)[number];
+
 export interface Attendee {
   id: string;
   korean_name: string;
@@ -50,6 +53,7 @@ export interface Attendee {
   email: string | null; // 본인 수정 scoping 용
   phone: string | null;
   room_id: string | null; // 배정된 호실 (관리자 전용)
+  language: Language; // 성도 언어 (관리자 전용, 기본 'ko')
   is_under_6: boolean; // 6세 미만 (회비 면제·객실 인원 제외)
   attendance: Attendance;
   arrival_at: string | null; // partial 일 때 필수
