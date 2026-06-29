@@ -1,7 +1,7 @@
 import { LANGUAGES } from "./types";
 import type { AttendeeWithRoom } from "./fees";
 
-export type SortKey = "attendance" | "room" | "language";
+export type SortKey = "household" | "attendance" | "room" | "language";
 export interface SortState {
   key: SortKey | null;
   dir: "asc" | "desc";
@@ -87,6 +87,21 @@ export function sortAttendees(
   }
   const key = sort.key;
   const sign = sort.dir === "desc" ? -1 : 1;
+  if (key === "household") {
+    // 가구주 이름 기준 정렬. 방향은 가구 순서에만 적용하고,
+    // 같은 가구 내에선 항상 가구주 먼저 → created_at (가족이 묶여 보이게).
+    const heads = buildHeads(rows);
+    out.sort((a, b) => {
+      const ha = headOf(a, heads)?.korean_name ?? a.korean_name;
+      const hb = headOf(b, heads)?.korean_name ?? b.korean_name;
+      return (
+        sign * ha.localeCompare(hb) ||
+        Number(b.is_householder) - Number(a.is_householder) ||
+        a.created_at.localeCompare(b.created_at)
+      );
+    });
+    return out;
+  }
   out.sort((a, b) => {
     if (key === "room") {
       // 미배정은 dir 무관 항상 맨 뒤
