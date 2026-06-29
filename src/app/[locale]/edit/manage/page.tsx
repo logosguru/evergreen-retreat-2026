@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { EditForm } from "@/components/EditForm";
+import { HouseholdFeeCard } from "@/components/HouseholdFeeCard";
 import type { Attendee } from "@/lib/types";
 
 export default async function ManagePage({
@@ -26,6 +27,13 @@ export default async function ManagePage({
     .order("is_householder", { ascending: false })
     .order("created_at", { ascending: true });
 
+  const { data: feeData } = await supabase.rpc("my_household_fee").single();
+  const fee = feeData as {
+    total: number;
+    unassigned_count: number;
+    paid: boolean;
+  } | null;
+
   const t = await getTranslations("Edit");
 
   return (
@@ -33,6 +41,13 @@ export default async function ManagePage({
       <h1 className="text-2xl font-bold text-slate-900">
         {t("yourRegistration")}
       </h1>
+      {fee && (
+        <HouseholdFeeCard
+          total={fee.total}
+          unassignedCount={fee.unassigned_count}
+          paid={fee.paid}
+        />
+      )}
       <div className="mt-8">
         <EditForm initial={(attendees as Attendee[] | null) ?? []} />
       </div>
