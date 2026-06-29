@@ -2,32 +2,59 @@ import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { LocaleSwitcher } from "./LocaleSwitcher";
+import { MobileNav } from "./MobileNav";
 import logo from "../../public/evergreen-logo.webp";
 
 export function SiteHeader() {
   const t = useTranslations("Nav");
 
+  const links = [
+    { href: "/about", label: t("about") },
+    { href: "/schedule", label: t("schedule") },
+    { href: "/speakers", label: t("speakers") },
+    { href: "/announcements", label: t("announcements") },
+    { href: "/contact", label: t("contact") },
+  ] as const;
+
   return (
     <header className="bg-emerald-800">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
         <Link href="/" className="flex items-center" aria-label="Evergreen Church">
-          <Image
-            src={logo}
-            alt="Evergreen Church"
-            priority
-            className="h-8 w-auto"
-          />
+          <Image src={logo} alt="Evergreen Church" priority className="h-8 w-auto" />
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/register" className="text-emerald-50/90 hover:text-white">
+
+        {/* 데스크톱 내비 */}
+        <nav className="hidden items-center gap-4 text-sm sm:flex">
+          {links.map((l) => (
+            <Link
+              key={l.href}
+              href={l.href}
+              className="text-emerald-50/90 hover:text-white"
+            >
+              {l.label}
+            </Link>
+          ))}
+          <Link
+            href="/register"
+            className="rounded-md bg-white/15 px-3 py-1.5 font-medium text-white hover:bg-white/25"
+          >
             {t("register")}
           </Link>
-          <span aria-hidden className="h-4 w-px bg-white/25" />
           <Link href="/edit" className="text-emerald-50/90 hover:text-white">
             {t("edit")}
           </Link>
           <LocaleSwitcher />
         </nav>
+
+        {/* 모바일 내비 (LocaleSwitcher는 바에 유지, 링크는 햄버거 패널) */}
+        <div className="flex items-center gap-2 sm:hidden">
+          <LocaleSwitcher />
+          <MobileNav
+            links={links}
+            registerLabel={t("register")}
+            editLabel={t("edit")}
+          />
+        </div>
       </div>
     </header>
   );

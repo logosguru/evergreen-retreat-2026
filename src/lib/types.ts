@@ -93,3 +93,25 @@ export interface Room {
   sort_order: number;
   created_at: string;
 }
+
+export interface ScheduleItem {
+  id: string;
+  day: string; // YYYY-MM-DD
+  start_time: string; // HH:MM:SS
+  title: string;
+  description: string | null;
+  location: string | null;
+  sort_order: number;
+  created_at: string;
+}
+
+export interface Announcement {
+  id: string;
+  title: string;
+  body: string;
+  pinned: boolean;
+  published: boolean;
+  published_at: string;
+  created_at: string;
+  updated_at: string;
+}
