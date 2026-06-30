@@ -13,10 +13,16 @@ export function EditRequestForm() {
   const locale = useLocale();
   const [email, setEmail] = useState("");
   const [token, setToken] = useState<string | null>(null);
+  const [captchaKey, setCaptchaKey] = useState(0);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
   const needsCaptcha = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+
+  function resetCaptcha() {
+    setToken(null);
+    setCaptchaKey((k) => k + 1);
+  }
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -28,7 +34,10 @@ export function EditRequestForm() {
         origin: window.location.origin,
       });
       if (res.ok) setSent(true);
-      else setError(res.error);
+      else {
+        setError(res.error);
+        resetCaptcha();
+      }
     });
   }
 
@@ -57,6 +66,7 @@ export function EditRequestForm() {
         />
       </div>
       <TurnstileWidget
+        key={captchaKey}
         onVerify={setToken}
         onExpire={() => setToken(null)}
         locale={locale}

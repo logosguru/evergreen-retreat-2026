@@ -32,12 +32,18 @@ export function RegistrationForm() {
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
   const [token, setToken] = useState<string | null>(null);
+  const [captchaKey, setCaptchaKey] = useState(0);
   const needsCaptcha = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   // 1단계: 이메일 확인
   const [emailError, setEmailError] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
   const [checking, startCheck] = useTransition();
+
+  function resetCaptcha() {
+    setToken(null);
+    setCaptchaKey((k) => k + 1);
+  }
 
   function submitEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -90,6 +96,7 @@ export function RegistrationForm() {
         setDone(true);
       } else {
         setError(result.error);
+        resetCaptcha();
       }
     });
   }
@@ -181,7 +188,10 @@ export function RegistrationForm() {
         </div>
         <button
           type="button"
-          onClick={() => setPhase("email")}
+          onClick={() => {
+            setPhase("email");
+            resetCaptcha();
+          }}
           className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
         >
           {t("changeEmail")}
@@ -273,6 +283,7 @@ export function RegistrationForm() {
       )}
 
       <TurnstileWidget
+        key={captchaKey}
         onVerify={setToken}
         onExpire={() => setToken(null)}
         locale={locale}
