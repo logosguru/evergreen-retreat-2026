@@ -8,7 +8,7 @@
 ## ▶ 현재 상태 / 다음 작업 (이어서 시작)
 
 - **완료**: Phase 1~4 모두 ✅ — `main` 병합됨. (Phase 4 = 관리자 대시보드 + 성도 언어 구분.) + 등록 이메일 중복 확인 단계.
-- **다음**: **출시 준비** — `SETUP.md`(실 Supabase·Google OAuth·Custom SMTP·Turnstile·keep-alive) + **Spanish UI 번역**(ko/en 완성 후 `es` 로케일 추가; 데이터 옵션은 이미 있음). 새 기능은 **brainstorming → spec → writing-plans → subagent-driven** 패턴 유지.
+- **다음**: **출시 준비** — `SETUP.md`(실 Supabase·Google OAuth·Custom SMTP·Turnstile·keep-alive). **Spanish UI 번역 ✅ 완료** (`es` 로케일 추가: `messages/es.json` 전체 번역, `routing.ts` locales=[ko,en,es], `LocaleSwitcher`를 3개국어 select로 변경, `schedule.ts` es 날짜 포맷·"Día del Señor"). 브라우저 E2E 검증 완료. 새 기능은 **brainstorming → spec → writing-plans → subagent-driven** 패턴 유지.
 - **개발 환경 재기동** (로컬): `supabase start` → `npm run dev` (http://localhost:3000). 로컬 키는 `.env.local`에 이미 있음(재시작해도 동일). 매직링크 메일은 Mailpit http://127.0.0.1:54324.
 - **미완/배포 전 할 일**: `SETUP.md` 참고 (실제 Supabase 프로젝트, Google OAuth, Custom SMTP, Turnstile, keep-alive cron).
 

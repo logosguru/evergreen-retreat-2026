@@ -28,13 +28,15 @@ export function groupByDay(items: ScheduleItem[]): ScheduleDay[] {
 // 일요일은 교회 관례에 따라 "주일" / "Lord's Day" 로 표기(주변 포맷·괄호는 유지).
 export function formatDayLabel(day: string, locale: string): string {
   const d = new Date(`${day}T12:00:00`);
-  const fmt = new Intl.DateTimeFormat(locale === "en" ? "en-US" : "ko-KR", {
+  const bcp47 = locale === "en" ? "en-US" : locale === "es" ? "es-ES" : "ko-KR";
+  const fmt = new Intl.DateTimeFormat(bcp47, {
     month: "long",
     day: "numeric",
     weekday: "short",
   });
   if (d.getDay() !== 0) return fmt.format(d);
-  const lordsDay = locale === "en" ? "Lord's Day" : "주일";
+  const lordsDay =
+    locale === "en" ? "Lord's Day" : locale === "es" ? "Día del Señor" : "주일";
   return fmt
     .formatToParts(d)
     .map((p) => (p.type === "weekday" ? lordsDay : p.value))
