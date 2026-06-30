@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { PersonInput } from "../register/actions";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 export type EditResult = { ok: true } | { ok: false; error: string };
 
@@ -45,5 +46,36 @@ export async function updateMyAttendee(
     .eq("id", id);
 
   if (error) return { ok: false, error: "updateError" };
+  return { ok: true };
+}
+
+export type RequestLinkResult = { ok: true } | { ok: false; error: string };
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// 매직링크 발송을 서버에서 처리해 Turnstile 서버 검증을 강제한다.
+// emailRedirectTo의 origin은 클라이언트가 전달(Supabase Redirect 허용목록이 최종 검증).
+export async function requestEditMagicLink(params: {
+  email: string;
+  turnstileToken: string | null;
+  origin: string;
+}): Promise<RequestLinkResult> {
+  if (!(await verifyTurnstile(params.turnstileToken))) {
+    return { ok: false, error: "captchaFailed" };
+  }
+  const email = clean(params.email);
+  if (!email || !EMAIL_RE.test(email)) {
+    return { ok: false, error: "validationEmail" };
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithOtp({
+    email,
+    options: {
+      shouldCreateUser: true,
+      emailRedirectTo: `${params.origin}/auth/confirm?next=/edit/manage`,
+    },
+  });
+  if (error) return { ok: false, error: "sendError" };
   return { ok: true };
 }

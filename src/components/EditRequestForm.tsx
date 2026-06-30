@@ -1,34 +1,34 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { useTranslations } from "next-intl";
-import { createClient } from "@/lib/supabase/client";
+import { useLocale, useTranslations } from "next-intl";
+import { TurnstileWidget } from "./TurnstileWidget";
+import { requestEditMagicLink } from "@/app/[locale]/edit/actions";
 
 const inputClass =
   "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500";
 
 export function EditRequestForm() {
   const t = useTranslations("Edit");
+  const locale = useLocale();
   const [email, setEmail] = useState("");
+  const [token, setToken] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
+  const needsCaptcha = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     start(async () => {
-      const supabase = createClient();
-      const { error } = await supabase.auth.signInWithOtp({
+      const res = await requestEditMagicLink({
         email,
-        options: {
-          // 등록만 하고 인증 유저가 아닐 수 있으므로 생성 허용
-          shouldCreateUser: true,
-          emailRedirectTo: `${window.location.origin}/auth/confirm?next=/edit/manage`,
-        },
+        turnstileToken: token,
+        origin: window.location.origin,
       });
-      if (error) setError(error.message);
-      else setSent(true);
+      if (res.ok) setSent(true);
+      else setError(res.error);
     });
   }
 
@@ -56,14 +56,19 @@ export function EditRequestForm() {
           placeholder="you@example.com"
         />
       </div>
+      <TurnstileWidget
+        onVerify={setToken}
+        onExpire={() => setToken(null)}
+        locale={locale}
+      />
       {error && (
         <p className="rounded-md bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-200">
-          {error}
+          {t(error)}
         </p>
       )}
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || (needsCaptcha && !token)}
         className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
       >
         {pending ? t("sending") : t("sendLink")}

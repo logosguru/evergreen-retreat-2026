@@ -82,7 +82,10 @@
     "yourRegistration": "내 등록 정보",
     "updateSuccess": "수정이 저장되었습니다.",
     "updateError": "수정 중 문제가 발생했습니다.",
-    "signOut": "로그아웃"
+    "signOut": "로그아웃",
+    "captchaFailed": "사람인지 확인하는 절차를 완료해 주세요.",
+    "sendError": "링크 발송 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.",
+    "validationEmail": "올바른 이메일 주소를 입력해 주세요."
   },
   "Admin": {
     "title": "관리자 — 참석자 관리",

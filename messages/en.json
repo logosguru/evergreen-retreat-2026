@@ -82,7 +82,10 @@
     "yourRegistration": "Your registration",
     "updateSuccess": "Your changes have been saved.",
     "updateError": "Something went wrong while saving.",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "captchaFailed": "Please complete the verification to confirm you're human.",
+    "sendError": "Something went wrong sending the link. Please try again shortly.",
+    "validationEmail": "Please enter a valid email address."
   },
   "Admin": {
     "title": "Admin — Attendee Management",
