@@ -66,7 +66,8 @@
     "useAnotherEmail": "Usar otro correo",
     "changeEmail": "Cambiar correo",
     "emailReadonlyNote": "Registrando con este correo",
-    "alreadyRegistered": "Este correo ya está registrado. Actualice su información en ‘Editar mi registro’."
+    "alreadyRegistered": "Este correo ya está registrado. Actualice su información en ‘Editar mi registro’.",
+    "captchaFailed": "Complete la verificación para confirmar que es una persona."
   },
   "Edit": {
     "title": "Editar mi registro",
@@ -81,7 +82,10 @@
     "yourRegistration": "Su registro",
     "updateSuccess": "Sus cambios se han guardado.",
     "updateError": "Ocurrió un problema al guardar.",
-    "signOut": "Cerrar sesión"
+    "signOut": "Cerrar sesión",
+    "captchaFailed": "Complete la verificación para confirmar que es una persona.",
+    "sendError": "Hubo un problema al enviar el enlace. Inténtelo de nuevo en unos momentos.",
+    "validationEmail": "Introduzca una dirección de correo válida."
   },
   "Admin": {
     "title": "Administración — Gestión de asistentes",

@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { Attendance, Gender, Role } from "@/lib/types";
+import { verifyTurnstile } from "@/lib/turnstile";
 
 export type PersonInput = {
   korean_name: string;
@@ -79,8 +80,11 @@ function rowFor(
 
 export async function insertRegistration(
   payload: RegistrationPayload,
+  turnstileToken: string | null,
 ): Promise<RegistrationResult> {
-  // TODO(Phase1 출시 전): Cloudflare Turnstile 토큰 검증 추가 (공개 INSERT 스팸 방지)
+  if (!(await verifyTurnstile(turnstileToken))) {
+    return { ok: false, error: "captchaFailed" };
+  }
   const email = clean(payload.email);
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return { ok: false, error: "validationEmail" };

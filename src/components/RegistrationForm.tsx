@@ -2,7 +2,9 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
+import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { TurnstileWidget } from "./TurnstileWidget";
 import { PersonFields, emptyPerson } from "./PersonFields";
 import {
   insertRegistration,
@@ -19,6 +21,7 @@ export function RegistrationForm() {
   const t = useTranslations("Register");
   const tc = useTranslations("Common");
   const tf = useTranslations("Fields");
+  const locale = useLocale();
 
   const [phase, setPhase] = useState<"email" | "form">("email");
   const [mode, setMode] = useState<"individual" | "household">("individual");
@@ -28,11 +31,19 @@ export function RegistrationForm() {
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
+  const [token, setToken] = useState<string | null>(null);
+  const [captchaKey, setCaptchaKey] = useState(0);
+  const needsCaptcha = !!process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
   // 1단계: 이메일 확인
   const [emailError, setEmailError] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
   const [checking, startCheck] = useTransition();
+
+  function resetCaptcha() {
+    setToken(null);
+    setCaptchaKey((k) => k + 1);
+  }
 
   function submitEmail(e: React.FormEvent) {
     e.preventDefault();
@@ -80,11 +91,12 @@ export function RegistrationForm() {
       members: mode === "household" ? members : [],
     };
     startTransition(async () => {
-      const result = await insertRegistration(payload);
+      const result = await insertRegistration(payload, token);
       if (result.ok) {
         setDone(true);
       } else {
         setError(result.error);
+        resetCaptcha();
       }
     });
   }
@@ -176,7 +188,10 @@ export function RegistrationForm() {
         </div>
         <button
           type="button"
-          onClick={() => setPhase("email")}
+          onClick={() => {
+            setPhase("email");
+            resetCaptcha();
+          }}
           className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
         >
           {t("changeEmail")}
@@ -267,9 +282,16 @@ export function RegistrationForm() {
         </p>
       )}
 
+      <TurnstileWidget
+        key={captchaKey}
+        onVerify={setToken}
+        onExpire={() => setToken(null)}
+        locale={locale}
+      />
+
       <button
         type="submit"
-        disabled={pending}
+        disabled={pending || (needsCaptcha && !token)}
         className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
       >
         {pending ? tc("submitting") : tc("submit")}

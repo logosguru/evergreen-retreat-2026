@@ -93,6 +93,21 @@ npm run dev
 - 본인 수정: `/edit` → 이메일 입력 → 메일의 링크 클릭 → `/edit/manage`
 - 관리자: `/admin/login` → Google 로그인 → `/admin` (참석자 목록 + 회비 토글)
 
+## 4b. Cloudflare Turnstile (공개 폼 봇 방지) — 출시 전 권장
+
+1. https://dash.cloudflare.com → Turnstile → 사이트 추가(도메인: 배포 URL, 로컬 테스트 시 `localhost` 추가).
+2. 발급된 **Site Key / Secret Key**를 환경변수로 등록:
+   - `NEXT_PUBLIC_TURNSTILE_SITE_KEY` (Site Key)
+   - `TURNSTILE_SECRET_KEY` (Secret Key)
+3. 두 키가 모두 비어 있으면 검증을 스킵하므로 로컬 개발은 키 없이 동작한다.
+   키가 설정되면 등록 제출과 수정 링크 요청에 캡차가 강제된다.
+
+## 4c. keep-alive cron
+
+- `vercel.json`의 cron이 매일 `/api/keep-alive`를 호출해 DB 무활동 정지를 방지한다.
+- Vercel 프로젝트 환경변수에 `CRON_SECRET`(임의 문자열)을 등록하면 라우트가
+  `Authorization: Bearer <CRON_SECRET>` 헤더를 검증한다(Vercel Cron이 자동 전송).
+
 ## 5. Vercel 배포
 
 ```bash
@@ -101,6 +116,9 @@ vercel link
 vercel env add NEXT_PUBLIC_SUPABASE_URL
 vercel env add NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY
 vercel env add SUPABASE_SECRET_KEY
+vercel env add NEXT_PUBLIC_TURNSTILE_SITE_KEY
+vercel env add TURNSTILE_SECRET_KEY
+vercel env add CRON_SECRET
 vercel deploy            # preview
 vercel deploy --prod     # production
 ```
