@@ -13,7 +13,8 @@
     "no": "아니오",
     "back": "뒤로",
     "langKo": "한국어",
-    "langEn": "English"
+    "langEn": "English",
+    "langEs": "Español"
   },
   "Nav": {
     "home": "홈",
@@ -266,6 +267,6 @@
   "Language": {
     "ko": "한국어",
     "en": "영어",
-    "es": "Spanish"
+    "es": "스페인어"
   }
 }

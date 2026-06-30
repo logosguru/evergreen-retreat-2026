@@ -2,23 +2,36 @@
 
 import { useLocale, useTranslations } from "next-intl";
 import { usePathname, useRouter } from "@/i18n/navigation";
+import { routing } from "@/i18n/routing";
 
-// 한/영 토글: 현재 경로를 유지한 채 로케일만 전환
+// 한/영/스페인어 전환: 현재 경로를 유지한 채 로케일만 전환 (select)
 export function LocaleSwitcher() {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
   const t = useTranslations("Common");
 
-  const other = locale === "ko" ? "en" : "ko";
+  const labels: Record<string, string> = {
+    ko: t("langKo"),
+    en: t("langEn"),
+    es: t("langEs"),
+  };
 
   return (
-    <button
-      type="button"
-      onClick={() => router.replace(pathname, { locale: other })}
-      className="rounded-md border border-white/30 px-2.5 py-1 text-sm font-medium text-emerald-50 hover:bg-white/10"
+    <select
+      aria-label={labels[locale]}
+      value={locale}
+      onChange={(e) =>
+        router.replace(pathname, { locale: e.target.value as typeof locale })
+      }
+      className="rounded-md border border-white/30 bg-transparent px-2 py-1 text-sm font-medium text-emerald-50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
     >
-      {other === "ko" ? t("langKo") : t("langEn")}
-    </button>
+      {routing.locales.map((loc) => (
+        // option은 시스템 위젯이라 배경을 어둡게 지정(헤더 위 가독성)
+        <option key={loc} value={loc} className="text-emerald-900">
+          {labels[loc]}
+        </option>
+      ))}
+    </select>
   );
 }
