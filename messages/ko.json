@@ -66,7 +66,8 @@
     "useAnotherEmail": "다른 이메일로 등록",
     "changeEmail": "이메일 변경",
     "emailReadonlyNote": "이 이메일로 등록합니다",
-    "alreadyRegistered": "이미 등록된 이메일입니다. ‘내 등록 수정’에서 정보를 변경해 주세요."
+    "alreadyRegistered": "이미 등록된 이메일입니다. ‘내 등록 수정’에서 정보를 변경해 주세요.",
+    "captchaFailed": "사람인지 확인하는 절차를 완료해 주세요."
   },
   "Edit": {
     "title": "내 등록 수정",

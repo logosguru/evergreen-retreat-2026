@@ -66,7 +66,8 @@
     "useAnotherEmail": "Use a different email",
     "changeEmail": "Change email",
     "emailReadonlyNote": "Registering with this email",
-    "alreadyRegistered": "This email is already registered. Please update your info under 'Edit my registration'."
+    "alreadyRegistered": "This email is already registered. Please update your info under 'Edit my registration'.",
+    "captchaFailed": "Please complete the verification to confirm you're human."
   },
   "Edit": {
     "title": "Edit my registration",

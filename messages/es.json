@@ -66,7 +66,8 @@
     "useAnotherEmail": "Usar otro correo",
     "changeEmail": "Cambiar correo",
     "emailReadonlyNote": "Registrando con este correo",
-    "alreadyRegistered": "Este correo ya está registrado. Actualice su información en ‘Editar mi registro’."
+    "alreadyRegistered": "Este correo ya está registrado. Actualice su información en ‘Editar mi registro’.",
+    "captchaFailed": "Complete la verificación para confirmar que es una persona."
   },
   "Edit": {
     "title": "Editar mi registro",

@@ -51,8 +51,12 @@ export function TurnstileWidget({
   // 콜백을 ref에 보관해 effect 재실행 없이 최신 함수 사용(react-best-practices).
   const onVerifyRef = useRef(onVerify);
   const onExpireRef = useRef(onExpire);
-  onVerifyRef.current = onVerify;
-  onExpireRef.current = onExpire;
+  useEffect(() => {
+    onVerifyRef.current = onVerify;
+  });
+  useEffect(() => {
+    onExpireRef.current = onExpire;
+  });
 
   useEffect(() => {
     if (!SITE_KEY) return; // 키 없으면 렌더 안 함
