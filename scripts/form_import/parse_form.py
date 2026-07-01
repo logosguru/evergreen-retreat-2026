@@ -1,5 +1,6 @@
 """Google Form 응답(xlsx) → 정리용 워크시트 CSV + 미정/불참 followup CSV."""
 import re
+from enums import DISTRICTS
 
 # 이름에 섞여 들어오는 직함 (긴 것 먼저 매칭)
 TITLES = ["서리집사", "전도사", "목사", "장로", "권사", "집사"]
@@ -34,3 +35,43 @@ def split_name(raw):
     if not korean:
         flags.append("name-split")
     return korean, english, title_hint, flags
+
+
+# 자유입력 구역명 → DISTRICTS 토큰
+_NAMED_DISTRICTS = [
+    (("마하나임", "mahanaim"), "mahanaim"),
+    (("미가엘", "michael"), "michael"),
+    (("기드온", "gideon"), "gideon"),
+    (("international", " im ", "im그룹"), "im"),
+]
+
+
+def normalize_district(raw):
+    flags = []
+    s = (raw or "").strip().lower()
+    if not s:
+        return "", ["district"]
+    matches = []
+    for n in re.findall(r"([1-9])\s*구역", s):
+        matches.append(n)
+    if not matches:
+        m = re.match(r"\s*([1-9])\b", s)
+        if m:
+            matches.append(m.group(1))
+    for keys, token in _NAMED_DISTRICTS:
+        # Use word boundary for better matching (avoid "im" matching in "mahanaim")
+        for k in keys:
+            k_stripped = k.strip()
+            # For "im", use word boundaries; for Korean/longer names, substring is fine
+            if len(k_stripped) > 2:
+                if k_stripped in s:
+                    matches.append(token)
+                    break
+            else:
+                if re.search(r"\b" + re.escape(k_stripped) + r"\b", s):
+                    matches.append(token)
+                    break
+    matches = list(dict.fromkeys(matches))
+    if len(matches) == 1 and matches[0] in DISTRICTS:
+        return matches[0], flags
+    return "", ["district"]
