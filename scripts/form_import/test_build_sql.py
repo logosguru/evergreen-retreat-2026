@@ -1,5 +1,6 @@
 import unittest
 from build_sql import group_households, validate_rows
+from build_sql import build_sql, sql_str
 
 
 def _row(**kw):
@@ -56,6 +57,36 @@ class TestValidate(unittest.TestCase):
         rows = [_row(household_id="H01", is_householder="TRUE", email="a@b.com"),
                 _row(household_id="H02", is_householder="TRUE", email="A@b.com")]
         self.assertTrue(any("email" in e.lower() for e in validate_rows(rows)))
+
+
+class TestSqlHelpers(unittest.TestCase):
+    def test_sql_str(self):
+        self.assertEqual(sql_str(""), "null")
+        self.assertEqual(sql_str(None), "null")
+        self.assertEqual(sql_str("O'Brien"), "'O''Brien'")
+
+
+class TestBuildSql(unittest.TestCase):
+    def test_single_person_household(self):
+        rows = [_row(household_id="H01", is_householder="TRUE", korean_name="독거",
+                     role="member")]
+        sql = build_sql(rows, expected_count=1)
+        self.assertIn("begin;", sql)
+        self.assertIn("commit;", sql)
+        self.assertIn("insert into public.attendees", sql)
+        self.assertIn("'독거'", sql)
+        self.assertNotIn("with hh", sql)   # 1인 가구는 CTE 불필요
+        self.assertIn("expected", sql.lower())  # 행수 assertion 존재
+
+    def test_multi_person_household_links_via_cte(self):
+        rows = [_row(household_id="H01", is_householder="TRUE", korean_name="가장", role="elder"),
+                _row(household_id="H01", is_householder="FALSE", korean_name="식구", role="member")]
+        sql = build_sql(rows, expected_count=2)
+        self.assertIn("with hh as (", sql)
+        self.assertIn("returning id", sql)
+        self.assertIn("(select id from hh)", sql)
+        self.assertIn("'가장'", sql)
+        self.assertIn("'식구'", sql)
 
 
 if __name__ == "__main__":

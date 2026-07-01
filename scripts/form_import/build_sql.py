@@ -73,3 +73,84 @@ def validate_rows(rows):
             else:
                 seen[e] = i
     return errors
+
+
+INSERT_COLS = ["korean_name", "english_name", "district", "gender", "role",
+               "is_householder", "householder_id", "language", "is_under_6",
+               "attendance", "arrival_at", "departure_at", "note", "email", "phone"]
+
+
+def sql_str(v):
+    if v is None or str(v).strip() == "":
+        return "null"
+    return "'" + str(v).strip().replace("'", "''") + "'"
+
+
+def sql_bool(v):
+    return "true" if _truthy(v) else "false"
+
+
+def _values(row, householder_expr):
+    """householder_expr: 'null' (가구주) 또는 '(select id from hh)' (구성원)."""
+    role = (row.get("role") or "").strip() or "member"  # 빈값이면 DB 기본값과 동일하게
+    v = {
+        "korean_name": sql_str(row.get("korean_name")),
+        "english_name": sql_str(row.get("english_name")),
+        "district": sql_str(row.get("district")),
+        "gender": sql_str(row.get("gender")),
+        "role": sql_str(role),
+        "is_householder": sql_bool(row.get("is_householder")),
+        "householder_id": householder_expr,
+        "language": sql_str(row.get("language")),
+        "is_under_6": sql_bool(row.get("is_under_6")),
+        "attendance": sql_str(row.get("attendance")),
+        "arrival_at": sql_str(row.get("arrival_at")),
+        "departure_at": sql_str(row.get("departure_at")),
+        "note": sql_str(row.get("note")),
+        "email": sql_str(row.get("email")),
+        "phone": sql_str(row.get("phone")),
+    }
+    return "(" + ", ".join(v[c] for c in INSERT_COLS) + ")"
+
+
+def _cols_sql():
+    return "(" + ", ".join(INSERT_COLS) + ")"
+
+
+def build_sql(rows, expected_count):
+    out = []
+    out.append("-- 늘푸른교회 수련회 Google Form → attendees import")
+    out.append("-- 실행 전 참고: select count(*) from public.attendees;")
+    out.append("begin;")
+    out.append("create temp table _before on commit drop as select count(*) c from public.attendees;")
+    out.append("")
+    for hh in group_households(rows):
+        head = hh["householder"]
+        members = hh["members"]
+        if not members:
+            out.append(f"-- {hh['id']} (1인)")
+            out.append(f"insert into public.attendees {_cols_sql()}")
+            out.append(f"values {_values(head, 'null')};")
+        else:
+            out.append(f"-- {hh['id']} (가구주 + {len(members)}인)")
+            out.append("with hh as (")
+            out.append(f"  insert into public.attendees {_cols_sql()}")
+            out.append(f"  values {_values(head, 'null')}")
+            out.append("  returning id")
+            out.append(")")
+            out.append(f"insert into public.attendees {_cols_sql()}")
+            vals = ",\n".join("  " + _values(m, "(select id from hh)") for m in members)
+            out.append("values")
+            out.append(vals + ";")
+        out.append("")
+    out.append("do $$")
+    out.append("declare b int; a int; expected int := %d;" % expected_count)
+    out.append("begin")
+    out.append("  select c into b from _before;")
+    out.append("  select count(*) into a from public.attendees;")
+    out.append("  if a - b <> expected then")
+    out.append("    raise exception 'Import 행수 불일치: expected % new rows, got %', expected, a - b;")
+    out.append("  end if;")
+    out.append("end $$;")
+    out.append("commit;")
+    return "\n".join(out) + "\n"
