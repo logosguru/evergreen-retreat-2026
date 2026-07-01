@@ -36,7 +36,11 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} className="h-full antialiased">
+    <html
+      lang={locale}
+      data-scroll-behavior="smooth"
+      className="h-full antialiased"
+    >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <NextIntlClientProvider>
           <SiteHeader />
