@@ -16,6 +16,22 @@ def _truthy(v):
     return str(v).strip().lower() in ("true", "1", "yes", "t")
 
 
+# admin이 role을 한글 라벨로 적어도 DB enum 토큰으로 변환 (앱과 동일: 저장=토큰).
+ROLE_LABELS = {
+    "목사": "pastor", "전도사": "pastor",
+    "장로": "elder", "권사": "gwonsa", "집사": "deacon",
+    "서리집사": "seogyosa", "성도": "member", "학생": "student",
+    "유년": "child", "기타": "other",
+}
+
+
+def normalize_role(v):
+    v = (v or "").strip()
+    if not v or v in ROLES:
+        return v
+    return ROLE_LABELS.get(v, v)  # 매핑 실패 시 원값 유지(검증이 잡음)
+
+
 def group_households(rows):
     order = []
     groups = {}
@@ -41,7 +57,7 @@ def validate_rows(rows):
         d = (row.get("district") or "").strip()
         if d and d not in DISTRICTS:
             errors.append(f"{tag}: district '{d}' 유효하지 않음")
-        r = (row.get("role") or "").strip()
+        r = normalize_role(row.get("role"))
         if r and r not in ROLES:
             errors.append(f"{tag}: role '{r}' 유효하지 않음")
         g = (row.get("gender") or "").strip()
@@ -91,7 +107,7 @@ def sql_bool(v):
 
 def _values(row, householder_expr):
     """householder_expr: 'null' (가구주) 또는 '(select id from hh)' (구성원)."""
-    role = (row.get("role") or "").strip() or "member"  # 빈값이면 DB 기본값과 동일하게
+    role = normalize_role(row.get("role")) or "member"  # 한글라벨→토큰, 빈값이면 DB 기본값
     v = {
         "korean_name": sql_str(row.get("korean_name")),
         "english_name": sql_str(row.get("english_name")),

@@ -45,6 +45,12 @@ class TestValidate(unittest.TestCase):
                      korean_name="", english_name="John Ko", role="member")]
         self.assertEqual(validate_rows(rows), [])
 
+    def test_korean_role_label_ok(self):
+        # role을 한글 라벨로 적어도 통과(토큰으로 매핑)
+        rows = [_row(household_id="H01", is_householder="TRUE", role="장로"),
+                _row(household_id="H01", role="서리집사")]
+        self.assertEqual(validate_rows(rows), [])
+
     def test_bad_enum(self):
         rows = [_row(household_id="H01", is_householder="TRUE", district="99",
                      role="bishop", gender="x", language="fr", attendance="maybe")]
