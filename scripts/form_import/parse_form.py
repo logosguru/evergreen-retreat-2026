@@ -75,3 +75,36 @@ def normalize_district(raw):
     if len(matches) == 1 and matches[0] in DISTRICTS:
         return matches[0], flags
     return "", ["district"]
+
+
+def detect_language(*texts):
+    for t in texts:
+        if t and _has_hangul(str(t)):
+            return "ko"
+    return "en"
+
+
+_UNDER6 = ("6세 미만", "under 6", "younger than 6", "6 미만", "만 6세 미만")
+
+
+def age_to_under6(raw):
+    s = (raw or "").strip().lower()
+    if not s:
+        return False
+    return any(lbl.lower() in s for lbl in _UNDER6)
+
+
+_PARTIAL = ("부분 참석", "부분참석", "partial")
+_FULL = ("전일 참석", "전일참석", "attending the full retreat", "full retreat", "full")
+_EXCLUDE = ("미정", "undecided", "불참", "cannot attend", "can't attend")
+
+
+def normalize_attendance(raw):
+    s = (raw or "").strip().lower()
+    if not s:
+        return None
+    if any(x in s for x in _PARTIAL):
+        return "partial"
+    if any(x in s for x in _FULL):
+        return "full"
+    return None  # 미정·불참·불명 → 제외(followup)

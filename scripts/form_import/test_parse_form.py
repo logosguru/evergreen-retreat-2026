@@ -1,5 +1,5 @@
 import unittest
-from parse_form import split_name, normalize_district
+from parse_form import split_name, normalize_district, detect_language, age_to_under6, normalize_attendance
 
 
 class TestSplitName(unittest.TestCase):
@@ -48,6 +48,32 @@ class TestNormalizeDistrict(unittest.TestCase):
         token, flags = normalize_district("Sandra Orosio")
         self.assertEqual(token, "")
         self.assertIn("district", flags)
+
+
+class TestClassifiers(unittest.TestCase):
+    def test_language(self):
+        self.assertEqual(detect_language("전일 참석", "이재훈"), "ko")
+        self.assertEqual(detect_language("Attending the full retreat", "Joan"), "en")
+        self.assertEqual(detect_language("", None), "en")
+
+    def test_under6(self):
+        self.assertFalse(age_to_under6("13세 이상"))
+        self.assertFalse(age_to_under6("13 or older"))
+        self.assertFalse(age_to_under6("6-12세"))
+        self.assertFalse(age_to_under6("6-12 y.o."))
+        self.assertFalse(age_to_under6(""))
+        self.assertTrue(age_to_under6("6세 미만"))
+        self.assertTrue(age_to_under6("Younger than 6"))
+
+    def test_attendance(self):
+        self.assertEqual(normalize_attendance("전일 참석"), "full")
+        self.assertEqual(normalize_attendance("Attending the full retreat"), "full")
+        self.assertEqual(normalize_attendance("부분 참석"), "partial")
+        self.assertIsNone(normalize_attendance("미정"))
+        self.assertIsNone(normalize_attendance("Undecided"))
+        self.assertIsNone(normalize_attendance("불참"))
+        self.assertIsNone(normalize_attendance("Cannot attend"))
+        self.assertIsNone(normalize_attendance(""))
 
 
 if __name__ == "__main__":
