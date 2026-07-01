@@ -40,7 +40,7 @@ export type Language = (typeof LANGUAGES)[number];
 
 export interface Attendee {
   id: string;
-  korean_name: string;
+  korean_name: string | null; // korean_name 또는 english_name 중 하나 필수 (DB name_required 제약)
   english_name: string | null;
   district: string | null; // 소속구역
   gender: Gender | null;

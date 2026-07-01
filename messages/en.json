@@ -53,7 +53,7 @@
     "success": "Registration complete. Thank you!",
     "successEditHint": "We can send an edit link to your email. Request it from ‘Edit my registration’.",
     "error": "Something went wrong during registration. Please try again shortly.",
-    "validationName": "Korean name is required.",
+    "validationName": "Either a Korean or English name is required.",
     "validationEmail": "Please enter a valid email.",
     "validationPartial": "For partial attendance, please provide arrival and departure times.",
     "emailStepTitle": "Check your email",
@@ -139,6 +139,7 @@
   "Fields": {
     "korean_name": "Korean name",
     "english_name": "English name",
+    "nameHint": "Enter at least one of Korean name or English name.",
     "district": "Cell Group",
     "gender": "Gender",
     "role": "Title",

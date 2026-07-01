@@ -30,12 +30,9 @@ export function PersonFields({
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
       <div>
-        <label className={labelClass}>
-          {t("korean_name")} <span className="text-rose-500">*</span>
-        </label>
+        <label className={labelClass}>{t("korean_name")}</label>
         <input
           type="text"
-          required
           value={value.korean_name}
           onChange={(e) => onChange({ korean_name: e.target.value })}
           className={inputClass}
@@ -51,6 +48,8 @@ export function PersonFields({
           className={inputClass}
         />
       </div>
+
+      <p className="-mt-2 text-xs text-slate-500 sm:col-span-2">{t("nameHint")}</p>
 
       <div>
         <label className={labelClass}>{t("district")}</label>

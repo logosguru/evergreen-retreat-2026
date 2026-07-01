@@ -1,5 +1,6 @@
 import { LANGUAGES } from "./types";
 import type { AttendeeWithRoom } from "./fees";
+import { nameKey } from "./names";
 
 export type SortKey = "household" | "attendance" | "room" | "language";
 export interface SortState {
@@ -29,7 +30,7 @@ export function headOf(
   return id ? heads.get(id) : undefined;
 }
 
-const nm = (a: AttendeeWithRoom) => a.korean_name;
+const nm = (a: AttendeeWithRoom) => nameKey(a);
 
 // 기본(묶음): [가구주이름, 가구주먼저, created_at]
 function compareDefault(
@@ -37,8 +38,8 @@ function compareDefault(
   b: AttendeeWithRoom,
   heads: Map<string, AttendeeWithRoom>,
 ): number {
-  const ha = headOf(a, heads)?.korean_name ?? a.korean_name;
-  const hb = headOf(b, heads)?.korean_name ?? b.korean_name;
+  const ha = nameKey(headOf(a, heads) ?? a);
+  const hb = nameKey(headOf(b, heads) ?? b);
   return (
     ha.localeCompare(hb) ||
     Number(b.is_householder) - Number(a.is_householder) ||
@@ -92,8 +93,8 @@ export function sortAttendees(
     // 같은 가구 내에선 항상 가구주 먼저 → created_at (가족이 묶여 보이게).
     const heads = buildHeads(rows);
     out.sort((a, b) => {
-      const ha = headOf(a, heads)?.korean_name ?? a.korean_name;
-      const hb = headOf(b, heads)?.korean_name ?? b.korean_name;
+      const ha = nameKey(headOf(a, heads) ?? a);
+      const hb = nameKey(headOf(b, heads) ?? b);
       return (
         sign * ha.localeCompare(hb) ||
         Number(b.is_householder) - Number(a.is_householder) ||
