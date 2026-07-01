@@ -272,5 +272,9 @@
     "ko": "한국어",
     "en": "영어",
     "es": "스페인어"
+  },
+  "Footer": {
+    "copyright": "© 2026 늘푸른교회 (Evergreen Church)",
+    "adminLogin": "관리자 로그인"
   }
 }
