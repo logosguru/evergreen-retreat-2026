@@ -7,10 +7,11 @@ import { PersonFields } from "./PersonFields";
 import { updateMyAttendee } from "@/app/[locale]/edit/actions";
 import type { PersonInput } from "@/app/[locale]/register/actions";
 import type { Attendee } from "@/lib/types";
+import { displayName } from "@/lib/names";
 
 function toPersonInput(a: Attendee): PersonInput {
   return {
-    korean_name: a.korean_name,
+    korean_name: a.korean_name ?? "",
     english_name: a.english_name ?? "",
     district: a.district ?? "",
     gender: a.gender ?? "",
@@ -80,7 +81,7 @@ export function EditForm({ initial }: { initial: Attendee[] }) {
         <section key={r.id} className="rounded-xl bg-white p-5 ring-1 ring-slate-200">
           <div className="mb-3 flex items-center gap-2">
             <span className="font-semibold text-slate-900">
-              {r.data.korean_name || "—"}
+              {displayName(r.data)}
             </span>
             {r.isHead && (
               <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-700">

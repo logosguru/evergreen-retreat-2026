@@ -18,7 +18,8 @@ export async function updateMyAttendee(
   id: string,
   input: PersonInput,
 ): Promise<EditResult> {
-  if (!clean(input.korean_name)) return { ok: false, error: "validationName" };
+  if (!clean(input.korean_name) && !clean(input.english_name))
+    return { ok: false, error: "validationName" };
   if (
     input.attendance === "partial" &&
     (!clean(input.arrival_at) || !clean(input.departure_at))
@@ -30,7 +31,7 @@ export async function updateMyAttendee(
   const { error } = await supabase
     .from("attendees")
     .update({
-      korean_name: clean(input.korean_name)!,
+      korean_name: clean(input.korean_name),
       english_name: clean(input.english_name),
       district: clean(input.district),
       gender: input.gender ? input.gender : null,

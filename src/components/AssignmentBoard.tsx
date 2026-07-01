@@ -6,6 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import type { Room, RoomType } from "@/lib/types";
 import type { AttendeeWithRoom } from "@/lib/fees";
 import { assignRoom } from "@/app/[locale]/admin/assignment-actions";
+import { displayName } from "@/lib/names";
 
 type RoomWithType = Room & { room_types: RoomType };
 
@@ -62,7 +63,7 @@ export function AssignmentBoard({
               className="flex items-center justify-between rounded bg-amber-50 px-3 py-1.5 text-sm ring-1 ring-amber-100"
             >
               <span>
-                {a.korean_name}
+                {displayName(a)}
                 {a.is_under_6 && (
                   <span className="ml-1 text-xs text-amber-600">(6&lt;)</span>
                 )}
@@ -109,7 +110,7 @@ export function AssignmentBoard({
                     className="flex items-center justify-between text-sm"
                   >
                     <span>
-                      {a.korean_name}
+                      {displayName(a)}
                       {a.is_under_6 && (
                         <span className="ml-1 text-xs text-amber-600">(6&lt;)</span>
                       )}

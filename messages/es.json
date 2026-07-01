@@ -53,7 +53,7 @@
     "success": "¡Registro completado. Gracias!",
     "successEditHint": "Podemos enviar un enlace de edición a su correo. Solicítelo en ‘Editar mi registro’.",
     "error": "Ocurrió un problema durante el registro. Inténtelo de nuevo en unos momentos.",
-    "validationName": "El nombre en coreano es obligatorio.",
+    "validationName": "Se requiere un nombre en coreano o en inglés.",
     "validationEmail": "Ingrese un correo electrónico válido.",
     "validationPartial": "Para asistencia parcial, indique la hora de llegada y de salida.",
     "emailStepTitle": "Verifique su correo",
@@ -139,6 +139,7 @@
   "Fields": {
     "korean_name": "Nombre en coreano",
     "english_name": "Nombre en inglés",
+    "nameHint": "Ingrese al menos un nombre: en coreano o en inglés.",
     "district": "Grupo celular",
     "gender": "Género",
     "role": "Cargo",

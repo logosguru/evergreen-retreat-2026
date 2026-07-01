@@ -39,7 +39,7 @@ function toTimestamp(s?: string): string | null {
 }
 
 function validatePerson(p: PersonInput): string | null {
-  if (!clean(p.korean_name)) return "validationName";
+  if (!clean(p.korean_name) && !clean(p.english_name)) return "validationName";
   if (
     p.attendance === "partial" &&
     (!clean(p.arrival_at) || !clean(p.departure_at))
@@ -60,7 +60,7 @@ function rowFor(
 ) {
   return {
     id: opts.id,
-    korean_name: clean(p.korean_name)!,
+    korean_name: clean(p.korean_name),
     english_name: clean(p.english_name),
     district: clean(p.district),
     gender: p.gender ? p.gender : null,

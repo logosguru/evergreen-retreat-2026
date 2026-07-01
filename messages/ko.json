@@ -53,7 +53,7 @@
     "success": "등록이 완료되었습니다. 감사합니다!",
     "successEditHint": "입력하신 이메일로 수정 링크를 보내드릴 수 있습니다. ‘내 등록 수정’에서 요청하세요.",
     "error": "등록 중 문제가 발생했습니다. 잠시 후 다시 시도해 주세요.",
-    "validationName": "한글 이름은 필수입니다.",
+    "validationName": "한글 이름 또는 영문 이름 중 하나는 필수입니다.",
     "validationEmail": "유효한 이메일을 입력해 주세요.",
     "validationPartial": "부분 참석은 도착/출발 시간을 입력해 주세요.",
     "emailStepTitle": "이메일 확인",
@@ -139,6 +139,7 @@
   "Fields": {
     "korean_name": "한글 이름",
     "english_name": "영어 이름",
+    "nameHint": "한글 이름 또는 영문 이름 중 하나는 반드시 입력해 주세요.",
     "district": "소속구역",
     "gender": "성별",
     "role": "직분",

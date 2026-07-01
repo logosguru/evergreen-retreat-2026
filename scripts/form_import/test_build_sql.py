@@ -33,9 +33,17 @@ class TestValidate(unittest.TestCase):
         rows = [_row(household_id="H01", is_householder="TRUE", role="elder")]
         self.assertEqual(validate_rows(rows), [])
 
-    def test_missing_korean_name(self):
-        rows = [_row(household_id="H01", is_householder="TRUE", korean_name="")]
-        self.assertTrue(any("korean_name" in e for e in validate_rows(rows)))
+    def test_missing_both_names(self):
+        # 한글·영문 둘 다 비면 실패
+        rows = [_row(household_id="H01", is_householder="TRUE",
+                     korean_name="", english_name="")]
+        self.assertTrue(any("english_name" in e for e in validate_rows(rows)))
+
+    def test_english_only_ok(self):
+        # 한글 없어도 영문이 있으면 통과 (영어 전용 등록자)
+        rows = [_row(household_id="H01", is_householder="TRUE",
+                     korean_name="", english_name="John Ko", role="member")]
+        self.assertEqual(validate_rows(rows), [])
 
     def test_bad_enum(self):
         rows = [_row(household_id="H01", is_householder="TRUE", district="99",

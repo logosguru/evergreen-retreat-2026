@@ -36,8 +36,8 @@ def validate_rows(rows):
     for i, row in enumerate(rows, 1):
         who = row.get("_raw_name") or row.get("korean_name") or "?"
         tag = f"row {i} ({who})"
-        if not (row.get("korean_name") or "").strip():
-            errors.append(f"{tag}: korean_name 비어있음")
+        if not (row.get("korean_name") or "").strip() and not (row.get("english_name") or "").strip():
+            errors.append(f"{tag}: korean_name/english_name 둘 다 비어있음 (하나는 필수)")
         d = (row.get("district") or "").strip()
         if d and d not in DISTRICTS:
             errors.append(f"{tag}: district '{d}' 유효하지 않음")

@@ -15,7 +15,7 @@
    - `gender`(male/female), `role`(pastor/elder/gwonsa/deacon/seogyosa/member/student/child/other), `email`, `phone` 입력
    - `attendance=partial` 행은 **`arrival_at`/`departure_at` 필수** (`YYYY-MM-DDTHH:MM`)
      - ⚠️ 시각은 wall-clock 그대로 들어가고 `timestamptz` 컬럼은 **실행 세션 타임존**으로 해석됨. Supabase SQL Editor는 보통 UTC라 `14:00`이 `14:00Z`로 저장될 수 있음. 동부시(ET)로 넣으려면 `2026-09-05T14:00-04:00`처럼 오프셋을 붙이거나 실행 후 값 확인.
-   - ⚠️ **`korean_name`이 비어 있으면 그 행 때문에 검증 실패 → SQL이 생성되지 않음.** 영어 전용 등록자도 반드시 한글명(또는 대체값)을 채워야 함.
+   - ⚠️ **`korean_name`·`english_name`이 둘 다 비어 있으면 그 행 때문에 검증 실패 → SQL이 생성되지 않음.** (하나만 있으면 OK — 영어 전용 등록자는 `english_name`만 있어도 통과. DB `name_required` 제약과 동일)
    - 저장(CSV, UTF-8). 예: `out/import-worksheet-final.csv`
 3. **SQL 생성** — 검증 후 import.sql
    ```bash
