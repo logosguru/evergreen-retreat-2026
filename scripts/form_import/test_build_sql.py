@@ -1,6 +1,10 @@
+import os
+import tempfile
+import csv as _csv
 import unittest
 from build_sql import group_households, validate_rows
 from build_sql import build_sql, sql_str
+from build_sql import read_csv
 
 
 def _row(**kw):
@@ -87,6 +91,19 @@ class TestBuildSql(unittest.TestCase):
         self.assertIn("(select id from hh)", sql)
         self.assertIn("'가장'", sql)
         self.assertIn("'식구'", sql)
+
+
+class TestReadCsv(unittest.TestCase):
+    def test_roundtrip(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = os.path.join(d, "w.csv")
+            with open(p, "w", newline="", encoding="utf-8-sig") as f:
+                w = _csv.DictWriter(f, fieldnames=["household_id", "korean_name"])
+                w.writeheader()
+                w.writerow({"household_id": "H01", "korean_name": "김철수"})
+            rows = read_csv(p)
+        self.assertEqual(rows[0]["korean_name"], "김철수")
+        self.assertEqual(rows[0]["household_id"], "H01")
 
 
 if __name__ == "__main__":

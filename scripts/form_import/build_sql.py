@@ -2,6 +2,7 @@
 import argparse
 import csv
 import os
+import sys
 
 from enums import DISTRICTS, ROLES, GENDERS, LANGUAGES, ATTENDANCE
 
@@ -154,3 +155,28 @@ def build_sql(rows, expected_count):
     out.append("end $$;")
     out.append("commit;")
     return "\n".join(out) + "\n"
+
+
+def main():
+    ap = argparse.ArgumentParser(description="편집 완료 CSV → import.sql (검증 포함)")
+    ap.add_argument("final_csv")
+    ap.add_argument("--out", default=None)
+    args = ap.parse_args()
+
+    rows = read_csv(args.final_csv)
+    errors = validate_rows(rows)
+    if errors:
+        print(f"검증 실패 — {len(errors)}건, SQL 생성 안 함:", file=sys.stderr)
+        for e in errors:
+            print("  - " + e, file=sys.stderr)
+        sys.exit(1)
+
+    out_path = args.out or os.path.join(os.path.dirname(args.final_csv), "import.sql")
+    sql = build_sql(rows, expected_count=len(rows))
+    with open(out_path, "w", encoding="utf-8") as f:
+        f.write(sql)
+    print(f"검증 통과 ({len(rows)}명) → {out_path}")
+
+
+if __name__ == "__main__":
+    main()
