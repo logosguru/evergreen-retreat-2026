@@ -25,7 +25,9 @@ export function AboutSection() {
           <img
             src="/honors-haven.webp"
             alt="Honor's Haven Retreat & Conference"
-            className="mt-3 w-full rounded-xl shadow-sm ring-1 ring-slate-200"
+            width={1500}
+            height={844}
+            className="mt-3 h-auto w-full rounded-xl shadow-sm ring-1 ring-slate-200"
           />
           <a
             href="https://www.honorshaven.com/"
