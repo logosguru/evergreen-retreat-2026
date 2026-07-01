@@ -58,9 +58,7 @@ def validate_rows(rows):
                 errors.append(f"{tag}: partial인데 arrival_at/departure_at 비어있음 (DB constraint 위반)")
 
     for hh in group_households(rows):
-        n = 1 if hh["householder"] else 0
-        heads_extra = sum(1 for _ in [])  # householder 는 group_households 가 1개만 잡음
-        # is_householder=TRUE 가 2개 이상이면 마지막이 householder 로 덮이므로 원시 카운트로 검증
+        # is_householder=TRUE 가 2개 이상이면 group_households 가 마지막 1개만 잡으므로 원시 카운트로 검증
         raw_heads = [r for r in rows if r.get("household_id") == hh["id"] and _truthy(r.get("is_householder"))]
         if len(raw_heads) != 1:
             errors.append(f"household {hh['id']}: 가구주 {len(raw_heads)}명 (정확히 1명이어야 함)")
