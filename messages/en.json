@@ -272,5 +272,9 @@
     "ko": "Korean",
     "en": "English",
     "es": "Spanish"
+  },
+  "Footer": {
+    "copyright": "© 2026 Evergreen Church",
+    "adminLogin": "Admin login"
   }
 }

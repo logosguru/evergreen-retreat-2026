@@ -4,6 +4,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/SiteHeader";
+import { SiteFooter } from "@/components/SiteFooter";
 import "../globals.css";
 
 export function generateStaticParams() {
@@ -35,11 +36,16 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   return (
-    <html lang={locale} className="h-full antialiased">
+    <html
+      lang={locale}
+      data-scroll-behavior="smooth"
+      className="h-full antialiased"
+    >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <NextIntlClientProvider>
           <SiteHeader />
           <main className="flex-1">{children}</main>
+          <SiteFooter />
         </NextIntlClientProvider>
       </body>
     </html>

@@ -272,5 +272,9 @@
     "ko": "Coreano",
     "en": "Inglés",
     "es": "Español"
+  },
+  "Footer": {
+    "copyright": "© 2026 Iglesia Evergreen",
+    "adminLogin": "Acceso de administrador"
   }
 }

@@ -10,10 +10,10 @@ export function SiteHeader() {
   const t = useTranslations("Nav");
 
   const links = [
-    { href: "/about", label: t("about") },
-    { href: "/schedule", label: t("schedule") },
-    { href: "/speakers", label: t("speakers") },
-    { href: "/faq", label: t("faq") },
+    { href: "/#about", label: t("about") },
+    { href: "/#schedule", label: t("schedule") },
+    { href: "/#speakers", label: t("speakers") },
+    { href: "/#faq", label: t("faq") },
   ] as const;
 
   return (
