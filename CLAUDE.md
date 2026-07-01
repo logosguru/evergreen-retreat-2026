@@ -7,10 +7,12 @@
 
 ## ▶ 현재 상태 / 다음 작업 (이어서 시작)
 
-- **완료**: Phase 1~4 모두 ✅ — `main` 병합됨. (Phase 4 = 관리자 대시보드 + 성도 언어 구분.) + 등록 이메일 중복 확인 단계.
-- **다음**: **출시 준비** — `SETUP.md`(실 Supabase·Google OAuth·Custom SMTP·Turnstile·keep-alive). **Spanish UI 번역 ✅ 완료** (`es` 로케일 추가: `messages/es.json` 전체 번역, `routing.ts` locales=[ko,en,es], `LocaleSwitcher`를 3개국어 select로 변경, `schedule.ts` es 날짜 포맷·"Día del Señor"). 브라우저 E2E 검증 완료. 새 기능은 **brainstorming → spec → writing-plans → subagent-driven** 패턴 유지.
-- **개발 환경 재기동** (로컬): `supabase start` → `npm run dev` (http://localhost:3000). 로컬 키는 `.env.local`에 이미 있음(재시작해도 동일). 매직링크 메일은 Mailpit http://127.0.0.1:54324.
-- **미완/배포 전 할 일**: `SETUP.md` 참고 (실제 Supabase 프로젝트, Google OAuth, Custom SMTP, Turnstile, keep-alive cron).
+- **🚀 배포 LIVE**: **https://retreat.nyevergreen.com** (2026-06-30). Vercel(프로젝트/GitHub repo = `evergreen-retreat-2026`) + Supabase 호스팅(ref `gkdhifnworjtnnubrpft`). 공개 등록·Turnstile·Supabase·관리자 Google 로그인·keep-alive cron 전부 검증 완료.
+- **완료**: Phase 1~4 ✅ + Spanish(es) UI ✅ + **출시 준비 코드 ✅**(Turnstile 봇 방지 · keep-alive cron · 배포 설정 — `docs/superpowers/{specs,plans}/2026-06-30-deploy-prep*`) — 모두 `main` 병합·배포됨.
+- **배포 구성 요약**: Supabase 마이그레이션 0001~0007 + Access Token Hook(Postgres `custom_access_token_hook`) 활성화 / Google OAuth(관리자, 첫 관리자 logosguru@gmail.com) / Resend SMTP(`send.nyevergreen.com`, sender `noreply@send.nyevergreen.com`) + 매직링크 템플릿(ko/en/es, token_hash→`/auth/confirm`) / URL Config(Site URL=배포 URL) / Turnstile hostnames=retreat.nyevergreen.com+localhost / Route53 CNAME `retreat`→Vercel / Vercel Deployment Protection=Standard(커스텀 도메인 공개).
+- **Vercel env(6)**: `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`·`SUPABASE_SECRET_KEY`·`CRON_SECRET`(All) + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`·`TURNSTILE_SECRET_KEY`(Production만). ⚠️ **env 추가/수정 후 반드시 Redeploy** (안 하면 반영 안 됨; 값에 따옴표/공백 섞이면 서버 Supabase 쿼리가 조용히 500).
+- **다음(선택)**: 실제 매직링크 수신 최종 확인, 필요 시 실 등록 데이터 관리. 새 기능은 **brainstorming → spec → writing-plans → subagent-driven** 패턴 유지.
+- **로컬 개발 재기동**: `supabase start` → `npm run dev` (http://localhost:3000). 로컬 키는 `.env.local`(로컬 Supabase + Turnstile 키). 매직링크 메일은 Mailpit http://127.0.0.1:54324. 로컬은 로컬 Supabase를 가리키며 프로덕션과 분리됨.
 
 ## 프로젝트
 
