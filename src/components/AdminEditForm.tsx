@@ -83,16 +83,14 @@ export function AdminEditForm({ initial }: { initial: Attendee }) {
     <div className="space-y-6">
       <PersonFields value={data} onChange={patch} groupId={`admin-${initial.id}`} showContact />
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <div className="sm:col-span-2">
-          <label className={labelClass}>{tf("email")}</label>
-          <input
-            type="email"
-            value={data.email ?? ""}
-            onChange={(e) => patch({ email: e.target.value })}
-            className={inputClass}
-          />
-        </div>
+      <div>
+        <label className={labelClass}>{tf("email")}</label>
+        <input
+          type="email"
+          value={data.email ?? ""}
+          onChange={(e) => patch({ email: e.target.value })}
+          className={inputClass}
+        />
       </div>
 
       <fieldset className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
