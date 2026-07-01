@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { setPaid, setLanguage } from "@/app/[locale]/admin/actions";
 import { LANGUAGES, type Language } from "@/lib/types";
 import { personFee, formatUSD, type AttendeeWithRoom } from "@/lib/fees";
@@ -148,9 +149,12 @@ export function AdminAttendeeTable({
             return (
               <tr key={a.id}>
                 <td className="px-3 py-2">
-                  <span className="font-medium text-slate-900">
+                  <Link
+                    href={`/admin/attendees/${a.id}/edit`}
+                    className="font-medium text-emerald-700 hover:underline"
+                  >
                     {displayName(a)}
-                  </span>
+                  </Link>
                   {a.is_under_6 && (
                     <span className="ml-2 rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-medium text-amber-700">
                       {t("under6")}
