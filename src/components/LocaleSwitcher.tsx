@@ -21,9 +21,11 @@ export function LocaleSwitcher() {
     <select
       aria-label={labels[locale]}
       value={locale}
-      onChange={(e) =>
-        router.replace(pathname, { locale: e.target.value as typeof locale })
-      }
+      onChange={(e) => {
+        const next = e.target.value as typeof locale;
+        document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000; samesite=lax`;
+        router.replace(pathname, { locale: next });
+      }}
       className="rounded-md border border-white/30 bg-transparent px-2 py-1 text-sm font-medium text-emerald-50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
     >
       {routing.locales.map((loc) => (
