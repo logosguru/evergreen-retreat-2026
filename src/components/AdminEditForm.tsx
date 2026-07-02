@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
-import { useRouter } from "@/i18n/navigation";
+import { Link, useRouter } from "@/i18n/navigation";
 import { PersonFields } from "./PersonFields";
 import {
   adminUpdateAttendee,
@@ -236,6 +236,12 @@ export function AdminEditForm({
         >
           {pending ? tc("submitting") : tc("save")}
         </button>
+        <Link
+          href="/admin/attendees"
+          className="rounded-lg px-4 py-2 text-sm font-medium text-slate-600 ring-1 ring-slate-300 hover:bg-slate-50"
+        >
+          {t("backToList")}
+        </Link>
         {saved && <span className="text-sm text-emerald-700">{t("saved")}</span>}
         {error && <span className="text-sm text-rose-700">{error}</span>}
 

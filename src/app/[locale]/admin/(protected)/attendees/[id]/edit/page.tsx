@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AdminEditForm } from "@/components/AdminEditForm";
 import { displayName } from "@/lib/names";
@@ -62,10 +61,7 @@ export default async function AdminEditAttendeePage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <Link href="/admin/attendees" className="text-sm text-slate-500 hover:text-slate-900">
-        {t("backToList")}
-      </Link>
-      <h1 className="mt-2 text-2xl font-bold text-slate-900">
+      <h1 className="text-2xl font-bold text-slate-900">
         {t("editTitle")} — {displayName(a)}
       </h1>
 
