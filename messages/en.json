@@ -28,7 +28,7 @@
     "registerDo": "New registration"
   },
   "Home": {
-    "title": "Evergreen Church Summer Retreat",
+    "title": "2026 Evergreen Church Summer Retreat",
     "theme": "Blessed Encounter",
     "verse": "I will meet there with the sons of Israel, and it shall be consecrated by My glory.",
     "verseRef": "Exodus 29:43",
@@ -286,8 +286,14 @@
   },
   "Speakers": {
     "title": "Speakers",
-    "tbaName": "To Be Announced",
-    "tbaNote": "Speaker information will be shared once confirmed."
+    "church": "Pyungkang Cheil Church, Seoul",
+    "s1Name": "Rev. Jung-Won Jung",
+    "s1Bio": "• B.A. in Business Administration, Hanyang University\n• M.Div., Chongshin Theological Seminary\n• Th.M. in Old Testament, Daehan Theological Graduate University\n• Serves the young adults ministry and the Bible-Keeping Redemptive History Movement Center at Pyungkang Cheil Church\n• Speaker, Bible Redemptive History Seminars in LA (2025) and Washington (2026)",
+    "s1LinkLA": "LA Redemptive History Seminar (2025)",
+    "s1LinkDC": "Washington Redemptive History Seminar (2026)",
+    "s2Name": "Missionary Sun-Hee Park",
+    "s2Bio": "• Serves the Bible-Keeping Redemptive History Movement Center at Pyungkang Cheil Church\n• Redemptive history lecturer, 2023 Summer Assembly — “Faith Passed Down Across Generations”\n• Itinerant Word ministry among churches in the U.S.",
+    "bioNote": "Full biographies will be updated soon."
   },
   "Faq": {
     "pageTitle": "FAQ",
