@@ -19,9 +19,9 @@ function toPersonInput(a: Attendee): PersonInput {
     phone: a.phone ?? "",
     is_under_6: a.is_under_6,
     attendance: a.attendance,
-    // wall-clock 보존: ISO 앞 16자("YYYY-MM-DDTHH:mm")만 사용
-    arrival_at: a.arrival_at ? a.arrival_at.slice(0, 16) : "",
-    departure_at: a.departure_at ? a.departure_at.slice(0, 16) : "",
+    // date 컬럼("YYYY-MM-DD") — 앞 10자만 사용
+    arrival_at: a.arrival_at ? a.arrival_at.slice(0, 10) : "",
+    departure_at: a.departure_at ? a.departure_at.slice(0, 10) : "",
     note: a.note ?? "",
   };
 }

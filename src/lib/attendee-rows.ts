@@ -12,8 +12,8 @@ export type PersonInput = {
   phone?: string;
   is_under_6?: boolean;
   attendance: Attendance;
-  arrival_at?: string; // datetime-local 문자열
-  departure_at?: string;
+  arrival_at?: string; // 부분 참석 도착일 "YYYY-MM-DD" (선택)
+  departure_at?: string; // 부분 참석 출발일 "YYYY-MM-DD" (선택)
   note?: string;
 };
 
@@ -22,21 +22,14 @@ export function clean(s?: string | null): string | null {
   return v === "" ? null : v;
 }
 
-// datetime-local "YYYY-MM-DDTHH:mm" 문자열을 그대로 저장(wall-clock 보존).
-// Date 변환을 거치지 않아 dev/prod 런타임 타임존에 흔들리지 않는다.
+// date input "YYYY-MM-DD" 문자열을 그대로 저장(DB도 date 타입 — 타임존 무관).
 export function toTimestamp(s?: string): string | null {
   return clean(s);
 }
 
-// 이름(한글/영문 중 하나) 필수 + partial이면 도착/출발 필수. 오류 시 메시지 키 반환.
+// 이름(한글/영문 중 하나) 필수. 부분 참석 도착/출발일은 선택(추후 확정 가능).
 export function validatePerson(p: PersonInput): string | null {
   if (!clean(p.korean_name) && !clean(p.english_name)) return "validationName";
-  if (
-    p.attendance === "partial" &&
-    (!clean(p.arrival_at) || !clean(p.departure_at))
-  ) {
-    return "validationPartial";
-  }
   return null;
 }
 

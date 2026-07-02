@@ -141,7 +141,7 @@ supabase/migrations/
 - **서버 액션**으로 모든 폼 mutation. **Route Handler**는 OAuth 콜백·매직링크 confirm·signout만.
 - 인증 라우트는 `[locale]` **밖**(`src/app/auth/...`)에 두고 `proxy.ts` matcher에서 제외 (locale 재작성 방지).
 - DB enum은 영문 토큰 저장, 화면 라벨은 messages로 번역 (직분 등). DB에 표시 문자열 저장 금지.
-- 부분 참석 시간은 datetime-local 문자열을 **wall-clock 그대로 저장**(Date 변환 X) — dev/prod 타임존 흔들림 방지. 표시는 ISO `slice(0,16)`.
+- 부분 참석 도착/출발은 **날짜만**(`date` 컬럼, 0011) + **선택 사항**(추후 확정 가능, partial이어도 null 허용). date input `min/max`=수련회 기간(`RETREAT_START/END` in lib/types). 폼 초기값은 `slice(0,10)`.
 - 관리자 권한 클레임은 **로그인 시점**에 굳어짐 → `admins`에 나중에 추가된 사람은 **재로그인** 필요.
 - 새 컴포넌트/페이지는 위 i18n·Supabase 패턴을 그대로 따를 것. `useTranslations`는 콜백 안에서 호출 금지(컴포넌트 상단에서).
 

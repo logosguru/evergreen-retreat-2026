@@ -20,12 +20,6 @@ export async function updateMyAttendee(
 ): Promise<EditResult> {
   if (!clean(input.korean_name) && !clean(input.english_name))
     return { ok: false, error: "validationName" };
-  if (
-    input.attendance === "partial" &&
-    (!clean(input.arrival_at) || !clean(input.departure_at))
-  ) {
-    return { ok: false, error: "validationPartial" };
-  }
 
   const supabase = await createClient();
   const { error } = await supabase

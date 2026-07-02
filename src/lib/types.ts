@@ -1,3 +1,7 @@
+// 수련회 기간 (부분 참석 도착/출발 datepicker 범위 제한에 사용)
+export const RETREAT_START = "2026-09-05";
+export const RETREAT_END = "2026-09-07";
+
 // DB enum 토큰 (라벨은 i18n messages 에서 번역)
 export const GENDERS = ["male", "female"] as const;
 export type Gender = (typeof GENDERS)[number];
@@ -56,8 +60,8 @@ export interface Attendee {
   language: Language; // 성도 언어 (관리자 전용, 기본 'ko')
   is_under_6: boolean; // 6세 미만 (회비 면제·객실 인원 제외)
   attendance: Attendance;
-  arrival_at: string | null; // partial 일 때 필수
-  departure_at: string | null; // partial 일 때 필수
+  arrival_at: string | null; // 부분 참석 도착일 YYYY-MM-DD (선택, 추후 확정 가능)
+  departure_at: string | null; // 부분 참석 출발일 YYYY-MM-DD (선택)
   paid: boolean; // 회비 (관리자 전용)
   paid_at: string | null;
   created_at: string;

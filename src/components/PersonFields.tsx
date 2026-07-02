@@ -1,7 +1,14 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { DISTRICTS, GENDERS, ROLES, type Attendance } from "@/lib/types";
+import {
+  DISTRICTS,
+  GENDERS,
+  ROLES,
+  RETREAT_START,
+  RETREAT_END,
+  type Attendance,
+} from "@/lib/types";
 import type { PersonInput } from "@/app/[locale]/register/actions";
 
 const inputClass =
@@ -146,27 +153,30 @@ export function PersonFields({
       {value.attendance === "partial" && (
         <>
           <div>
-            <label className={labelClass}>
-              {t("arrival_at")} <span className="text-rose-500">*</span>
-            </label>
+            <label className={labelClass}>{t("arrival_at")}</label>
             <input
-              type="datetime-local"
+              type="date"
+              min={RETREAT_START}
+              max={RETREAT_END}
               value={value.arrival_at ?? ""}
               onChange={(e) => onChange({ arrival_at: e.target.value })}
               className={inputClass}
             />
           </div>
           <div>
-            <label className={labelClass}>
-              {t("departure_at")} <span className="text-rose-500">*</span>
-            </label>
+            <label className={labelClass}>{t("departure_at")}</label>
             <input
-              type="datetime-local"
+              type="date"
+              min={RETREAT_START}
+              max={RETREAT_END}
               value={value.departure_at ?? ""}
               onChange={(e) => onChange({ departure_at: e.target.value })}
               className={inputClass}
             />
           </div>
+          <p className="-mt-2 text-xs text-slate-500 sm:col-span-2">
+            {t("partialDateHint")}
+          </p>
         </>
       )}
 
