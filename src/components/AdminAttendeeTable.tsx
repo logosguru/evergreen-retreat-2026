@@ -1,6 +1,11 @@
 "use client";
 
-import { Fragment, useState, useTransition } from "react";
+import {
+  Fragment,
+  useState,
+  useSyncExternalStore,
+  useTransition,
+} from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
@@ -20,6 +25,22 @@ import {
   type SortKey,
   type SortState,
 } from "@/lib/attendee-sort";
+
+const VIEW_STORAGE_KEY = "admin-attendee-view";
+
+// localStorage의 저장된 보기 모드를 hydration 안전하게 구독 (SSR에선 null).
+function subscribeStorage(cb: () => void) {
+  window.addEventListener("storage", cb);
+  return () => window.removeEventListener("storage", cb);
+}
+function useStoredView(): "list" | "grouped" | null {
+  const v = useSyncExternalStore(
+    subscribeStorage,
+    () => window.localStorage.getItem(VIEW_STORAGE_KEY),
+    () => null,
+  );
+  return v === "list" || v === "grouped" ? v : null;
+}
 
 function SortTh({
   k,
@@ -63,7 +84,18 @@ export function AdminAttendeeTable({
   const [, start] = useTransition();
   const [busy, setBusy] = useState<string | null>(null);
   const [sort, setSort] = useState<SortState>({ key: null, dir: "asc" });
-  const [view, setView] = useState<"list" | "grouped">("list");
+  // 보기 모드: 기본 가구별. 마지막 선택을 localStorage에 보존해
+  // 편집 페이지에서 돌아와도(어떤 경로든) 이전 보기로 복원된다.
+  // 세션 내 전환은 override(state), 초기값은 저장소 구독 — SSR은 기본값.
+  const storedView = useStoredView();
+  const [viewOverride, setViewOverride] = useState<"list" | "grouped" | null>(
+    null,
+  );
+  const view = viewOverride ?? storedView ?? "grouped";
+  function changeView(v: "list" | "grouped") {
+    setViewOverride(v);
+    window.localStorage.setItem(VIEW_STORAGE_KEY, v);
+  }
 
   function toggleSort(key: SortKey) {
     setSort((s) =>
@@ -188,11 +220,11 @@ export function AdminAttendeeTable({
 
   const toggle = (
     <div className="mb-3 inline-flex overflow-hidden rounded-lg ring-1 ring-slate-300">
-      <button type="button" onClick={() => setView("list")} className={viewBtn(view === "list")}>
-        {t("viewList")}
-      </button>
-      <button type="button" onClick={() => setView("grouped")} className={viewBtn(view === "grouped")}>
+      <button type="button" onClick={() => changeView("grouped")} className={viewBtn(view === "grouped")}>
         {t("viewGrouped")}
+      </button>
+      <button type="button" onClick={() => changeView("list")} className={viewBtn(view === "list")}>
+        {t("viewList")}
       </button>
     </div>
   );
