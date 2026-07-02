@@ -76,6 +76,12 @@ export default async function ProtectedAdminLayout({
           >
             {tn("navFaq")}
           </Link>
+          <Link
+            href="/admin/admins"
+            className="text-slate-600 hover:text-slate-900"
+          >
+            {tn("navAdmins")}
+          </Link>
         </div>
       </nav>
       {children}

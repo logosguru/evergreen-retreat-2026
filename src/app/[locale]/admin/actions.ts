@@ -2,7 +2,25 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { Language } from "@/lib/types";
-import type { PersonInput } from "../register/actions";
+import {
+  clean,
+  rowFor,
+  validatePerson,
+  type PersonInput,
+} from "@/lib/attendee-rows";
+
+// INSERT 는 guard 트리거(BEFORE UPDATE 전용)·RLS(anon/authenticated 모두 허용)로
+// 관리자 여부를 막지 못하므로, 수동 입력 액션은 클레임으로 직접 admin 을 확인한다.
+async function isAdminSession(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+): Promise<boolean> {
+  const { data } = await supabase.auth.getClaims();
+  const appMetadata = (data?.claims?.app_metadata ?? {}) as Record<
+    string,
+    unknown
+  >;
+  return appMetadata.app_role === "admin";
+}
 
 // 회비 납부 토글 (관리자 전용). RLS + 클레임으로 관리자만 통과.
 export async function setPaid(id: string, paid: boolean) {
@@ -31,9 +49,177 @@ export type AdminEditInput = PersonInput & {
   is_group_leader?: boolean;
 };
 
-function clean(s?: string | null): string | null {
-  const v = (s ?? "").trim();
-  return v === "" ? null : v;
+// 관리자 수동 입력(가구주 + 가족 일괄). 공개 등록과 달리 Turnstile 없음, admin 필드 포함.
+export type AdminInsertPayload = {
+  mode: "individual" | "household";
+  email?: string; // 선택 — 있으면 본인 수정 링크(매직링크)용, 중복이면 차단
+  householder: PersonInput;
+  members: PersonInput[]; // household 모드에서만
+  language: Language;
+  retreat_group?: string;
+  is_group_leader?: boolean;
+  // 개인 모드에서 기존 가구에 구성원으로 추가할 때 그 가구주 id. 없으면 새 가구.
+  attachToHeadId?: string;
+};
+
+export async function adminInsertAttendee(
+  payload: AdminInsertPayload,
+): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  if (!(await isAdminSession(supabase))) {
+    return { ok: false, error: "notAdmin" };
+  }
+
+  const headErr = validatePerson(payload.householder);
+  if (headErr) return { ok: false, error: headErr };
+
+  const members = payload.mode === "household" ? payload.members : [];
+  for (const m of members) {
+    const e = validatePerson(m);
+    if (e) return { ok: false, error: e };
+  }
+
+  const email = clean(payload.email);
+  if (email) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return { ok: false, error: "validationEmail" };
+    }
+    const { data: already } = await supabase.rpc("email_registered", {
+      check_email: email,
+    });
+    if (already) return { ok: false, error: "alreadyRegistered" };
+  }
+
+  const adminCommon = {
+    language: payload.language,
+    retreat_group: clean(payload.retreat_group),
+  };
+
+  // 개인 모드 + 기존 가구 지정 → 그 가구의 구성원 1명으로 추가.
+  const attachTo = clean(payload.attachToHeadId);
+  if (payload.mode === "individual" && attachTo) {
+    const { data: head } = await supabase
+      .from("attendees")
+      .select("is_householder")
+      .eq("id", attachTo)
+      .single();
+    if (!head || !head.is_householder) {
+      return { ok: false, error: "headNotFound" };
+    }
+    const memberId = crypto.randomUUID();
+    const { error } = await supabase.from("attendees").insert([
+      {
+        ...rowFor(payload.householder, {
+          id: memberId,
+          is_householder: false,
+          email,
+          householder_id: attachTo,
+        }),
+        ...adminCommon,
+        is_group_leader: !!payload.is_group_leader,
+      },
+    ]);
+    if (error) {
+      if (error.code === "23505") return { ok: false, error: "alreadyRegistered" };
+      return { ok: false, error: "error" };
+    }
+    return { ok: true, id: memberId };
+  }
+
+  // 가구주 id 를 서버에서 미리 생성해 가구주+가족을 한 번의 insert 로 처리.
+  // admin 필드(language/retreat_group)는 가구 전체에 적용, is_group_leader 는 가구주만.
+  const headId = crypto.randomUUID();
+  const rows = [
+    {
+      ...rowFor(payload.householder, {
+        id: headId,
+        is_householder: true,
+        email,
+        householder_id: null,
+      }),
+      ...adminCommon,
+      is_group_leader: !!payload.is_group_leader,
+    },
+    ...members.map((m) => ({
+      ...rowFor(m, {
+        id: crypto.randomUUID(),
+        is_householder: false,
+        email: null,
+        householder_id: headId,
+      }),
+      ...adminCommon,
+      is_group_leader: false,
+    })),
+  ];
+
+  const { error } = await supabase.from("attendees").insert(rows);
+  if (error) {
+    // 23505 = unique_violation → 이메일 중복(경합)
+    if (error.code === "23505") {
+      return { ok: false, error: "alreadyRegistered" };
+    }
+    return { ok: false, error: "error" };
+  }
+  return { ok: true, id: headId };
+}
+
+// 참석자를 관리자로 지정/해제 (admins 이메일 allowlist 관리).
+// makeAdmin=true → admins insert(중복 무시), false → 삭제(본인은 차단).
+// 지정 후 대상자는 재로그인해야 클레임(app_role)이 반영됨.
+export async function setAttendeeAdmin(
+  email: string,
+  makeAdmin: boolean,
+  name: string,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const appMetadata = (claimsData?.claims?.app_metadata ?? {}) as Record<
+    string,
+    unknown
+  >;
+  if (appMetadata.app_role !== "admin") {
+    return { ok: false, error: "notAdmin" };
+  }
+
+  const target = clean(email)?.toLowerCase();
+  if (!target || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(target)) {
+    return { ok: false, error: "adminNeedsEmail" };
+  }
+
+  if (makeAdmin) {
+    const { error } = await supabase
+      .from("admins")
+      .upsert({ email: target, name: clean(name) }, { onConflict: "email" });
+    if (error) return { ok: false, error: "adminRoleError" };
+    return { ok: true };
+  }
+
+  // 해제: 본인(현재 세션 이메일)은 차단 → 잠금 방지.
+  const sessionEmail = ((claimsData?.claims?.email as string) ?? "").toLowerCase();
+  if (sessionEmail && sessionEmail === target) {
+    return { ok: false, error: "cannotRemoveSelf" };
+  }
+  const { error } = await supabase.from("admins").delete().ilike("email", target);
+  if (error) return { ok: false, error: "adminRoleError" };
+  return { ok: true };
+}
+
+// 가구주 재지정. new_head=null → 독립 가구주, 지정 시 그 가구 구성원으로.
+// 구성원 있는 가구주 강등 시 최선등록자 자동 승격(RPC가 원자적으로 처리).
+export async function adminSetHouseholder(
+  targetId: string,
+  newHeadId: string | null,
+): Promise<{ ok: true } | { ok: false; error: string }> {
+  const supabase = await createClient();
+  if (!(await isAdminSession(supabase))) {
+    return { ok: false, error: "notAdmin" };
+  }
+  const { error } = await supabase.rpc("admin_set_householder", {
+    target: targetId,
+    new_head: newHeadId,
+  });
+  if (error) return { ok: false, error: "householdError" };
+  return { ok: true };
 }
 
 // 관리자 전체 편집(화이트리스트). admin은 RLS + guard 트리거 통과.

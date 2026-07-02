@@ -1,22 +1,12 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import type { Attendance, Gender, Role } from "@/lib/types";
 import { verifyTurnstile } from "@/lib/turnstile";
+import { clean, rowFor, validatePerson } from "@/lib/attendee-rows";
 
-export type PersonInput = {
-  korean_name: string;
-  english_name?: string;
-  district?: string;
-  gender?: Gender | "";
-  role?: Role | "";
-  phone?: string;
-  is_under_6?: boolean;
-  attendance: Attendance;
-  arrival_at?: string; // datetime-local 문자열
-  departure_at?: string;
-  note?: string;
-};
+// PersonInput 은 공유 lib 로 이동 — 기존 import 경로 호환을 위해 재노출.
+export type { PersonInput } from "@/lib/attendee-rows";
+import type { PersonInput } from "@/lib/attendee-rows";
 
 export type RegistrationPayload = {
   mode: "individual" | "household";
@@ -26,57 +16,6 @@ export type RegistrationPayload = {
 };
 
 export type RegistrationResult = { ok: true } | { ok: false; error: string };
-
-function clean(s?: string): string | null {
-  const v = (s ?? "").trim();
-  return v === "" ? null : v;
-}
-
-// datetime-local "YYYY-MM-DDTHH:mm" 문자열을 그대로 저장(wall-clock 보존).
-// Date 변환을 거치지 않아 dev/prod 런타임 타임존에 흔들리지 않는다.
-function toTimestamp(s?: string): string | null {
-  return clean(s);
-}
-
-function validatePerson(p: PersonInput): string | null {
-  if (!clean(p.korean_name) && !clean(p.english_name)) return "validationName";
-  if (
-    p.attendance === "partial" &&
-    (!clean(p.arrival_at) || !clean(p.departure_at))
-  ) {
-    return "validationPartial";
-  }
-  return null;
-}
-
-function rowFor(
-  p: PersonInput,
-  opts: {
-    id: string;
-    is_householder: boolean;
-    email: string | null;
-    householder_id: string | null;
-  },
-) {
-  return {
-    id: opts.id,
-    korean_name: clean(p.korean_name),
-    english_name: clean(p.english_name),
-    district: clean(p.district),
-    gender: p.gender ? p.gender : null,
-    role: p.role ? p.role : "member",
-    phone: clean(p.phone),
-    is_under_6: !!p.is_under_6,
-    attendance: p.attendance,
-    arrival_at: p.attendance === "partial" ? toTimestamp(p.arrival_at) : null,
-    departure_at:
-      p.attendance === "partial" ? toTimestamp(p.departure_at) : null,
-    note: clean(p.note),
-    is_householder: opts.is_householder,
-    householder_id: opts.householder_id,
-    email: opts.email,
-  };
-}
 
 export async function insertRegistration(
   payload: RegistrationPayload,

@@ -7,9 +7,14 @@ import { PersonFields } from "./PersonFields";
 import {
   adminUpdateAttendee,
   adminDeleteAttendee,
+  adminSetHouseholder,
+  setAttendeeAdmin,
   type AdminEditInput,
 } from "@/app/[locale]/admin/actions";
 import { LANGUAGES, type Attendee } from "@/lib/types";
+import { displayName } from "@/lib/names";
+
+type HeadOption = Pick<Attendee, "id" | "korean_name" | "english_name">;
 
 const inputClass =
   "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500";
@@ -35,7 +40,17 @@ function toInput(a: Attendee): AdminEditInput {
   };
 }
 
-export function AdminEditForm({ initial }: { initial: Attendee }) {
+export function AdminEditForm({
+  initial,
+  heads,
+  isAttendeeAdmin,
+  currentEmail,
+}: {
+  initial: Attendee;
+  heads: HeadOption[];
+  isAttendeeAdmin: boolean;
+  currentEmail: string | null;
+}) {
   const t = useTranslations("Admin");
   const tc = useTranslations("Common");
   const tf = useTranslations("Fields");
@@ -43,9 +58,20 @@ export function AdminEditForm({ initial }: { initial: Attendee }) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [data, setData] = useState<AdminEditInput>(() => toInput(initial));
+  // "" = 독립(본인이 가구주). 아니면 소속 가구주 id.
+  const initialHeadId = initial.is_householder ? "" : (initial.householder_id ?? "");
+  const [headId, setHeadId] = useState<string>(initialHeadId);
+  const [makeAdmin, setMakeAdmin] = useState(isAttendeeAdmin);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirming, setConfirming] = useState(false);
+
+  const hasEmail = !!(data.email ?? "").trim();
+  // 본인(현재 로그인 관리자) 행이면 권한 토글 비활성 — 자기 잠금 방지.
+  const isSelf =
+    !!initial.email &&
+    !!currentEmail &&
+    initial.email.toLowerCase() === currentEmail.toLowerCase();
 
   function patch(p: Partial<AdminEditInput>) {
     setData((d) => ({ ...d, ...p }));
@@ -57,12 +83,36 @@ export function AdminEditForm({ initial }: { initial: Attendee }) {
     setError(null);
     start(async () => {
       const r = await adminUpdateAttendee(initial.id, data);
-      if (r.ok) {
-        setSaved(true);
-        router.refresh();
-      } else {
+      if (!r.ok) {
         setError(t("saveError"));
+        return;
       }
+      // 가구주 선택이 바뀌었으면 재지정(구성원 승격 등은 RPC가 원자적으로 처리).
+      if (headId !== initialHeadId) {
+        const h = await adminSetHouseholder(initial.id, headId || null);
+        if (!h.ok) {
+          setError(t("householdError"));
+          return;
+        }
+      }
+      // 관리자 권한이 바뀌었으면 admins allowlist 반영(이메일은 위에서 이미 저장됨).
+      if (makeAdmin !== isAttendeeAdmin) {
+        const email = (data.email ?? "").trim();
+        const name = data.korean_name || data.english_name || email;
+        const ar = await setAttendeeAdmin(email, makeAdmin, name);
+        if (!ar.ok) {
+          setError(
+            ar.error === "cannotRemoveSelf"
+              ? t("cannotRemoveSelf")
+              : ar.error === "adminNeedsEmail"
+                ? t("adminNeedsEmail")
+                : t("adminRoleError"),
+          );
+          return;
+        }
+      }
+      setSaved(true);
+      router.refresh();
     });
   }
 
@@ -81,6 +131,29 @@ export function AdminEditForm({ initial }: { initial: Attendee }) {
 
   return (
     <div className="space-y-6">
+      <fieldset className="rounded-xl bg-slate-50 p-4 ring-1 ring-slate-200">
+        <legend className="px-1 text-sm font-semibold text-slate-700">
+          {t("householdLabel")}
+        </legend>
+        <label className={labelClass}>{t("headSelect")}</label>
+        <select
+          value={headId}
+          onChange={(e) => {
+            setHeadId(e.target.value);
+            setSaved(false);
+          }}
+          className={inputClass}
+        >
+          <option value="">{t("headIndependent")}</option>
+          {heads.map((h) => (
+            <option key={h.id} value={h.id}>
+              {displayName(h)}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-xs text-slate-500">{t("headHint")}</p>
+      </fieldset>
+
       <PersonFields value={data} onChange={patch} groupId={`admin-${initial.id}`} showContact />
 
       <div>
@@ -129,6 +202,28 @@ export function AdminEditForm({ initial }: { initial: Attendee }) {
             />
             {t("groupLeader")}
           </label>
+        </div>
+
+        <div className="mt-4 border-t border-slate-200 pt-4">
+          <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+            <input
+              type="checkbox"
+              checked={makeAdmin}
+              disabled={isSelf || !hasEmail}
+              onChange={(e) => {
+                setMakeAdmin(e.target.checked);
+                setSaved(false);
+              }}
+            />
+            {t("adminRole")}
+          </label>
+          <p className="mt-1 text-xs text-slate-500">
+            {isSelf
+              ? t("adminSelfNote")
+              : !hasEmail
+                ? t("adminNeedsEmail")
+                : t("adminRoleHint")}
+          </p>
         </div>
       </fieldset>
 

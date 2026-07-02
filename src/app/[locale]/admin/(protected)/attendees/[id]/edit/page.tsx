@@ -24,6 +24,28 @@ export default async function AdminEditAttendeePage({
   if (!attendee) notFound();
   const a = attendee as Attendee;
 
+  // 가구주 재지정 후보: 본인을 제외한 모든 가구주(개인 포함 — 모든 개인은 1인 가구주)
+  const { data: headRows } = await supabase
+    .from("attendees")
+    .select("id, korean_name, english_name")
+    .eq("is_householder", true)
+    .neq("id", a.id)
+    .order("korean_name", { ascending: true, nullsFirst: false });
+  const heads = headRows ?? [];
+
+  // 이 참석자가 관리자(admins allowlist)인지 + 본인(현재 로그인) 여부 판단용 이메일
+  let isAttendeeAdmin = false;
+  if (a.email) {
+    const { data: adminRow } = await supabase
+      .from("admins")
+      .select("email")
+      .ilike("email", a.email)
+      .maybeSingle();
+    isAttendeeAdmin = !!adminRow;
+  }
+  const { data: claimsData } = await supabase.auth.getClaims();
+  const currentEmail = (claimsData?.claims?.email as string | undefined) ?? null;
+
   // 읽기전용 가구 맥락
   const headId = a.is_householder ? a.id : a.householder_id;
   let household: Pick<Attendee, "id" | "korean_name" | "english_name" | "is_householder">[] = [];
@@ -57,7 +79,12 @@ export default async function AdminEditAttendeePage({
       )}
 
       <div className="mt-6">
-        <AdminEditForm initial={a} />
+        <AdminEditForm
+          initial={a}
+          heads={heads}
+          isAttendeeAdmin={isAttendeeAdmin}
+          currentEmail={currentEmail}
+        />
       </div>
     </div>
   );
