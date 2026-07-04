@@ -163,7 +163,7 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
               ))}
             </select>
             <input
-              className={`${input} w-24`}
+              className={`${input} w-36`}
               type="time"
               value={time}
               onChange={(e) => setTime(e.target.value)}
