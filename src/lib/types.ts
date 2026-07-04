@@ -107,8 +107,14 @@ export interface ScheduleItem {
   day: string; // YYYY-MM-DD
   start_time: string; // HH:MM:SS
   title: string;
+  title_en: string | null;
+  title_es: string | null;
   description: string | null;
+  description_en: string | null;
+  description_es: string | null;
   location: string | null;
+  location_en: string | null;
+  location_es: string | null;
   sort_order: number;
   created_at: string;
 }
@@ -116,7 +122,11 @@ export interface ScheduleItem {
 export interface Faq {
   id: string;
   question: string;
+  question_en: string | null;
+  question_es: string | null;
   answer: string;
+  answer_en: string | null;
+  answer_es: string | null;
   sort_order: number;
   created_at: string;
 }
