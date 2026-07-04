@@ -16,6 +16,29 @@ const input =
 // 수련회 3일 (고정)
 const RETREAT_DAYS = ["2026-09-05", "2026-09-06", "2026-09-07"];
 
+// 언어 행 라벨은 원어 고정 표기 (번역 안 함)
+const LANGS = [
+  { suffix: "", label: "한국어" },
+  { suffix: "_en", label: "English" },
+  { suffix: "_es", label: "Español" },
+] as const;
+
+type Suffix = (typeof LANGS)[number]["suffix"];
+type TextKey = `${"title" | "location" | "description"}${Suffix}`;
+type TextFields = Record<TextKey, string>;
+
+const EMPTY: TextFields = {
+  title: "",
+  title_en: "",
+  title_es: "",
+  location: "",
+  location_en: "",
+  location_es: "",
+  description: "",
+  description_en: "",
+  description_es: "",
+};
+
 export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
   const t = useTranslations("Schedule");
   const locale = useLocale();
@@ -25,29 +48,26 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
   const [editId, setEditId] = useState<string | null>(null);
   const [day, setDay] = useState(RETREAT_DAYS[0]);
   const [time, setTime] = useState("09:00");
-  const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [loc, setLoc] = useState("");
+  const [fields, setFields] = useState<TextFields>(EMPTY);
+
+  const set = (k: TextKey) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    setFields((f) => ({ ...f, [k]: e.target.value }));
 
   function reset() {
     setEditId(null);
     setDay(RETREAT_DAYS[0]);
     setTime("09:00");
-    setTitle("");
-    setDesc("");
-    setLoc("");
+    setFields(EMPTY);
   }
 
   function submit() {
-    if (!title.trim()) return;
+    if (!fields.title.trim()) return;
     start(async () => {
       await upsertScheduleItem({
         id: editId ?? undefined,
         day,
         start_time: time,
-        title,
-        description: desc,
-        location: loc,
+        ...fields,
       });
       reset();
       router.refresh();
@@ -58,9 +78,17 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
     setEditId(it.id);
     setDay(it.day);
     setTime(formatTime(it.start_time));
-    setTitle(it.title);
-    setDesc(it.description ?? "");
-    setLoc(it.location ?? "");
+    setFields({
+      title: it.title,
+      title_en: it.title_en ?? "",
+      title_es: it.title_es ?? "",
+      location: it.location ?? "",
+      location_en: it.location_en ?? "",
+      location_es: it.location_es ?? "",
+      description: it.description ?? "",
+      description_en: it.description_en ?? "",
+      description_es: it.description_es ?? "",
+    });
   }
 
   const groups = groupByDay(items);
@@ -121,56 +149,70 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
         <h2 className="mb-3 text-base font-semibold text-slate-900">
           {editId ? t("editItem") : t("addItem")}
         </h2>
-        <div className="flex flex-wrap items-end gap-2">
-          <select
-            className={input}
-            value={day}
-            onChange={(e) => setDay(e.target.value)}
-          >
-            {RETREAT_DAYS.map((d) => (
-              <option key={d} value={d}>
-                {formatDayLabel(d, locale)}
-              </option>
-            ))}
-          </select>
-          <input
-            className={`${input} w-24`}
-            type="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-          />
-          <input
-            className={input}
-            placeholder={t("titleField")}
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
-          <input
-            className={input}
-            placeholder={t("locationField")}
-            value={loc}
-            onChange={(e) => setLoc(e.target.value)}
-          />
-          <input
-            className={`${input} flex-1`}
-            placeholder={t("descField")}
-            value={desc}
-            onChange={(e) => setDesc(e.target.value)}
-          />
-          <button
-            onClick={submit}
-            className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
-          >
-            {editId ? t("save") : t("add")}
-          </button>
-          {editId && (
-            <button
-              onClick={reset}
-              className="rounded-md px-3 py-1.5 text-sm text-slate-500 hover:text-slate-700"
+        <div className="space-y-2">
+          <div className="flex flex-wrap items-center gap-2">
+            <select
+              className={input}
+              value={day}
+              onChange={(e) => setDay(e.target.value)}
             >
-              {t("cancel")}
+              {RETREAT_DAYS.map((d) => (
+                <option key={d} value={d}>
+                  {formatDayLabel(d, locale)}
+                </option>
+              ))}
+            </select>
+            <input
+              className={`${input} w-24`}
+              type="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+            />
+          </div>
+          {LANGS.map(({ suffix, label }) => (
+            <div
+              key={label}
+              className="grid gap-2 sm:grid-cols-[4.5rem_1fr_1fr_1.5fr] sm:items-center"
+            >
+              <span className="text-xs font-medium text-slate-500">
+                {label}
+              </span>
+              <input
+                className={input}
+                placeholder={t("titleField")}
+                value={fields[`title${suffix}`]}
+                onChange={set(`title${suffix}`)}
+              />
+              <input
+                className={input}
+                placeholder={t("locationField")}
+                value={fields[`location${suffix}`]}
+                onChange={set(`location${suffix}`)}
+              />
+              <input
+                className={input}
+                placeholder={t("descField")}
+                value={fields[`description${suffix}`]}
+                onChange={set(`description${suffix}`)}
+              />
+            </div>
+          ))}
+          <div className="flex gap-2">
+            <button
+              onClick={submit}
+              className="rounded-md bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700"
+            >
+              {editId ? t("save") : t("add")}
             </button>
-          )}
+            {editId && (
+              <button
+                onClick={reset}
+                className="rounded-md px-3 py-1.5 text-sm text-slate-500 hover:text-slate-700"
+              >
+                {t("cancel")}
+              </button>
+            )}
+          </div>
         </div>
       </section>
     </div>
