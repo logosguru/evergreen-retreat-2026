@@ -2,6 +2,27 @@ import { useLocale, useTranslations } from "next-intl";
 import type { Faq } from "@/lib/types";
 import { localized } from "@/lib/localized";
 
+// 답변 텍스트 안의 URL을 클릭 가능한 링크로 변환
+const URL_RE = /(https?:\/\/[^\s]+)/g;
+
+function linkify(text: string) {
+  return text.split(URL_RE).map((part, i) =>
+    part.startsWith("http://") || part.startsWith("https://") ? (
+      <a
+        key={i}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="break-all text-emerald-700 underline hover:text-emerald-800"
+      >
+        {part}
+      </a>
+    ) : (
+      part
+    ),
+  );
+}
+
 export function FaqSection({ items }: { items: Faq[] }) {
   const t = useTranslations("Faq");
   const locale = useLocale();
@@ -24,7 +45,7 @@ export function FaqSection({ items }: { items: Faq[] }) {
               </dt>
               <dd className="mt-2 flex gap-2 whitespace-pre-wrap text-slate-600">
                 <span className="font-semibold text-slate-400">A.</span>
-                <span>{localized(f, "answer", locale)}</span>
+                <span>{linkify(localized(f, "answer", locale) ?? "")}</span>
               </dd>
             </div>
           ))}
