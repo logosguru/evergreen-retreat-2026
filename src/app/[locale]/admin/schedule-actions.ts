@@ -10,8 +10,14 @@ export async function upsertScheduleItem(input: {
   day: string;
   start_time: string;
   title: string;
+  title_en?: string | null;
+  title_es?: string | null;
   description?: string | null;
+  description_en?: string | null;
+  description_es?: string | null;
   location?: string | null;
+  location_en?: string | null;
+  location_es?: string | null;
   sort_order?: number;
 }): Promise<Result> {
   const supabase = await createClient();
@@ -19,8 +25,14 @@ export async function upsertScheduleItem(input: {
     day: input.day,
     start_time: input.start_time,
     title: input.title.trim(),
+    title_en: input.title_en?.trim() || null,
+    title_es: input.title_es?.trim() || null,
     description: input.description?.trim() || null,
+    description_en: input.description_en?.trim() || null,
+    description_es: input.description_es?.trim() || null,
     location: input.location?.trim() || null,
+    location_en: input.location_en?.trim() || null,
+    location_es: input.location_es?.trim() || null,
     sort_order: input.sort_order ?? 0,
   };
   const { error } = input.id
