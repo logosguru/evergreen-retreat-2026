@@ -1,8 +1,10 @@
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import type { Faq } from "@/lib/types";
+import { localized } from "@/lib/localized";
 
 export function FaqSection({ items }: { items: Faq[] }) {
   const t = useTranslations("Faq");
+  const locale = useLocale();
 
   return (
     <section id="faq" className="mx-auto max-w-2xl scroll-mt-8 px-4 py-12">
@@ -18,11 +20,11 @@ export function FaqSection({ items }: { items: Faq[] }) {
             >
               <dt className="flex gap-2 text-lg font-semibold text-slate-900">
                 <span className="text-emerald-600">Q.</span>
-                {f.question}
+                {localized(f, "question", locale)}
               </dt>
               <dd className="mt-2 flex gap-2 whitespace-pre-wrap text-slate-600">
                 <span className="font-semibold text-slate-400">A.</span>
-                <span>{f.answer}</span>
+                <span>{localized(f, "answer", locale)}</span>
               </dd>
             </div>
           ))}

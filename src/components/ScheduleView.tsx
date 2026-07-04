@@ -3,6 +3,7 @@
 import { useLocale } from "next-intl";
 import type { ScheduleItem } from "@/lib/types";
 import { groupByDay, formatDayLabel, formatTime } from "@/lib/schedule";
+import { localized } from "@/lib/localized";
 
 export function ScheduleView({ items }: { items: ScheduleItem[] }) {
   const locale = useLocale();
@@ -16,26 +17,30 @@ export function ScheduleView({ items }: { items: ScheduleItem[] }) {
             {formatDayLabel(g.day, locale)}
           </h2>
           <ul className="space-y-3">
-            {g.items.map((it) => (
-              <li key={it.id} className="flex gap-4">
-                <span className="w-14 shrink-0 font-mono text-sm text-emerald-700">
-                  {formatTime(it.start_time)}
-                </span>
-                <div>
-                  <p className="font-medium text-slate-800">
-                    {it.title}
-                    {it.location && (
-                      <span className="ml-2 text-sm font-normal text-slate-400">
-                        @{it.location}
-                      </span>
+            {g.items.map((it) => {
+              const location = localized(it, "location", locale);
+              const description = localized(it, "description", locale);
+              return (
+                <li key={it.id} className="flex gap-4">
+                  <span className="w-14 shrink-0 font-mono text-sm text-emerald-700">
+                    {formatTime(it.start_time)}
+                  </span>
+                  <div>
+                    <p className="font-medium text-slate-800">
+                      {localized(it, "title", locale)}
+                      {location && (
+                        <span className="ml-2 text-sm font-normal text-slate-400">
+                          @{location}
+                        </span>
+                      )}
+                    </p>
+                    {description && (
+                      <p className="text-sm text-slate-500">{description}</p>
                     )}
-                  </p>
-                  {it.description && (
-                    <p className="text-sm text-slate-500">{it.description}</p>
-                  )}
-                </div>
-              </li>
-            ))}
+                  </div>
+                </li>
+              );
+            })}
           </ul>
         </section>
       ))}
