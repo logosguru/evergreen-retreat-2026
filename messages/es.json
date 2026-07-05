@@ -66,7 +66,18 @@
     "changeEmail": "Cambiar correo",
     "emailReadonlyNote": "Registrando con este correo",
     "alreadyRegistered": "Este correo ya está registrado. Actualice su información en ‘Editar mi registro’.",
-    "captchaFailed": "Complete la verificación para confirmar que es una persona."
+    "captchaFailed": "Complete la verificación para confirmar que es una persona.",
+    "tabEmail": "Verificar por correo",
+    "tabName": "Verificar por nombre",
+    "nameLabel": "Nombre",
+    "nameStepHint": "Escriba el nombre tal como fue registrado (en coreano o en alfabeto latino). Los familiares incluidos en una inscripción familiar también pueden verificar con su propio nombre.",
+    "checkName": "Verificar",
+    "nameFoundTitle": "Ya está inscrito",
+    "nameFoundHint": "Puede recibir un enlace de edición en el correo indicado abajo para ver o modificar su inscripción.",
+    "nameNotFoundTitle": "No se encontró ninguna inscripción con este nombre",
+    "nameNotFoundHint": "Si aún no se ha inscrito, continúe con el paso de correo para registrarse.",
+    "goRegisterByEmail": "Inscribirse con correo",
+    "validationCheckName": "Ingrese al menos 2 caracteres."
   },
   "Edit": {
     "title": "Editar mi registro",

@@ -66,7 +66,18 @@
     "changeEmail": "Change email",
     "emailReadonlyNote": "Registering with this email",
     "alreadyRegistered": "This email is already registered. Please update your info under 'Edit my registration'.",
-    "captchaFailed": "Please complete the verification to confirm you're human."
+    "captchaFailed": "Please complete the verification to confirm you're human.",
+    "tabEmail": "Check by Email",
+    "tabName": "Check by Name",
+    "nameLabel": "Name",
+    "nameStepHint": "Enter your name exactly as it was registered (Korean or English spelling both work). Family members included in a household registration can check with their own name.",
+    "checkName": "Check",
+    "nameFoundTitle": "You are already registered",
+    "nameFoundHint": "You can receive an edit link at the email below to view or update your registration.",
+    "nameNotFoundTitle": "No registration found under this name",
+    "nameNotFoundHint": "If you have not registered yet, please continue with the email step to register.",
+    "goRegisterByEmail": "Register with Email",
+    "validationCheckName": "Please enter at least 2 characters."
   },
   "Edit": {
     "title": "Edit my registration",

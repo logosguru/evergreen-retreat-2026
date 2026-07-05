@@ -66,7 +66,18 @@
     "changeEmail": "이메일 변경",
     "emailReadonlyNote": "이 이메일로 등록합니다",
     "alreadyRegistered": "이미 등록된 이메일입니다. ‘내 등록 수정’에서 정보를 변경해 주세요.",
-    "captchaFailed": "사람인지 확인하는 절차를 완료해 주세요."
+    "captchaFailed": "사람인지 확인하는 절차를 완료해 주세요.",
+    "tabEmail": "이메일로 확인",
+    "tabName": "이름으로 확인",
+    "nameLabel": "이름",
+    "nameStepHint": "등록 때 입력한 이름 그대로 적어 주세요 (한글·영어 어느 쪽이든 가능). 가족 등록에 포함된 분도 본인 이름으로 확인할 수 있습니다.",
+    "checkName": "확인하기",
+    "nameFoundTitle": "이미 등록되어 있습니다",
+    "nameFoundHint": "아래 이메일로 수정 링크를 받아 등록 내용을 확인·수정할 수 있습니다.",
+    "nameNotFoundTitle": "이 이름으로 등록된 내역이 없습니다",
+    "nameNotFoundHint": "아직 등록 전이라면 이메일 확인 후 새로 등록해 주세요.",
+    "goRegisterByEmail": "이메일로 새로 등록하기",
+    "validationCheckName": "이름을 2자 이상 입력해 주세요."
   },
   "Edit": {
     "title": "내 등록 수정",
