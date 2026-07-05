@@ -9,6 +9,7 @@ import { PersonFields, emptyPerson } from "./PersonFields";
 import {
   insertRegistration,
   checkEmail,
+  checkName,
   type PersonInput,
   type RegistrationPayload,
 } from "@/app/[locale]/register/actions";
@@ -16,6 +17,10 @@ import {
 const labelClass = "block text-sm font-medium text-slate-700";
 const inputClass =
   "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500";
+const tabActiveClass =
+  "flex-1 rounded-md bg-white px-3 py-2 text-center font-semibold text-emerald-700 shadow-sm";
+const tabIdleClass =
+  "flex-1 rounded-md px-3 py-2 text-center text-slate-500 hover:text-slate-700";
 
 export function RegistrationForm() {
   const t = useTranslations("Register");
@@ -40,6 +45,15 @@ export function RegistrationForm() {
   const [registered, setRegistered] = useState(false);
   const [checking, startCheck] = useTransition();
 
+  // 1단계: 이름으로 확인 (확인 전용 — 폼 진행은 이메일 탭에서만)
+  const [checkTab, setCheckTab] = useState<"email" | "name">("email");
+  const [nameInput, setNameInput] = useState("");
+  const [nameError, setNameError] = useState<string | null>(null);
+  const [nameResult, setNameResult] = useState<{
+    matched: boolean;
+    maskedEmails: string[];
+  } | null>(null);
+
   function resetCaptcha() {
     setToken(null);
     setCaptchaKey((k) => k + 1);
@@ -60,6 +74,20 @@ export function RegistrationForm() {
         return;
       }
       setPhase("form");
+    });
+  }
+
+  function submitName(e: React.FormEvent) {
+    e.preventDefault();
+    setNameError(null);
+    setNameResult(null);
+    startCheck(async () => {
+      const res = await checkName(nameInput);
+      if (!res.ok) {
+        setNameError(res.error);
+        return;
+      }
+      setNameResult({ matched: res.matched, maskedEmails: res.maskedEmails });
     });
   }
 
@@ -110,70 +138,194 @@ export function RegistrationForm() {
     );
   }
 
-  // ── 1단계: 이메일 확인 ──
+  // ── 1단계: 등록 여부 확인 (이메일/이름 탭) ──
   if (phase === "email") {
     return (
-      <form onSubmit={submitEmail} className="space-y-4">
-        <div>
-          <label className={labelClass}>
-            {tf("email")} <span className="text-rose-500">*</span>
-          </label>
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(e) => {
-              setEmail(e.target.value);
-              setRegistered(false);
-              setEmailError(null);
-            }}
-            className={inputClass}
-            placeholder="you@example.com"
-          />
-          <p className="mt-1 text-xs text-slate-500">{t("emailStepHint")}</p>
+      <div className="space-y-4">
+        <div role="tablist" className="flex rounded-lg bg-slate-100 p-1 text-sm">
+          <button
+            type="button"
+            role="tab"
+            id="check-tab-email"
+            aria-selected={checkTab === "email"}
+            aria-controls="check-panel"
+            onClick={() => setCheckTab("email")}
+            className={checkTab === "email" ? tabActiveClass : tabIdleClass}
+          >
+            {t("tabEmail")}
+          </button>
+          <button
+            type="button"
+            role="tab"
+            id="check-tab-name"
+            aria-selected={checkTab === "name"}
+            aria-controls="check-panel"
+            onClick={() => setCheckTab("name")}
+            className={checkTab === "name" ? tabActiveClass : tabIdleClass}
+          >
+            {t("tabName")}
+          </button>
         </div>
 
-        {emailError && (
-          <p className="rounded-md bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-200">
-            {t(emailError)}
-          </p>
-        )}
-
-        {registered ? (
-          <div className="rounded-xl bg-amber-50 p-5 ring-1 ring-amber-200">
-            <p className="text-base font-semibold text-amber-900">
-              {t("alreadyTitle")}
-            </p>
-            <p className="mt-1 text-sm text-amber-800">{t("alreadyHint")}</p>
-            <div className="mt-4 flex flex-wrap items-center gap-3">
-              <Link
-                href="/edit"
-                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
-              >
-                {t("goToEdit")}
-              </Link>
-              <button
-                type="button"
-                onClick={() => {
-                  setRegistered(false);
-                  setEmail("");
-                }}
-                className="text-sm font-medium text-slate-500 hover:text-slate-700"
-              >
-                {t("useAnotherEmail")}
-              </button>
-            </div>
-          </div>
-        ) : (
-          <button
-            type="submit"
-            disabled={checking}
-            className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
+        {checkTab === "email" ? (
+          <form
+            onSubmit={submitEmail}
+            id="check-panel"
+            role="tabpanel"
+            aria-labelledby="check-tab-email"
+            className="space-y-4"
           >
-            {checking ? t("checking") : t("next")}
-          </button>
+            <div>
+              <label className={labelClass}>
+                {tf("email")} <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="email"
+                required
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  setRegistered(false);
+                  setEmailError(null);
+                }}
+                className={inputClass}
+                placeholder="you@example.com"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                {t("emailStepHint")}
+              </p>
+            </div>
+
+            {emailError && (
+              <p className="rounded-md bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-200">
+                {t(emailError)}
+              </p>
+            )}
+
+            {registered ? (
+              <div className="rounded-xl bg-amber-50 p-5 ring-1 ring-amber-200">
+                <p className="text-base font-semibold text-amber-900">
+                  {t("alreadyTitle")}
+                </p>
+                <p className="mt-1 text-sm text-amber-800">
+                  {t("alreadyHint")}
+                </p>
+                <div className="mt-4 flex flex-wrap items-center gap-3">
+                  <Link
+                    href="/edit"
+                    className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+                  >
+                    {t("goToEdit")}
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setRegistered(false);
+                      setEmail("");
+                    }}
+                    className="text-sm font-medium text-slate-500 hover:text-slate-700"
+                  >
+                    {t("useAnotherEmail")}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <button
+                type="submit"
+                disabled={checking}
+                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
+              >
+                {checking ? t("checking") : t("next")}
+              </button>
+            )}
+          </form>
+        ) : (
+          <form
+            onSubmit={submitName}
+            id="check-panel"
+            role="tabpanel"
+            aria-labelledby="check-tab-name"
+            className="space-y-4"
+          >
+            <div>
+              <label className={labelClass}>
+                {t("nameLabel")} <span className="text-rose-500">*</span>
+              </label>
+              <input
+                type="text"
+                required
+                value={nameInput}
+                onChange={(e) => {
+                  setNameInput(e.target.value);
+                  setNameResult(null);
+                  setNameError(null);
+                }}
+                className={inputClass}
+                placeholder="김철수 / John Kim"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                {t("nameStepHint")}
+              </p>
+            </div>
+
+            {nameError && (
+              <p className="rounded-md bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-200">
+                {t(nameError)}
+              </p>
+            )}
+
+            {nameResult?.matched ? (
+              <div className="rounded-xl bg-amber-50 p-5 ring-1 ring-amber-200">
+                <p className="text-base font-semibold text-amber-900">
+                  {t("nameFoundTitle")}
+                </p>
+                <p className="mt-1 text-sm text-amber-800">
+                  {t("nameFoundHint")}
+                </p>
+                <ul className="mt-2 space-y-1">
+                  {nameResult.maskedEmails.map((m) => (
+                    <li key={m} className="font-mono text-sm text-amber-900">
+                      {m}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-4">
+                  <Link
+                    href="/edit"
+                    className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+                  >
+                    {t("goToEdit")}
+                  </Link>
+                </div>
+              </div>
+            ) : nameResult ? (
+              <div className="rounded-xl bg-slate-50 p-5 ring-1 ring-slate-200">
+                <p className="text-base font-semibold text-slate-800">
+                  {t("nameNotFoundTitle")}
+                </p>
+                <p className="mt-1 text-sm text-slate-600">
+                  {t("nameNotFoundHint")}
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setCheckTab("email")}
+                  className="mt-4 inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+                >
+                  {t("goRegisterByEmail")}
+                </button>
+              </div>
+            ) : (
+              <button
+                type="submit"
+                disabled={checking}
+                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
+              >
+                {checking ? t("checking") : t("checkName")}
+              </button>
+            )}
+          </form>
         )}
-      </form>
+      </div>
     );
   }
 
