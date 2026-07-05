@@ -98,3 +98,23 @@ export async function checkEmail(emailRaw: string): Promise<CheckEmailResult> {
   if (error) return { ok: false, error: "error" };
   return { ok: true, registered: !!data };
 }
+
+export type CheckNameResult =
+  | { ok: true; matched: boolean; maskedEmails: string[] }
+  | { ok: false; error: string };
+
+// 이름(한글/영어 표기 무관)으로 등록 여부 확인. 정규화 정확 일치만 —
+// 명단 비노출 RPC가 마스킹된 가구 대표 이메일 배열만 반환한다.
+export async function checkName(nameRaw: string): Promise<CheckNameResult> {
+  const name = clean(nameRaw);
+  if (!name || name.replace(/\s/g, "").length < 2) {
+    return { ok: false, error: "validationCheckName" };
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase.rpc("name_registered", {
+    check_name: name,
+  });
+  if (error) return { ok: false, error: "error" };
+  const maskedEmails = (data ?? []) as string[];
+  return { ok: true, matched: maskedEmails.length > 0, maskedEmails };
+}
