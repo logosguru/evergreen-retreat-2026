@@ -116,6 +116,7 @@ export interface ScheduleItem {
   location_en: string | null;
   location_es: string | null;
   sort_order: number;
+  by_language: boolean;
   created_at: string;
 }
 
