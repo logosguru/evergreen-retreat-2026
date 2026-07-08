@@ -13,12 +13,17 @@ export default async function AdminDashboardPage({
   setRequestLocale(locale);
 
   const supabase = await createClient();
-  const [{ data: aData }, { data: rData }] = await Promise.all([
-    supabase
-      .from("attendees")
-      .select("*, rooms(label, room_types(name, price_per_person))"),
-    supabase.from("rooms").select("room_types(name, capacity)"),
-  ]);
+  const [{ data: aData }, { data: rData }, { count: reqCount }] =
+    await Promise.all([
+      supabase
+        .from("attendees")
+        .select("*, rooms(label, room_types(name, price_per_person))"),
+      supabase.from("rooms").select("room_types(name, capacity)"),
+      supabase
+        .from("email_requests")
+        .select("id", { count: "exact", head: true })
+        .eq("processed", false),
+    ]);
 
   const stats = computeDashboard(
     (aData as AttendeeWithRoom[] | null) ?? [],
@@ -40,6 +45,14 @@ export default async function AdminDashboardPage({
           </button>
         </form>
       </div>
+      {(reqCount ?? 0) > 0 && (
+        <div className="mt-6 rounded-xl bg-amber-50 p-4 ring-1 ring-amber-100">
+          <p className="text-xs font-semibold uppercase tracking-wide text-amber-700">
+            {t("dashEmailRequests")}
+          </p>
+          <p className="mt-1 text-2xl font-bold text-amber-800">{reqCount}</p>
+        </div>
+      )}
       <div className="mt-6">
         <AdminDashboard stats={stats} />
       </div>

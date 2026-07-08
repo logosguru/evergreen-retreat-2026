@@ -2,6 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AdminAttendeeTable } from "@/components/AdminAttendeeTable";
+import { EmailRequestBanner, type EmailRequest } from "@/components/EmailRequestBanner";
 import { groupHouseholds, type AttendeeWithRoom } from "@/lib/fees";
 
 export default async function AdminAttendeesPage({
@@ -25,6 +26,13 @@ export default async function AdminAttendeesPage({
   const grandTotal = households.reduce((s, h) => s + h.total, 0);
   const paidHouseholds = households.filter((h) => h.head.paid).length;
 
+  const { data: reqData } = await supabase
+    .from("email_requests")
+    .select("id, name_entered, email, phone, created_at")
+    .eq("processed", false)
+    .order("created_at", { ascending: true });
+  const requests = (reqData as EmailRequest[] | null) ?? [];
+
   const t = await getTranslations("Admin");
 
   return (
@@ -44,6 +52,9 @@ export default async function AdminAttendeesPage({
         <span>{t("paidCount", { count: paidHouseholds })}</span>
         <span>·</span>
         <span>${grandTotal.toLocaleString("en-US")}</span>
+      </div>
+      <div className="mt-6">
+        <EmailRequestBanner requests={requests} />
       </div>
       <div className="mt-6">
         <AdminAttendeeTable attendees={attendees} />
