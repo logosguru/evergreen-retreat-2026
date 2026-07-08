@@ -127,3 +127,30 @@ export async function checkName(nameRaw: string): Promise<CheckNameResult> {
     maskedEmails: result.masked_emails ?? [],
   };
 }
+
+export type RequestEmailResult = { ok: true } | { ok: false; error: string };
+
+// 이름 확인에서 '등록됨+이메일 없음' 성도가 본인 이메일을 신청. attendees에
+// 반영하지 않고 email_requests에 접수만 — 관리자가 확인 후 편집으로 반영한다.
+export async function requestEmail(
+  nameRaw: string,
+  emailRaw: string,
+  phoneRaw: string,
+): Promise<RequestEmailResult> {
+  const name = clean(nameRaw);
+  const email = clean(emailRaw);
+  const phone = clean(phoneRaw);
+  if (!name) return { ok: false, error: "error" };
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, error: "validationEmail" };
+  }
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("email_requests")
+    .insert({ name_entered: name, email, phone });
+  if (error) {
+    if (error.code === "23505") return { ok: false, error: "requestDuplicate" };
+    return { ok: false, error: "error" };
+  }
+  return { ok: true };
+}
