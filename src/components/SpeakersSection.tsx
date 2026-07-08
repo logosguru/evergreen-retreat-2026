@@ -1,24 +1,6 @@
 import { useTranslations } from "next-intl";
 
-// 강사별 사진·영상 링크는 정적 데이터(번역 불필요), 문구는 messages/Speakers.
-const YT_LA = "https://www.youtube.com/watch?v=XJgze48E9ys"; // 제15회 LA 성경 구속사 세미나 제1강 (2025)
-const YT_DC = "https://www.youtube.com/watch?v=IOvX162bX08"; // 워싱턴 성경구속사 세미나 1강 (2026)
-
-function VideoLink({ href, label }: { href: string; label: string }) {
-  return (
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 ring-1 ring-slate-200 hover:bg-slate-200"
-    >
-      <span aria-hidden className="text-rose-600">
-        ▶
-      </span>
-      {label}
-    </a>
-  );
-}
+// 강사별 사진은 정적 데이터(번역 불필요), 문구는 messages/Speakers.
 
 export function SpeakersSection() {
   const t = useTranslations("Speakers");
@@ -44,10 +26,6 @@ export function SpeakersSection() {
           <p className="mt-4 whitespace-pre-line text-sm leading-6 text-slate-600">
             {t("s1Bio")}
           </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            <VideoLink href={YT_LA} label={t("s1LinkLA")} />
-            <VideoLink href={YT_DC} label={t("s1LinkDC")} />
-          </div>
         </div>
 
         {/* 박선희 선교사 */}
