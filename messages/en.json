@@ -74,11 +74,17 @@
     "checkName": "Check",
     "nameFoundTitle": "You are already registered",
     "nameFoundHint": "You can receive an edit link at the email below to view or update your registration.",
-    "nameFoundNoEmailHint": "Your registration was found, but there is no email on file to receive an edit link. To review or update your information, please contact Minister Joyce Kim.",
+    "nameFoundNoEmailHint": "If you cannot submit a request yourself, please contact Minister Joyce Kim.",
     "nameNotFoundTitle": "No registration found under this name",
     "nameNotFoundHint": "If you have not registered yet, please continue with the email step to register.",
     "goRegisterByEmail": "Register with Email",
-    "validationCheckName": "Please enter at least 2 characters."
+    "validationCheckName": "Please enter at least 2 characters.",
+    "requestEmailIntro": "Leave your email below and you can use the edit link once an administrator confirms it.",
+    "requestPhoneLabel": "Phone (optional)",
+    "requestPhoneHint": "Helps us verify it is you.",
+    "requestEmailSubmit": "Request email registration",
+    "requestEmailDone": "Request submitted. You can use the edit link once an administrator confirms it.",
+    "requestDuplicate": "A request is already pending. Please wait for administrator confirmation."
   },
   "Edit": {
     "title": "Edit my registration",
@@ -181,7 +187,11 @@
     "dashUnpaid": "Unpaid",
     "dashPaidHouseholds": "Paid households",
     "dashByDistrict": "By district",
-    "dashByRole": "By role"
+    "dashByRole": "By role",
+    "requestsTitle": "Email registration requests",
+    "requestsHint": "After verifying identity, enter the email on the attendee edit page and mark it processed.",
+    "requestProcessed": "Mark processed",
+    "dashEmailRequests": "Pending email requests"
   },
   "Fields": {
     "korean_name": "Korean name",

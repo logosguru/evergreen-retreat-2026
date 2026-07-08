@@ -74,11 +74,17 @@
     "checkName": "Verificar",
     "nameFoundTitle": "Ya está inscrito",
     "nameFoundHint": "Puede recibir un enlace de edición en el correo indicado abajo para ver o modificar su inscripción.",
-    "nameFoundNoEmailHint": "Se encontró su inscripción, pero no hay un correo registrado para recibir el enlace de edición. Para revisar o modificar su información, por favor contacte a la ministra Joyce Kim.",
+    "nameFoundNoEmailHint": "Si no puede enviar la solicitud usted mismo, por favor contacte a la ministra Joyce Kim.",
     "nameNotFoundTitle": "No se encontró ninguna inscripción con este nombre",
     "nameNotFoundHint": "Si aún no se ha inscrito, continúe con el paso de correo para registrarse.",
     "goRegisterByEmail": "Inscribirse con correo",
-    "validationCheckName": "Ingrese al menos 2 caracteres."
+    "validationCheckName": "Ingrese al menos 2 caracteres.",
+    "requestEmailIntro": "Deje su correo a continuación y podrá usar el enlace de edición una vez que un administrador lo confirme.",
+    "requestPhoneLabel": "Teléfono (opcional)",
+    "requestPhoneHint": "Nos ayuda a verificar su identidad.",
+    "requestEmailSubmit": "Solicitar registro de correo",
+    "requestEmailDone": "Solicitud enviada. Podrá usar el enlace de edición una vez que un administrador la confirme.",
+    "requestDuplicate": "Ya hay una solicitud pendiente. Por favor espere la confirmación del administrador."
   },
   "Edit": {
     "title": "Editar mi registro",
@@ -181,7 +187,11 @@
     "dashUnpaid": "No pagado",
     "dashPaidHouseholds": "Familias que pagaron",
     "dashByDistrict": "Por grupo celular",
-    "dashByRole": "Por cargo"
+    "dashByRole": "Por cargo",
+    "requestsTitle": "Solicitudes de registro de correo",
+    "requestsHint": "Tras verificar la identidad, ingrese el correo en la página de edición del asistente y márquela como procesada.",
+    "requestProcessed": "Marcar procesada",
+    "dashEmailRequests": "Solicitudes de correo pendientes"
   },
   "Fields": {
     "korean_name": "Nombre en coreano",
