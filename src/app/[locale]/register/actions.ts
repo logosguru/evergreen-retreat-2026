@@ -115,6 +115,15 @@ export async function checkName(nameRaw: string): Promise<CheckNameResult> {
     check_name: name,
   });
   if (error) return { ok: false, error: "error" };
-  const maskedEmails = (data ?? []) as string[];
-  return { ok: true, matched: maskedEmails.length > 0, maskedEmails };
+  // jsonb: matched(이름 일치 여부)와 masked_emails를 분리 — 이메일 없는
+  // 가구(import 데이터)도 '등록됨'으로 안내할 수 있게 한다.
+  const result = (data ?? {}) as {
+    matched?: boolean;
+    masked_emails?: string[];
+  };
+  return {
+    ok: true,
+    matched: !!result.matched,
+    maskedEmails: result.masked_emails ?? [],
+  };
 }

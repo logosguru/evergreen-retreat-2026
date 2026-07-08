@@ -279,24 +279,32 @@ export function RegistrationForm() {
                 <p className="text-base font-semibold text-amber-900">
                   {t("nameFoundTitle")}
                 </p>
-                <p className="mt-1 text-sm text-amber-800">
-                  {t("nameFoundHint")}
-                </p>
-                <ul className="mt-2 space-y-1">
-                  {nameResult.maskedEmails.map((m) => (
-                    <li key={m} className="font-mono text-sm text-amber-900">
-                      {m}
-                    </li>
-                  ))}
-                </ul>
-                <div className="mt-4">
-                  <Link
-                    href="/edit"
-                    className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
-                  >
-                    {t("goToEdit")}
-                  </Link>
-                </div>
+                {nameResult.maskedEmails.length > 0 ? (
+                  <>
+                    <p className="mt-1 text-sm text-amber-800">
+                      {t("nameFoundHint")}
+                    </p>
+                    <ul className="mt-2 space-y-1">
+                      {nameResult.maskedEmails.map((m) => (
+                        <li key={m} className="font-mono text-sm text-amber-900">
+                          {m}
+                        </li>
+                      ))}
+                    </ul>
+                    <div className="mt-4">
+                      <Link
+                        href="/edit"
+                        className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+                      >
+                        {t("goToEdit")}
+                      </Link>
+                    </div>
+                  </>
+                ) : (
+                  <p className="mt-1 text-sm text-amber-800">
+                    {t("nameFoundNoEmailHint")}
+                  </p>
+                )}
               </div>
             ) : nameResult ? (
               <div className="rounded-xl bg-slate-50 p-5 ring-1 ring-slate-200">

@@ -74,6 +74,7 @@
     "checkName": "확인하기",
     "nameFoundTitle": "이미 등록되어 있습니다",
     "nameFoundHint": "아래 이메일로 수정 링크를 받아 등록 내용을 확인·수정할 수 있습니다.",
+    "nameFoundNoEmailHint": "등록은 확인되었지만 수정 링크를 받을 이메일이 아직 등록되어 있지 않습니다. 정보 확인·수정은 등록 담당자(김효진 전도사)에게 문의해 주세요.",
     "nameNotFoundTitle": "이 이름으로 등록된 내역이 없습니다",
     "nameNotFoundHint": "아직 등록 전이라면 이메일 확인 후 새로 등록해 주세요.",
     "goRegisterByEmail": "이메일로 새로 등록하기",

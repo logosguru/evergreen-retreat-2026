@@ -74,6 +74,7 @@
     "checkName": "Check",
     "nameFoundTitle": "You are already registered",
     "nameFoundHint": "You can receive an edit link at the email below to view or update your registration.",
+    "nameFoundNoEmailHint": "Your registration was found, but there is no email on file to receive an edit link. To review or update your information, please contact Minister Joyce Kim.",
     "nameNotFoundTitle": "No registration found under this name",
     "nameNotFoundHint": "If you have not registered yet, please continue with the email step to register.",
     "goRegisterByEmail": "Register with Email",

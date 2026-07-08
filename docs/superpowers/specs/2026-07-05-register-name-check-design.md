@@ -149,6 +149,18 @@ phase `"email"` 화면 상단에 탭 2개를 추가한다: `checkTab` state (`"e
   흐름 회귀 없음.
 - tsc/lint/build, ko/en/es 키 파리티.
 
+## 추록 (2026-07-05, migration 0014) — '등록됨 + 이메일 없음' 3번째 상태
+
+프로덕션 스모크 테스트에서 발견: import된 가구(head email = null)는 이름이 일치해도 RPC가
+빈 배열을 반환 → UI가 "등록 내역 없음"으로 오안내 → 중복 등록 유발 위험.
+
+- `name_registered`를 **jsonb** 반환으로 변경(0014, drop 후 재생성):
+  `{ "matched": boolean, "masked_emails": text[] }` — matched(이름 일치)와 이메일을 분리.
+- `checkName`은 jsonb를 파싱해 기존 `CheckNameResult` 형태 그대로 반환(인터페이스 무변경).
+- UI: `matched && maskedEmails.length === 0`이면 amber 카드에 `nameFoundNoEmailHint`
+  ("등록 확인됨, 수정용 이메일 없음 → 등록 담당자(김효진 전도사) 문의") 표시, /edit 링크 없음.
+- i18n: `nameFoundNoEmailHint` ko/en/es 추가 (39키).
+
 ## 범위 밖 (후속)
 
 - 이름 열거 레이트리밋 — 정확 일치 + 마스킹 반환이라 위험 낮음, 교회 내부 대상. 후속.

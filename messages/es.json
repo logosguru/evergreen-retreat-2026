@@ -74,6 +74,7 @@
     "checkName": "Verificar",
     "nameFoundTitle": "Ya está inscrito",
     "nameFoundHint": "Puede recibir un enlace de edición en el correo indicado abajo para ver o modificar su inscripción.",
+    "nameFoundNoEmailHint": "Se encontró su inscripción, pero no hay un correo registrado para recibir el enlace de edición. Para revisar o modificar su información, por favor contacte a la ministra Joyce Kim.",
     "nameNotFoundTitle": "No se encontró ninguna inscripción con este nombre",
     "nameNotFoundHint": "Si aún no se ha inscrito, continúe con el paso de correo para registrarse.",
     "goRegisterByEmail": "Inscribirse con correo",
