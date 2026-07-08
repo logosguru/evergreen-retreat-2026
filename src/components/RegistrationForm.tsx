@@ -10,6 +10,7 @@ import {
   insertRegistration,
   checkEmail,
   checkName,
+  requestEmail,
   type PersonInput,
   type RegistrationPayload,
 } from "@/app/[locale]/register/actions";
@@ -54,6 +55,12 @@ export function RegistrationForm() {
     maskedEmails: string[];
   } | null>(null);
 
+  // 이메일 없음 카드: 본인 이메일 신청
+  const [reqEmail, setReqEmail] = useState("");
+  const [reqPhone, setReqPhone] = useState("");
+  const [reqError, setReqError] = useState<string | null>(null);
+  const [reqDone, setReqDone] = useState(false);
+
   function resetCaptcha() {
     setToken(null);
     setCaptchaKey((k) => k + 1);
@@ -88,6 +95,21 @@ export function RegistrationForm() {
         return;
       }
       setNameResult({ matched: res.matched, maskedEmails: res.maskedEmails });
+    });
+  }
+
+  function submitRequest(e: React.FormEvent) {
+    e.preventDefault();
+    setReqError(null);
+    const submittedName = nameInput;
+    startCheck(async () => {
+      const res = await requestEmail(submittedName, reqEmail, reqPhone);
+      if (nameInput !== submittedName) return; // 이름이 바뀌었으면 stale 결과 무시
+      if (!res.ok) {
+        setReqError(res.error);
+        return;
+      }
+      setReqDone(true);
     });
   }
 
@@ -259,6 +281,10 @@ export function RegistrationForm() {
                   setNameInput(e.target.value);
                   setNameResult(null);
                   setNameError(null);
+                  setReqError(null);
+                  setReqDone(false);
+                  setReqEmail("");
+                  setReqPhone("");
                 }}
                 className={inputClass}
                 placeholder="김철수 / John Kim"
@@ -300,10 +326,57 @@ export function RegistrationForm() {
                       </Link>
                     </div>
                   </>
-                ) : (
+                ) : reqDone ? (
                   <p className="mt-1 text-sm text-amber-800">
-                    {t("nameFoundNoEmailHint")}
+                    {t("requestEmailDone")}
                   </p>
+                ) : (
+                  <div className="mt-2 space-y-3">
+                    <p className="text-sm text-amber-800">
+                      {t("requestEmailIntro")}
+                    </p>
+                    <div className="space-y-2">
+                      <input
+                        type="email"
+                        required
+                        value={reqEmail}
+                        onChange={(e) => {
+                          setReqEmail(e.target.value);
+                          setReqError(null);
+                        }}
+                        className={inputClass}
+                        placeholder="you@example.com"
+                        aria-label={tf("email")}
+                      />
+                      <input
+                        type="tel"
+                        value={reqPhone}
+                        onChange={(e) => setReqPhone(e.target.value)}
+                        className={inputClass}
+                        placeholder={t("requestPhoneLabel")}
+                        aria-label={t("requestPhoneLabel")}
+                      />
+                      <p className="text-xs text-amber-700">
+                        {t("requestPhoneHint")}
+                      </p>
+                    </div>
+                    {reqError && (
+                      <p className="rounded-md bg-rose-50 px-4 py-3 text-sm text-rose-700 ring-1 ring-rose-200">
+                        {t(reqError)}
+                      </p>
+                    )}
+                    <button
+                      type="button"
+                      onClick={submitRequest}
+                      disabled={checking}
+                      className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
+                    >
+                      {checking ? tc("submitting") : t("requestEmailSubmit")}
+                    </button>
+                    <p className="text-xs text-amber-700">
+                      {t("nameFoundNoEmailHint")}
+                    </p>
+                  </div>
                 )}
               </div>
             ) : nameResult ? (
