@@ -268,3 +268,17 @@ export async function adminDeleteAttendee(
   if (error) return { ok: false, error: "deleteError" };
   return { ok: true };
 }
+
+// 이메일 신청 처리 완료 (관리자 전용). 관리자가 본인 확인 후 참석자 편집에서
+// 이메일을 입력하고 이 액션으로 신청을 마감한다.
+export async function setEmailRequestProcessed(
+  id: string,
+): Promise<{ ok: boolean }> {
+  const supabase = await createClient();
+  if (!(await isAdminSession(supabase))) return { ok: false };
+  const { error } = await supabase
+    .from("email_requests")
+    .update({ processed: true })
+    .eq("id", id);
+  return { ok: !error };
+}
