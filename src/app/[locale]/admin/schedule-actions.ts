@@ -19,6 +19,7 @@ export async function upsertScheduleItem(input: {
   location_en?: string | null;
   location_es?: string | null;
   sort_order?: number;
+  by_language?: boolean;
 }): Promise<Result> {
   const supabase = await createClient();
   const row = {
@@ -34,6 +35,7 @@ export async function upsertScheduleItem(input: {
     location_en: input.location_en?.trim() || null,
     location_es: input.location_es?.trim() || null,
     sort_order: input.sort_order ?? 0,
+    by_language: input.by_language ?? false,
   };
   const { error } = input.id
     ? await supabase.from("schedule_items").update(row).eq("id", input.id)

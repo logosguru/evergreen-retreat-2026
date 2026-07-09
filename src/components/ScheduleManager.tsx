@@ -48,6 +48,7 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
   const [editId, setEditId] = useState<string | null>(null);
   const [day, setDay] = useState(RETREAT_DAYS[0]);
   const [time, setTime] = useState("09:00");
+  const [byLanguage, setByLanguage] = useState(false);
   const [fields, setFields] = useState<TextFields>(EMPTY);
 
   const set = (k: TextKey) => (e: React.ChangeEvent<HTMLInputElement>) =>
@@ -57,6 +58,7 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
     setEditId(null);
     setDay(RETREAT_DAYS[0]);
     setTime("09:00");
+    setByLanguage(false);
     setFields(EMPTY);
   }
 
@@ -67,6 +69,7 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
         id: editId ?? undefined,
         day,
         start_time: time,
+        by_language: byLanguage,
         ...fields,
       });
       reset();
@@ -78,6 +81,7 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
     setEditId(it.id);
     setDay(it.day);
     setTime(formatTime(it.start_time));
+    setByLanguage(it.by_language);
     setFields({
       title: it.title,
       title_en: it.title_en ?? "",
@@ -113,6 +117,11 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
                   <span className="font-medium text-slate-800">
                     {formatTime(it.start_time)} · {it.title}
                   </span>
+                  {it.by_language && (
+                    <span className="ml-2 inline-flex rounded-full bg-indigo-100 px-2 py-0.5 text-xs font-medium text-indigo-700">
+                      {t("byLanguageBadge")}
+                    </span>
+                  )}
                   {it.location && (
                     <span className="text-slate-400"> @{it.location}</span>
                   )}
@@ -168,6 +177,15 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
               value={time}
               onChange={(e) => setTime(e.target.value)}
             />
+            <label className="flex items-center gap-1.5 text-sm text-slate-600">
+              <input
+                type="checkbox"
+                checked={byLanguage}
+                onChange={(e) => setByLanguage(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+              />
+              {t("byLanguageLabel")}
+            </label>
           </div>
           {LANGS.map(({ suffix, label }) => (
             <div
