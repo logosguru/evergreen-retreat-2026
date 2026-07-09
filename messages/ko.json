@@ -304,7 +304,9 @@
     "save": "저장",
     "cancel": "취소",
     "edit": "수정",
-    "delete": "삭제"
+    "delete": "삭제",
+    "byLanguageBadge": "언어별 진행",
+    "byLanguageLabel": "언어별 진행"
   },
   "Speakers": {
     "title": "강사 소개",

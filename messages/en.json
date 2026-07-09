@@ -304,7 +304,9 @@
     "save": "Save",
     "cancel": "Cancel",
     "edit": "Edit",
-    "delete": "Delete"
+    "delete": "Delete",
+    "byLanguageBadge": "By Language",
+    "byLanguageLabel": "By language"
   },
   "Speakers": {
     "title": "Speakers",

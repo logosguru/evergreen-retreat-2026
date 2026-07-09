@@ -304,7 +304,9 @@
     "save": "Guardar",
     "cancel": "Cancelar",
     "edit": "Editar",
-    "delete": "Eliminar"
+    "delete": "Eliminar",
+    "byLanguageBadge": "Por idioma",
+    "byLanguageLabel": "Por idioma"
   },
   "Speakers": {
     "title": "Predicadores",
