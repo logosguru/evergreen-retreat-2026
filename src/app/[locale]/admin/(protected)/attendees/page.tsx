@@ -36,7 +36,7 @@ export default async function AdminAttendeesPage({
   const t = await getTranslations("Admin");
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
+    <div className="px-4 py-10 sm:px-6 lg:px-8">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
         <Link

@@ -6,7 +6,7 @@ import {
   useSyncExternalStore,
   useTransition,
 } from "react";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
 import { setPaid, setLanguage } from "@/app/[locale]/admin/actions";
@@ -80,6 +80,11 @@ export function AdminAttendeeTable({
   const tf = useTranslations("Fee");
   const trm = useTranslations("Rooms");
   const tl = useTranslations("Language");
+  const locale = useLocale();
+  const dateFmt = new Intl.DateTimeFormat(
+    locale === "en" ? "en-US" : locale === "es" ? "es-ES" : "ko-KR",
+    { year: "numeric", month: "short", day: "numeric" },
+  );
   const router = useRouter();
   const [, start] = useTransition();
   const [busy, setBusy] = useState<string | null>(null);
@@ -349,6 +354,12 @@ export function AdminAttendeeTable({
               <th className="px-3 py-2 text-left font-medium">
                 {t("colPayment")}
               </th>
+              <SortTh
+                k="registered"
+                label={t("colRegistered")}
+                sort={sort}
+                onToggle={toggleSort}
+              />
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
@@ -369,6 +380,9 @@ export function AdminAttendeeTable({
                   </td>
                   {personCells(a)}
                   <td className="px-3 py-2">{paidButton(headId, headPaid)}</td>
+                  <td className="whitespace-nowrap px-3 py-2 text-slate-500">
+                    {dateFmt.format(new Date(a.created_at))}
+                  </td>
                 </tr>
               );
             })}

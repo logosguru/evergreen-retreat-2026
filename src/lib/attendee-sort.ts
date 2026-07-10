@@ -2,7 +2,12 @@ import { LANGUAGES } from "./types";
 import type { AttendeeWithRoom } from "./fees";
 import { nameKey } from "./names";
 
-export type SortKey = "household" | "attendance" | "room" | "language";
+export type SortKey =
+  | "household"
+  | "attendance"
+  | "room"
+  | "language"
+  | "registered";
 export interface SortState {
   key: SortKey | null;
   dir: "asc" | "desc";
@@ -62,6 +67,9 @@ function compareKey(
       (LANG_INDEX[a.language] ?? 99) - (LANG_INDEX[b.language] ?? 99) ||
       nm(a).localeCompare(nm(b))
     );
+  }
+  if (key === "registered") {
+    return a.created_at.localeCompare(b.created_at) || nm(a).localeCompare(nm(b));
   }
   // room: 방 타입 이름 → 호실 라벨 → 이름
   const ta = a.rooms?.room_types?.name ?? null;

@@ -124,6 +124,7 @@
     "colRoom": "Room",
     "colLanguage": "Language",
     "colPayment": "Payment",
+    "colRegistered": "Registered",
     "markPaid": "Mark paid",
     "markUnpaid": "Mark unpaid",
     "householder": "Head",

@@ -124,6 +124,7 @@
     "colRoom": "방",
     "colLanguage": "언어",
     "colPayment": "납부",
+    "colRegistered": "등록일",
     "markPaid": "납부 처리",
     "markUnpaid": "미납 처리",
     "householder": "가구주",
