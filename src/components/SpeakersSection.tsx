@@ -39,9 +39,18 @@ export function SpeakersSection() {
                   {t(sp.nameKey)}
                 </p>
                 <p className="text-center text-sm text-moss">{t("church")}</p>
-                <p className="mt-5 whitespace-pre-line text-sm leading-6 text-bark-soft">
-                  {t(sp.bioKey)}
-                </p>
+                <ul className="mt-5 space-y-1.5 text-sm leading-6 text-bark-soft">
+                  {t(sp.bioKey)
+                    .split("\n")
+                    .map((line, idx) => (
+                      <li key={idx} className="flex gap-2">
+                        <span aria-hidden className="select-none text-moss">
+                          •
+                        </span>
+                        <span>{line.replace(/^•\s*/, "")}</span>
+                      </li>
+                    ))}
+                </ul>
               </article>
             </Reveal>
           ))}
