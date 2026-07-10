@@ -43,3 +43,7 @@ next-env.d.ts
 
 # form import 산출물 (개인정보 — 커밋 금지)
 scripts/form_import/out/
+
+# 로컬 도구 산출물 (커밋 금지)
+.playwright-mcp/
+scratchpad/

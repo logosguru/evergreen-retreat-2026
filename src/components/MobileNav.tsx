@@ -32,7 +32,7 @@ export function MobileNav({
         onClick={() => setOpen((v) => !v)}
         aria-label="Menu"
         aria-expanded={open}
-        className="flex h-9 w-9 items-center justify-center rounded-md text-emerald-50 hover:bg-white/10"
+        className="flex h-9 w-9 items-center justify-center rounded-md text-ivory hover:bg-white/10"
       >
         <svg
           width="22"
@@ -47,13 +47,13 @@ export function MobileNav({
         </svg>
       </button>
       {open && (
-        <div className="absolute right-0 z-20 mt-2 w-52 rounded-lg bg-white py-2 shadow-lg ring-1 ring-slate-200">
+        <div className="absolute right-0 z-20 mt-2 w-52 rounded-xl bg-cream py-2 shadow-lg ring-1 ring-line">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               onClick={() => setOpen(false)}
-              className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+              className="block px-4 py-2 text-sm text-bark hover:bg-mist"
             >
               {l.label}
             </Link>
@@ -61,14 +61,14 @@ export function MobileNav({
           <Link
             href="/register"
             onClick={() => setOpen(false)}
-            className="block px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-slate-50"
+            className="block px-4 py-2 text-sm font-semibold text-moss hover:bg-mist"
           >
             {registerLabel}
           </Link>
           <Link
             href="/edit"
             onClick={() => setOpen(false)}
-            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+            className="block px-4 py-2 text-sm text-bark hover:bg-mist"
           >
             {editLabel}
           </Link>

@@ -6,7 +6,7 @@ import { TurnstileWidget } from "./TurnstileWidget";
 import { requestEditMagicLink } from "@/app/[locale]/edit/actions";
 
 const inputClass =
-  "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500";
+  "mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm focus:border-moss focus:outline-none focus:ring-1 focus:ring-moss";
 
 export function EditRequestForm() {
   const t = useTranslations("Edit");
@@ -43,9 +43,9 @@ export function EditRequestForm() {
 
   if (sent) {
     return (
-      <div className="rounded-xl bg-emerald-50 p-6 ring-1 ring-emerald-200">
-        <p className="text-sm font-medium text-emerald-800">{t("linkSent")}</p>
-        <p className="mt-2 text-xs text-emerald-700">{t("linkSentNote")}</p>
+      <div className="rounded-2xl bg-moss/10 p-6 ring-1 ring-moss/30">
+        <p className="text-sm font-semibold text-pine">{t("linkSent")}</p>
+        <p className="mt-2 text-xs text-bark-soft">{t("linkSentNote")}</p>
       </div>
     );
   }
@@ -53,7 +53,7 @@ export function EditRequestForm() {
   return (
     <form onSubmit={submit} className="space-y-4">
       <div>
-        <label className="block text-sm font-medium text-slate-700">
+        <label className="block text-sm font-medium text-bark">
           {t("emailLabel")}
         </label>
         <input
@@ -79,7 +79,7 @@ export function EditRequestForm() {
       <button
         type="submit"
         disabled={pending || (needsCaptcha && !token)}
-        className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
+        className="inline-flex items-center justify-center rounded-full bg-pine px-6 py-3 text-sm font-semibold text-ivory shadow-sm transition hover:bg-pine-deep disabled:opacity-60"
       >
         {pending ? t("sending") : t("sendLink")}
       </button>

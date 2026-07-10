@@ -17,19 +17,19 @@ export function SiteHeader() {
   ] as const;
 
   return (
-    <header className="bg-emerald-800">
-      <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
+    <header className="sticky top-0 z-50 border-b border-gold/20 bg-pine/90 backdrop-blur supports-[backdrop-filter]:bg-pine/75">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3 sm:px-8">
         <Link href="/" className="flex items-center" aria-label="Evergreen Church">
-          <Image src={logo} alt="Evergreen Church" priority className="h-8 w-auto" />
+          <Image src={logo} alt="Evergreen Church" priority className="h-9 w-auto" />
         </Link>
 
         {/* 데스크톱 내비 */}
-        <nav className="hidden items-center gap-4 text-sm sm:flex">
+        <nav className="hidden items-center gap-7 text-sm sm:flex">
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className="text-emerald-50/90 hover:text-white"
+              className="font-medium text-ivory/85 transition hover:text-gold-soft"
             >
               {l.label}
             </Link>
@@ -38,7 +38,7 @@ export function SiteHeader() {
           <LocaleSwitcher />
         </nav>
 
-        {/* 모바일 내비 (LocaleSwitcher는 바에 유지, 링크는 햄버거 패널) */}
+        {/* 모바일 내비 */}
         <div className="flex items-center gap-2 sm:hidden">
           <LocaleSwitcher />
           <MobileNav

@@ -12,8 +12,8 @@ import {
 import type { PersonInput } from "@/app/[locale]/register/actions";
 
 const inputClass =
-  "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500";
-const labelClass = "block text-sm font-medium text-slate-700";
+  "mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm focus:border-moss focus:outline-none focus:ring-1 focus:ring-moss";
+const labelClass = "block text-sm font-medium text-bark";
 
 export function PersonFields({
   value,
@@ -56,7 +56,7 @@ export function PersonFields({
         />
       </div>
 
-      <p className="-mt-2 text-xs text-slate-500 sm:col-span-2">{t("nameHint")}</p>
+      <p className="-mt-2 text-xs text-bark-soft sm:col-span-2">{t("nameHint")}</p>
 
       <div>
         <label className={labelClass}>{t("district")}</label>
@@ -123,7 +123,7 @@ export function PersonFields({
       )}
 
       <div className="sm:col-span-2">
-        <label className="flex items-center gap-2 text-sm text-slate-700">
+        <label className="flex items-center gap-2 text-sm text-bark">
           <input
             type="checkbox"
             checked={!!value.is_under_6}
@@ -174,7 +174,7 @@ export function PersonFields({
               className={inputClass}
             />
           </div>
-          <p className="-mt-2 text-xs text-slate-500 sm:col-span-2">
+          <p className="-mt-2 text-xs text-bark-soft sm:col-span-2">
             {t("partialDateHint")}
           </p>
         </>

@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { fraunces, myeongjo, pretendard } from "../fonts";
 import "../globals.css";
 
 export function generateStaticParams() {
@@ -39,7 +40,7 @@ export default async function LocaleLayout({
     <html
       lang={locale}
       data-scroll-behavior="smooth"
-      className="h-full antialiased"
+      className={`h-full antialiased ${pretendard.variable} ${fraunces.variable} ${myeongjo.variable}`}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground">
         <NextIntlClientProvider>

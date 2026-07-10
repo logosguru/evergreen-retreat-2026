@@ -37,10 +37,11 @@ export default async function ManagePage({
   const t = await getTranslations("Edit");
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-2xl font-bold text-slate-900">
+    <div className="mx-auto max-w-2xl px-6 py-16 sm:px-8">
+      <h1 className="font-display-ko text-3xl font-bold text-pine sm:text-4xl">
         {t("yourRegistration")}
       </h1>
+      <div className="mb-8 mt-4 h-px w-14 bg-gold" />
       {fee && (
         <HouseholdFeeCard
           total={fee.total}
