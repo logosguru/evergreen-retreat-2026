@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import type { ScheduleItem } from "@/lib/types";
@@ -52,6 +52,8 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
   const [fields, setFields] = useState<TextFields>(EMPTY);
   const [owner, setOwner] = useState("");
   const [adminNote, setAdminNote] = useState("");
+  const formRef = useRef<HTMLElement>(null);
+  const firstFieldRef = useRef<HTMLInputElement>(null);
 
   const set = (k: TextKey) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setFields((f) => ({ ...f, [k]: e.target.value }));
@@ -100,6 +102,12 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
       description: it.description ?? "",
       description_en: it.description_en ?? "",
       description_es: it.description_es ?? "",
+    });
+    // 리스트가 길 때 폼이 화면 밖에 있으면 로드 여부를 알기 어려우므로
+    // 폼으로 스크롤 + 첫 입력란 포커스 (스크롤은 smooth가 처리하도록 focus는 preventScroll).
+    requestAnimationFrame(() => {
+      formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      firstFieldRef.current?.focus({ preventScroll: true });
     });
   }
 
@@ -176,7 +184,7 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
         </section>
       ))}
 
-      <section className="rounded-lg p-4 ring-1 ring-slate-200">
+      <section ref={formRef} className="scroll-mt-4 rounded-lg p-4 ring-1 ring-slate-200">
         <h2 className="mb-3 text-base font-semibold text-slate-900">
           {editId ? t("editItem") : t("addItem")}
         </h2>
@@ -218,6 +226,7 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
                 {label}
               </span>
               <input
+                ref={suffix === "" ? firstFieldRef : undefined}
                 className={input}
                 placeholder={t("titleField")}
                 value={fields[`title${suffix}`]}
