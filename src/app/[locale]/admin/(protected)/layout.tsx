@@ -44,7 +44,7 @@ export default async function ProtectedAdminLayout({
   const tn = await getTranslations("Admin");
   return (
     <>
-      <nav className="border-b border-slate-200 bg-white">
+      <nav className="border-b border-slate-200 bg-white print:hidden">
         <div className="mx-auto flex max-w-5xl gap-4 px-4 py-2 text-sm">
           <Link href="/admin" className="text-slate-600 hover:text-slate-900">
             {tn("navDashboard")}

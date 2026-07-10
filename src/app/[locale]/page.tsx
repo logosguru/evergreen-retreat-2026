@@ -18,9 +18,12 @@ export default async function HomePage({
 
   const supabase = await createClient();
   const [scheduleRes, faqRes] = await Promise.all([
+    // 공개엔 owner/admin_note(관리자 전용) 미노출 — 명시적 컬럼만 선택
     supabase
       .from("schedule_items")
-      .select("*")
+      .select(
+        "id, day, start_time, title, title_en, title_es, description, description_en, description_es, location, location_en, location_es, sort_order, by_language, created_at",
+      )
       .order("day")
       .order("start_time")
       .order("sort_order"),

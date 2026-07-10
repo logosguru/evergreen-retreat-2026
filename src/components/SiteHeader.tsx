@@ -17,7 +17,7 @@ export function SiteHeader() {
   ] as const;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-gold/20 bg-pine/90 backdrop-blur supports-[backdrop-filter]:bg-pine/75">
+    <header className="sticky top-0 z-50 border-b border-gold/20 bg-pine/90 backdrop-blur supports-[backdrop-filter]:bg-pine/75 print:hidden">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-3 sm:px-8">
         <Link href="/" className="flex items-center" aria-label="Evergreen Church">
           <Image src={logo} alt="Evergreen Church" priority className="h-9 w-auto" />

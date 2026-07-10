@@ -18,6 +18,8 @@ export async function upsertScheduleItem(input: {
   location?: string | null;
   location_en?: string | null;
   location_es?: string | null;
+  owner?: string | null;
+  admin_note?: string | null;
   sort_order?: number;
   by_language?: boolean;
 }): Promise<Result> {
@@ -34,6 +36,8 @@ export async function upsertScheduleItem(input: {
     location: input.location?.trim() || null,
     location_en: input.location_en?.trim() || null,
     location_es: input.location_es?.trim() || null,
+    owner: input.owner?.trim() || null,
+    admin_note: input.admin_note?.trim() || null,
     sort_order: input.sort_order ?? 0,
     by_language: input.by_language ?? false,
   };

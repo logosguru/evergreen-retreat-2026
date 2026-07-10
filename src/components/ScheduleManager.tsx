@@ -50,6 +50,8 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
   const [time, setTime] = useState("09:00");
   const [byLanguage, setByLanguage] = useState(false);
   const [fields, setFields] = useState<TextFields>(EMPTY);
+  const [owner, setOwner] = useState("");
+  const [adminNote, setAdminNote] = useState("");
 
   const set = (k: TextKey) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setFields((f) => ({ ...f, [k]: e.target.value }));
@@ -60,6 +62,8 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
     setTime("09:00");
     setByLanguage(false);
     setFields(EMPTY);
+    setOwner("");
+    setAdminNote("");
   }
 
   function submit() {
@@ -70,6 +74,8 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
         day,
         start_time: time,
         by_language: byLanguage,
+        owner,
+        admin_note: adminNote,
         ...fields,
       });
       reset();
@@ -82,6 +88,8 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
     setDay(it.day);
     setTime(formatTime(it.start_time));
     setByLanguage(it.by_language);
+    setOwner(it.owner ?? "");
+    setAdminNote(it.admin_note ?? "");
     setFields({
       title: it.title,
       title_en: it.title_en ?? "",
@@ -127,6 +135,20 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
                   )}
                   {it.description && (
                     <p className="text-slate-500">{it.description}</p>
+                  )}
+                  {(it.owner || it.admin_note) && (
+                    <p className="mt-0.5 text-xs text-slate-400">
+                      {it.owner && (
+                        <span className="mr-2 inline-flex rounded bg-slate-100 px-1.5 py-0.5 font-medium text-slate-600">
+                          {t("ownerField")}: {it.owner}
+                        </span>
+                      )}
+                      {it.admin_note && (
+                        <span className="text-slate-500">
+                          {t("noteField")}: {it.admin_note}
+                        </span>
+                      )}
+                    </p>
                   )}
                 </div>
                 <div className="flex shrink-0 gap-2">
@@ -215,6 +237,23 @@ export function ScheduleManager({ items }: { items: ScheduleItem[] }) {
               />
             </div>
           ))}
+          <div className="grid gap-2 sm:grid-cols-[4.5rem_1fr_1.5fr] sm:items-center">
+            <span className="text-xs font-medium text-slate-400">
+              {t("adminOnly")}
+            </span>
+            <input
+              className={input}
+              placeholder={t("ownerField")}
+              value={owner}
+              onChange={(e) => setOwner(e.target.value)}
+            />
+            <input
+              className={input}
+              placeholder={t("noteField")}
+              value={adminNote}
+              onChange={(e) => setAdminNote(e.target.value)}
+            />
+          </div>
           <div className="flex gap-2">
             <button
               onClick={submit}

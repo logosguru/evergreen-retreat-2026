@@ -115,6 +115,8 @@ export interface ScheduleItem {
   location: string | null;
   location_en: string | null;
   location_es: string | null;
+  owner: string | null; // 담당자 (관리자 전용, 공개 미노출)
+  admin_note: string | null; // 비고 (관리자 전용, 공개 미노출)
   sort_order: number;
   by_language: boolean;
   created_at: string;
