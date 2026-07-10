@@ -40,7 +40,7 @@ export function RegisterMenu() {
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="menu"
         aria-expanded={open}
-        className="inline-flex items-center gap-1 rounded-md bg-white/15 px-3 py-1.5 text-sm font-medium text-white hover:bg-white/25"
+        className="inline-flex items-center gap-1 rounded-full bg-gold px-4 py-1.5 text-sm font-semibold text-pine-deep transition hover:bg-gold-soft"
       >
         {t("register")}
         <svg
@@ -60,19 +60,19 @@ export function RegisterMenu() {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 z-20 mt-2 w-44 rounded-lg bg-white py-2 shadow-lg ring-1 ring-slate-200"
+          className="absolute right-0 z-20 mt-2 w-44 rounded-xl bg-cream py-2 shadow-lg ring-1 ring-line"
         >
           <Link
             href="/register"
             role="menuitem"
-            className="block px-4 py-2 text-sm font-medium text-emerald-700 hover:bg-slate-50"
+            className="block px-4 py-2 text-sm font-semibold text-moss hover:bg-mist"
           >
             {t("registerDo")}
           </Link>
           <Link
             href="/edit"
             role="menuitem"
-            className="block px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
+            className="block px-4 py-2 text-sm text-bark hover:bg-mist"
           >
             {t("edit")}
           </Link>

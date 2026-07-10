@@ -14,9 +14,12 @@ export default function RegisterPage({
   const t = useTranslations("Register");
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10">
-      <h1 className="text-2xl font-bold text-slate-900">{t("title")}</h1>
-      <p className="mt-2 text-sm text-slate-600">{t("subtitle")}</p>
+    <div className="mx-auto max-w-2xl px-6 py-16 sm:px-8">
+      <h1 className="font-display-ko text-3xl font-bold text-pine sm:text-4xl">
+        {t("title")}
+      </h1>
+      <div className="mt-4 h-px w-14 bg-gold" />
+      <p className="mt-4 text-sm leading-relaxed text-bark-soft">{t("subtitle")}</p>
       <div className="mt-8">
         <RegistrationForm />
       </div>

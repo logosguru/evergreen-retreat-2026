@@ -15,13 +15,17 @@ import {
   type RegistrationPayload,
 } from "@/app/[locale]/register/actions";
 
-const labelClass = "block text-sm font-medium text-slate-700";
+const labelClass = "block text-sm font-medium text-bark";
 const inputClass =
-  "mt-1 block w-full rounded-md border border-slate-300 px-3 py-2 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500";
+  "mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm focus:border-moss focus:outline-none focus:ring-1 focus:ring-moss";
 const tabActiveClass =
-  "flex-1 rounded-md bg-white px-3 py-2 text-center font-semibold text-emerald-700 shadow-sm";
+  "flex-1 rounded-md bg-white px-3 py-2 text-center font-semibold text-pine shadow-sm";
 const tabIdleClass =
-  "flex-1 rounded-md px-3 py-2 text-center text-slate-500 hover:text-slate-700";
+  "flex-1 rounded-md px-3 py-2 text-center text-bark-soft hover:text-pine";
+const btnPrimary =
+  "inline-flex items-center justify-center rounded-full bg-pine px-6 py-3 text-base font-semibold text-ivory shadow-sm transition hover:bg-pine-deep disabled:opacity-60";
+const btnPrimarySm =
+  "inline-flex items-center justify-center rounded-full bg-pine px-5 py-2.5 text-sm font-semibold text-ivory transition hover:bg-pine-deep disabled:opacity-60";
 
 export function RegistrationForm() {
   const t = useTranslations("Register");
@@ -153,9 +157,11 @@ export function RegistrationForm() {
 
   if (done) {
     return (
-      <div className="rounded-xl bg-emerald-50 p-6 ring-1 ring-emerald-200">
-        <p className="text-lg font-semibold text-emerald-800">{t("success")}</p>
-        <p className="mt-2 text-sm text-emerald-700">{t("successEditHint")}</p>
+      <div className="rounded-2xl bg-moss/10 p-6 ring-1 ring-moss/30">
+        <p className="font-display-ko text-lg font-bold text-pine">
+          {t("success")}
+        </p>
+        <p className="mt-2 text-sm text-bark-soft">{t("successEditHint")}</p>
       </div>
     );
   }
@@ -164,7 +170,7 @@ export function RegistrationForm() {
   if (phase === "email") {
     return (
       <div className="space-y-4">
-        <div role="tablist" className="flex rounded-lg bg-slate-100 p-1 text-sm">
+        <div role="tablist" className="flex rounded-lg bg-mist p-1 text-sm">
           <button
             type="button"
             role="tab"
@@ -235,7 +241,7 @@ export function RegistrationForm() {
                 <div className="mt-4 flex flex-wrap items-center gap-3">
                   <Link
                     href="/edit"
-                    className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+                    className={btnPrimarySm}
                   >
                     {t("goToEdit")}
                   </Link>
@@ -245,7 +251,7 @@ export function RegistrationForm() {
                       setRegistered(false);
                       setEmail("");
                     }}
-                    className="text-sm font-medium text-slate-500 hover:text-slate-700"
+                    className="text-sm font-medium text-bark-soft hover:text-pine"
                   >
                     {t("useAnotherEmail")}
                   </button>
@@ -255,7 +261,7 @@ export function RegistrationForm() {
               <button
                 type="submit"
                 disabled={checking}
-                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
+                className={btnPrimary}
               >
                 {checking ? t("checking") : t("next")}
               </button>
@@ -320,7 +326,7 @@ export function RegistrationForm() {
                     <div className="mt-4">
                       <Link
                         href="/edit"
-                        className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+                        className={btnPrimarySm}
                       >
                         {t("goToEdit")}
                       </Link>
@@ -369,7 +375,7 @@ export function RegistrationForm() {
                       type="button"
                       onClick={submitRequest}
                       disabled={checking}
-                      className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700 disabled:opacity-60"
+                      className={btnPrimarySm}
                     >
                       {checking ? tc("submitting") : t("requestEmailSubmit")}
                     </button>
@@ -380,11 +386,11 @@ export function RegistrationForm() {
                 )}
               </div>
             ) : nameResult ? (
-              <div className="rounded-xl bg-slate-50 p-5 ring-1 ring-slate-200">
-                <p className="text-base font-semibold text-slate-800">
+              <div className="rounded-2xl bg-mist p-5 ring-1 ring-line">
+                <p className="text-base font-semibold text-pine">
                   {t("nameNotFoundTitle")}
                 </p>
-                <p className="mt-1 text-sm text-slate-600">
+                <p className="mt-1 text-sm text-bark-soft">
                   {t("nameNotFoundHint")}
                 </p>
                 <button
@@ -399,7 +405,7 @@ export function RegistrationForm() {
               <button
                 type="submit"
                 disabled={checking}
-                className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
+                className={btnPrimary}
               >
                 {checking ? t("checking") : t("checkName")}
               </button>
@@ -414,10 +420,10 @@ export function RegistrationForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
       {/* 확인된 이메일 (읽기전용) */}
-      <div className="flex items-center justify-between rounded-lg bg-slate-50 px-4 py-3 ring-1 ring-slate-200">
+      <div className="flex items-center justify-between rounded-lg bg-mist px-4 py-3 ring-1 ring-line">
         <div>
-          <p className="text-xs text-slate-500">{t("emailReadonlyNote")}</p>
-          <p className="text-sm font-medium text-slate-800">{email}</p>
+          <p className="text-xs text-bark-soft">{t("emailReadonlyNote")}</p>
+          <p className="text-sm font-medium text-bark">{email}</p>
         </div>
         <button
           type="button"
@@ -425,7 +431,7 @@ export function RegistrationForm() {
             setPhase("email");
             resetCaptcha();
           }}
-          className="text-sm font-medium text-emerald-700 hover:text-emerald-800"
+          className="text-sm font-medium text-moss hover:text-pine"
         >
           {t("changeEmail")}
         </button>
@@ -457,8 +463,8 @@ export function RegistrationForm() {
       </fieldset>
 
       {/* 가구주 / 개인 */}
-      <section className="rounded-xl bg-white p-5 ring-1 ring-slate-200">
-        <h2 className="mb-4 text-base font-semibold text-slate-900">
+      <section className="rounded-2xl bg-white/70 p-5 ring-1 ring-line">
+        <h2 className="mb-4 text-base font-semibold text-pine">
           {mode === "household" ? t("householderSection") : t("modeIndividual")}
         </h2>
         <PersonFields
@@ -472,16 +478,16 @@ export function RegistrationForm() {
       {/* 가족 구성원 (household 모드) */}
       {mode === "household" && (
         <section className="space-y-4">
-          <h2 className="text-base font-semibold text-slate-900">
+          <h2 className="text-base font-semibold text-pine">
             {t("familySection")}
           </h2>
           {members.map((m, i) => (
             <div
               key={i}
-              className="rounded-xl bg-white p-5 ring-1 ring-slate-200"
+              className="rounded-2xl bg-white/70 p-5 ring-1 ring-line"
             >
               <div className="mb-3 flex items-center justify-between">
-                <span className="text-sm font-medium text-slate-500">
+                <span className="text-sm font-medium text-bark-soft">
                   #{i + 1}
                 </span>
                 <button
@@ -502,7 +508,7 @@ export function RegistrationForm() {
           <button
             type="button"
             onClick={addMember}
-            className="rounded-lg border border-dashed border-slate-300 px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-50"
+            className="rounded-lg border border-dashed border-moss/40 px-4 py-2 text-sm font-medium text-moss hover:bg-mist"
           >
             + {t("addMember")}
           </button>
@@ -525,7 +531,7 @@ export function RegistrationForm() {
       <button
         type="submit"
         disabled={pending || (needsCaptcha && !token)}
-        className="inline-flex items-center justify-center rounded-lg bg-emerald-600 px-6 py-3 text-base font-semibold text-white shadow-sm hover:bg-emerald-700 disabled:opacity-60"
+        className={btnPrimary}
       >
         {pending ? tc("submitting") : tc("submit")}
       </button>

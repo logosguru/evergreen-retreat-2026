@@ -1,24 +1,157 @@
 @import "tailwindcss";
 
-html {
-  scroll-behavior: smooth;
-}
+/* ============================================================
+   Blessed Encounter / 산속의 만남 — design tokens
+   ============================================================ */
 
 :root {
-  --background: #f8fafc;
-  --foreground: #0f172a;
+  --background: #f6f1e7; /* ivory — warm parchment */
+  --foreground: #2b2a26; /* bark — warm near-black */
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
+
+  /* palette */
+  --color-pine: #14342b; /* deep evergreen */
+  --color-pine-deep: #0e241d;
+  --color-moss: #3a6b5a; /* mid green */
+  --color-moss-soft: #6e9484;
+  --color-gold: #c89b3c; /* dawn / harvest gold */
+  --color-gold-soft: #dcc07f;
+  --color-ivory: #f6f1e7;
+  --color-cream: #fbf8f1;
+  --color-bark: #2b2a26;
+  --color-bark-soft: #5c574d;
+  --color-mist: #e7eae3;
+  --color-line: #ddd8c8; /* hairline on ivory */
+
+  /* type roles */
   --font-sans:
-    "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", -apple-system,
-    BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans KR", sans-serif;
+    var(--font-pretendard), "Apple SD Gothic Neo", "Malgun Gothic",
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  /* Latin→Fraunces, 한글은 없으니 나눔명조로 자동 폴백 */
+  --font-display:
+    var(--font-fraunces), var(--font-myeongjo), Georgia, "Times New Roman",
+    serif;
+  --font-display-ko:
+    var(--font-myeongjo), var(--font-fraunces), Georgia, serif;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-sans);
+}
+
+/* Fraunces optical-sizing for display */
+.font-display,
+.font-display-ko {
+  font-optical-sizing: auto;
+}
+
+/* eyebrow / label utility */
+.eyebrow {
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-weight: 600;
+  font-size: 0.72rem;
+}
+
+/* accessible focus */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-gold);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+::selection {
+  background: var(--color-gold-soft);
+  color: var(--color-pine-deep);
+}
+
+/* ============================================================
+   Signature: topographic contour draw-in
+   ============================================================ */
+
+.topo-line {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.25;
+  vector-effect: non-scaling-stroke;
+}
+
+.topo-draw .topo-line {
+  stroke-dasharray: var(--len, 2000);
+  stroke-dashoffset: var(--len, 2000);
+  animation: topo-draw 2.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: var(--delay, 0s);
+}
+
+@keyframes topo-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* ============================================================
+   Motion — load & reveal
+   ============================================================ */
+
+@keyframes fade-rise {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-rise {
+  opacity: 0;
+  animation: fade-rise 0.9s cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation-delay: var(--delay, 0s);
+}
+
+/* Reveal-on-scroll (paired with the Reveal client component).
+   기본(idle)은 보임 — 화면 밖으로 판정된 요소만 hidden 처리. */
+[data-reveal="hidden"] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+[data-reveal="shown"] {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+  transition-delay: var(--delay, 0s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-rise,
+  [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .topo-draw .topo-line {
+    stroke-dashoffset: 0 !important;
+  }
 }

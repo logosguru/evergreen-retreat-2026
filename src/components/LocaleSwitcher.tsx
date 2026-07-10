@@ -26,11 +26,11 @@ export function LocaleSwitcher() {
         document.cookie = `NEXT_LOCALE=${next}; path=/; max-age=31536000; samesite=lax`;
         router.replace(pathname, { locale: next });
       }}
-      className="rounded-md border border-white/30 bg-transparent px-2 py-1 text-sm font-medium text-emerald-50 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/40"
+      className="rounded-full border border-ivory/30 bg-transparent px-3 py-1 text-sm font-medium text-ivory/85 hover:bg-white/10 focus:outline-none focus:ring-2 focus:ring-gold/50"
     >
       {routing.locales.map((loc) => (
         // option은 시스템 위젯이라 배경을 어둡게 지정(헤더 위 가독성)
-        <option key={loc} value={loc} className="text-emerald-900">
+        <option key={loc} value={loc} className="text-pine">
           {labels[loc]}
         </option>
       ))}

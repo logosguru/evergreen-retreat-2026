@@ -5,6 +5,7 @@ import { AboutSection } from "@/components/AboutSection";
 import { ScheduleSection } from "@/components/ScheduleSection";
 import { SpeakersSection } from "@/components/SpeakersSection";
 import { FaqSection } from "@/components/FaqSection";
+import { CtaBand } from "@/components/CtaBand";
 import type { ScheduleItem, Faq } from "@/lib/types";
 
 export default async function HomePage({
@@ -36,6 +37,7 @@ export default async function HomePage({
       <ScheduleSection items={scheduleItems} />
       <SpeakersSection />
       <FaqSection items={faqItems} />
+      <CtaBand />
     </>
   );
 }
