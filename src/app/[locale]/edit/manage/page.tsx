@@ -3,6 +3,7 @@ import { redirect } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { EditForm } from "@/components/EditForm";
 import { HouseholdFeeCard } from "@/components/HouseholdFeeCard";
+import { buildDonateUrl } from "@/lib/paypal";
 import type { Attendee } from "@/lib/types";
 
 export default async function ManagePage({
@@ -44,6 +45,32 @@ export default async function ManagePage({
     paid: boolean;
   } | null;
 
+  // PayPal 결제 링크: 미납 + 금액확정(미배정 0) + 이메일설정 + 가구주존재일 때만.
+  const rows = (attendees as Attendee[] | null) ?? [];
+  const head = rows.find((a) => a.is_householder);
+  const paypalEmail = process.env.NEXT_PUBLIC_PAYPAL_BUSINESS_EMAIL;
+  const tFee = await getTranslations("Fee");
+
+  let payUrl: string | null = null;
+  if (
+    fee &&
+    !fee.paid &&
+    fee.total > 0 &&
+    fee.unassigned_count === 0 &&
+    paypalEmail &&
+    head
+  ) {
+    const name =
+      head.korean_name?.trim() || head.english_name?.trim() || "";
+    const ref = head.district ? `${name} (${head.district})` : name;
+    payUrl = buildDonateUrl({
+      email: paypalEmail,
+      amount: fee.total,
+      itemName: tFee("payItemName"),
+      itemNumber: ref,
+    });
+  }
+
   const t = await getTranslations("Edit");
 
   return (
@@ -57,10 +84,11 @@ export default async function ManagePage({
           total={fee.total}
           unassignedCount={fee.unassigned_count}
           paid={fee.paid}
+          payUrl={payUrl}
         />
       )}
       <div className="mt-8">
-        <EditForm initial={(attendees as Attendee[] | null) ?? []} />
+        <EditForm initial={rows} />
       </div>
     </div>
   );
