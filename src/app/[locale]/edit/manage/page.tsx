@@ -20,12 +20,22 @@ export default async function ManagePage({
     redirect({ href: "/edit", locale });
   }
 
-  // RLS가 본인 이메일/가구 행만 반환. 가구주가 위로 오도록 정렬.
-  const { data: attendees } = await supabase
-    .from("attendees")
-    .select("*")
-    .order("is_householder", { ascending: false })
-    .order("created_at", { ascending: true });
+  // 본인 가구로 명시 스코프. RLS만 의존하면 세션 사용자가 관리자일 경우
+  // attendees_select_admin(전체 조회) 정책이 발동해 전 명단이 보인다.
+  // my_attendee_ids()(SECURITY DEFINER, 세션 이메일 lower 일치)로 본인
+  // 가구주 id를 얻어 가구주+가족 행만 가져온다. (관리자 여부 무관)
+  const { data: idData } = await supabase.rpc("my_attendee_ids");
+  const myIds = (idData as string[] | null) ?? [];
+
+  // 가구주가 위로 오도록 정렬.
+  const { data: attendees } = myIds.length
+    ? await supabase
+        .from("attendees")
+        .select("*")
+        .or(`id.in.(${myIds.join(",")}),householder_id.in.(${myIds.join(",")})`)
+        .order("is_householder", { ascending: false })
+        .order("created_at", { ascending: true })
+    : { data: [] as Attendee[] };
 
   const { data: feeData } = await supabase.rpc("my_household_fee").single();
   const fee = feeData as {
