@@ -17,7 +17,9 @@ export default async function AdminDashboardPage({
     await Promise.all([
       supabase
         .from("attendees")
-        .select("*, rooms(label, room_types(name, price_per_person))"),
+        .select(
+          "*, rooms(label, room_types(name, price_per_person)), requested_room_type:room_types!requested_room_type_id(name, price_per_person)",
+        ),
       supabase.from("rooms").select("room_types(name, capacity)"),
       supabase
         .from("email_requests")

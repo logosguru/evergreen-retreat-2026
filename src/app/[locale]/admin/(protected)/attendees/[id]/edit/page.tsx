@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { AdminEditForm } from "@/components/AdminEditForm";
 import { displayName } from "@/lib/names";
-import type { Attendee } from "@/lib/types";
+import type { Attendee, RoomType } from "@/lib/types";
 
 export default async function AdminEditAttendeePage({
   params,
@@ -45,6 +45,11 @@ export default async function AdminEditAttendeePage({
   const { data: claimsData } = await supabase.auth.getClaims();
   const currentEmail = (claimsData?.claims?.email as string | undefined) ?? null;
 
+  const { data: roomTypesData } = await supabase
+    .from("room_types")
+    .select("*")
+    .order("sort_order");
+
   // 읽기전용 가구 맥락
   const headId = a.is_householder ? a.id : a.householder_id;
   let household: Pick<Attendee, "id" | "korean_name" | "english_name" | "is_householder">[] = [];
@@ -80,6 +85,7 @@ export default async function AdminEditAttendeePage({
           heads={heads}
           isAttendeeAdmin={isAttendeeAdmin}
           currentEmail={currentEmail}
+          roomTypes={(roomTypesData as RoomType[] | null) ?? []}
         />
       </div>
     </div>

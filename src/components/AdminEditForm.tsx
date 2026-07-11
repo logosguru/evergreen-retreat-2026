@@ -11,7 +11,8 @@ import {
   setAttendeeAdmin,
   type AdminEditInput,
 } from "@/app/[locale]/admin/actions";
-import { LANGUAGES, type Attendee } from "@/lib/types";
+import { RoomTypeSelect } from "./RoomTypeSelect";
+import { LANGUAGES, type Attendee, type RoomType } from "@/lib/types";
 import { displayName } from "@/lib/names";
 
 type HeadOption = Pick<Attendee, "id" | "korean_name" | "english_name">;
@@ -37,6 +38,7 @@ function toInput(a: Attendee): AdminEditInput {
     language: a.language,
     retreat_group: a.retreat_group ?? "",
     is_group_leader: a.is_group_leader,
+    requested_room_type_id: a.requested_room_type_id ?? "",
   };
 }
 
@@ -45,16 +47,19 @@ export function AdminEditForm({
   heads,
   isAttendeeAdmin,
   currentEmail,
+  roomTypes,
 }: {
   initial: Attendee;
   heads: HeadOption[];
   isAttendeeAdmin: boolean;
   currentEmail: string | null;
+  roomTypes: RoomType[];
 }) {
   const t = useTranslations("Admin");
   const tc = useTranslations("Common");
   const tf = useTranslations("Fields");
   const tl = useTranslations("Language");
+  const tfee = useTranslations("Fee");
   const router = useRouter();
   const [pending, start] = useTransition();
   const [data, setData] = useState<AdminEditInput>(() => toInput(initial));
@@ -191,6 +196,15 @@ export function AdminEditForm({
               type="text"
               value={data.retreat_group ?? ""}
               onChange={(e) => patch({ retreat_group: e.target.value })}
+              className={inputClass}
+            />
+          </div>
+          <div>
+            <label className={labelClass}>{tfee("roomType")}</label>
+            <RoomTypeSelect
+              roomTypes={roomTypes}
+              value={(data.requested_room_type_id as string) ?? ""}
+              onChange={(id) => patch({ requested_room_type_id: id })}
               className={inputClass}
             />
           </div>
