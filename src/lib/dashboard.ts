@@ -1,4 +1,8 @@
-import { groupHouseholds, type AttendeeWithRoom } from "./fees";
+import {
+  groupHouseholds,
+  withHouseholdRoomType,
+  type AttendeeWithRoom,
+} from "./fees";
 
 // 대시보드 정원 집계용 rooms 조회 형태: rooms + room_types(name, capacity)
 export type RoomForStats = {
@@ -39,7 +43,7 @@ export function computeDashboard(
   attendees: AttendeeWithRoom[],
   rooms: RoomForStats[],
 ): DashboardStats {
-  const households = groupHouseholds(attendees);
+  const households = groupHouseholds(withHouseholdRoomType(attendees));
   const grandTotal = households.reduce((s, h) => s + h.total, 0);
   const paidTotal = households
     .filter((h) => h.head.paid)
