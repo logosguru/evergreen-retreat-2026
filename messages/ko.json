@@ -274,7 +274,10 @@
     "unassignedNotice": "{count}명은 객실 미배정으로 아직 산정되지 않았습니다.",
     "perPerson": "1인",
     "exempt": "면제(6세 미만)",
-    "pending": "미산정"
+    "pending": "미산정",
+    "payWithPaypal": "PayPal로 {amount} 납부하기",
+    "payNotice": "결제 후 반영에는 관리자 확인이 필요합니다.",
+    "payItemName": "늘푸른교회 2026 수련회 회비"
   },
   "About": {
     "title": "수련회 소개",
