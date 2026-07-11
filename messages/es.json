@@ -274,7 +274,10 @@
     "unassignedNotice": "{count} aún no calculados (habitación sin asignar).",
     "perPerson": "por persona",
     "exempt": "Exento (menor de 6)",
-    "pending": "Pendiente"
+    "pending": "Pendiente",
+    "payWithPaypal": "Pagar {amount} con PayPal",
+    "payNotice": "Tras el pago, un administrador lo confirmará antes de que aparezca aquí.",
+    "payItemName": "Cuota del Retiro 2026 de la Iglesia Evergreen"
   },
   "About": {
     "title": "Sobre el Retiro",

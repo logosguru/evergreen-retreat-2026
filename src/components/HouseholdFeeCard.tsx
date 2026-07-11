@@ -5,10 +5,12 @@ export function HouseholdFeeCard({
   total,
   unassignedCount,
   paid,
+  payUrl = null,
 }: {
   total: number;
   unassignedCount: number;
   paid: boolean;
+  payUrl?: string | null;
 }) {
   const t = useTranslations("Fee");
 
@@ -35,6 +37,21 @@ export function HouseholdFeeCard({
         <p className="mt-3 text-xs text-ivory/60">
           {t("unassignedNotice", { count: unassignedCount })}
         </p>
+      )}
+      {payUrl && (
+        <div className="mt-5">
+          <a
+            href={payUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block rounded-full bg-gold px-5 py-3 text-center text-sm font-semibold text-pine-deep transition hover:brightness-105"
+          >
+            {t("payWithPaypal", { amount: formatUSD(total) })}
+          </a>
+          <p className="mt-2 text-center text-xs text-ivory/60">
+            {t("payNotice")}
+          </p>
+        </div>
       )}
     </div>
   );

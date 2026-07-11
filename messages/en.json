@@ -274,7 +274,10 @@
     "unassignedNotice": "{count} not yet calculated (room not assigned).",
     "perPerson": "per person",
     "exempt": "Exempt (under 6)",
-    "pending": "Pending"
+    "pending": "Pending",
+    "payWithPaypal": "Pay {amount} with PayPal",
+    "payNotice": "After payment, an admin will confirm it before it shows here.",
+    "payItemName": "Evergreen Church 2026 Retreat Fee"
   },
   "About": {
     "title": "About the Retreat",
