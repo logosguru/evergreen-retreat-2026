@@ -199,15 +199,22 @@ export function AdminEditForm({
               className={inputClass}
             />
           </div>
-          <div>
-            <label className={labelClass}>{tfee("roomType")}</label>
-            <RoomTypeSelect
-              roomTypes={roomTypes}
-              value={(data.requested_room_type_id as string) ?? ""}
-              onChange={(id) => patch({ requested_room_type_id: id })}
-              className={inputClass}
-            />
-          </div>
+          {initial.is_householder ? (
+            <div>
+              <label className={labelClass}>{tfee("roomType")}</label>
+              <RoomTypeSelect
+                roomTypes={roomTypes}
+                value={data.requested_room_type_id ?? ""}
+                onChange={(id) => patch({ requested_room_type_id: id })}
+                className={inputClass}
+              />
+            </div>
+          ) : (
+            <div>
+              <label className={labelClass}>{tfee("roomType")}</label>
+              <p className="mt-1 text-xs text-slate-500">{t("roomTypeHeadOnly")}</p>
+            </div>
+          )}
           <label className="flex items-center gap-2 text-sm text-slate-700">
             <input
               type="checkbox"

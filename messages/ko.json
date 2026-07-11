@@ -134,6 +134,7 @@
     "newEmailHint": "선택 사항 — 입력하면 참석자가 본인 수정 링크(매직링크)를 사용할 수 있습니다.",
     "adminFields": "관리자 항목",
     "groupLeader": "조장",
+    "roomTypeHeadOnly": "객실 타입은 가구주 행에서 설정합니다.",
     "saved": "저장되었습니다.",
     "saveError": "저장에 실패했습니다.",
     "deleteBtn": "삭제",

@@ -134,6 +134,7 @@
     "newEmailHint": "Opcional — si se proporciona, el asistente puede usar el enlace mágico para editar sus datos.",
     "adminFields": "Campos de administrador",
     "groupLeader": "Líder de grupo",
+    "roomTypeHeadOnly": "El tipo de habitación se define en el titular del hogar.",
     "saved": "Guardado.",
     "saveError": "No se pudo guardar.",
     "deleteBtn": "Eliminar",

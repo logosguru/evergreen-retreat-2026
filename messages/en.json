@@ -134,6 +134,7 @@
     "newEmailHint": "Optional — if provided, the attendee can use the self-edit magic link.",
     "adminFields": "Admin fields",
     "groupLeader": "Group leader",
+    "roomTypeHeadOnly": "Set the room type on the household head.",
     "saved": "Saved.",
     "saveError": "Failed to save.",
     "deleteBtn": "Delete",
