@@ -174,7 +174,7 @@ $$;
 
 ## 영향 범위
 
-- **신규 마이그레이션** `0017_requested_room_type.sql`(컬럼 + room_types 공개읽기 +
+- **신규 마이그레이션** `0018_requested_room_type.sql`(컬럼 + room_types 공개읽기 +
   my_household_fee 재작성). ⚠️ 프로덕션 적용은 **사용자가 직접 `supabase db push`**
   (코드 병합보다 먼저).
 - 신규: `updateMyRoomType` 서버 액션, 객실 타입 select 컴포넌트(공용).

@@ -34,3 +34,24 @@ language sql stable security definer set search_path = public as $$
     coalesce((select paid from head), false) as paid;
 $$;
 grant execute on function public.my_household_fee to authenticated;
+
+-- 납부 완료 후에는 성도가 객실 타입을 못 바꾸도록 DB 레벨에서도 고정(앱 방어 + 방어심화).
+-- 미납 상태에선 성도 수정 허용(requested_room_type_id는 관리자 전용 아님).
+create or replace function public.guard_privileged_cols()
+returns trigger language plpgsql as $$
+begin
+  if not public.is_admin() then
+    new.paid            := old.paid;
+    new.paid_at         := old.paid_at;
+    new.retreat_group   := old.retreat_group;
+    new.is_group_leader := old.is_group_leader;
+    new.is_householder  := old.is_householder;
+    new.householder_id  := old.householder_id;
+    new.room_id         := old.room_id;
+    new.language        := old.language;
+    if old.paid then
+      new.requested_room_type_id := old.requested_room_type_id;
+    end if;
+  end if;
+  return new;
+end $$;
