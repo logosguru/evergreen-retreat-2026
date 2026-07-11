@@ -277,7 +277,12 @@
     "pending": "미산정",
     "payWithPaypal": "PayPal로 {amount} 납부하기",
     "payNotice": "결제 후 반영에는 관리자 확인이 필요합니다.",
-    "payItemName": "늘푸른교회 2026 수련회 회비"
+    "payItemName": "늘푸른교회 2026 수련회 회비",
+    "roomType": "객실 타입",
+    "roomTypePlaceholder": "선택 안 함",
+    "perPersonSuffix": "/인",
+    "selectTypeNotice": "객실 타입을 선택하면 회비가 산정됩니다.",
+    "roomTypeLockedNote": "납부 완료되어 변경할 수 없습니다."
   },
   "About": {
     "title": "수련회 소개",
