@@ -13,6 +13,7 @@ export type RegistrationPayload = {
   email: string; // 가구주(대표자) 이메일 — 수정 링크 발송용
   householder: PersonInput;
   members: PersonInput[]; // household 모드에서만
+  roomTypeId?: string; // 가구 단위 선택 객실 타입(가구주 행에 저장). 빈값=미선택
 };
 
 export type RegistrationResult = { ok: true } | { ok: false; error: string };
@@ -52,13 +53,17 @@ export async function insertRegistration(
   // anon 역할은 SELECT 정책이 없어(.select() 불가) insert-후-select-back이 막히므로
   // id를 미리 만들어 select-back 없이 삽입한다. 개인 등록도 1인 가구로 처리.
   const headId = crypto.randomUUID();
+  const roomTypeId = clean(payload.roomTypeId);
   const rows = [
-    rowFor(payload.householder, {
-      id: headId,
-      is_householder: true,
-      email,
-      householder_id: null,
-    }),
+    {
+      ...rowFor(payload.householder, {
+        id: headId,
+        is_householder: true,
+        email,
+        householder_id: null,
+      }),
+      requested_room_type_id: roomTypeId,
+    },
     ...members.map((m) =>
       rowFor(m, {
         id: crypto.randomUUID(),

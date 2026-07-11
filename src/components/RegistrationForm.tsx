@@ -6,6 +6,8 @@ import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { TurnstileWidget } from "./TurnstileWidget";
 import { PersonFields, emptyPerson } from "./PersonFields";
+import { RoomTypeSelect } from "./RoomTypeSelect";
+import type { RoomType } from "@/lib/types";
 import {
   insertRegistration,
   checkEmail,
@@ -27,10 +29,11 @@ const btnPrimary =
 const btnPrimarySm =
   "inline-flex items-center justify-center rounded-full bg-pine px-5 py-2.5 text-sm font-semibold text-ivory transition hover:bg-pine-deep disabled:opacity-60";
 
-export function RegistrationForm() {
+export function RegistrationForm({ roomTypes }: { roomTypes: RoomType[] }) {
   const t = useTranslations("Register");
   const tc = useTranslations("Common");
   const tf = useTranslations("Fields");
+  const tfee = useTranslations("Fee");
   const locale = useLocale();
 
   const [phase, setPhase] = useState<"email" | "form">("email");
@@ -38,6 +41,7 @@ export function RegistrationForm() {
   const [email, setEmail] = useState("");
   const [householder, setHouseholder] = useState<PersonInput>(emptyPerson());
   const [members, setMembers] = useState<PersonInput[]>([]);
+  const [roomTypeId, setRoomTypeId] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [done, setDone] = useState(false);
   const [pending, startTransition] = useTransition();
@@ -143,6 +147,7 @@ export function RegistrationForm() {
       email,
       householder,
       members: mode === "household" ? members : [],
+      roomTypeId,
     };
     startTransition(async () => {
       const result = await insertRegistration(payload, token);
@@ -461,6 +466,17 @@ export function RegistrationForm() {
           </label>
         </div>
       </fieldset>
+
+      {/* 객실 타입 선택 (가구 단위, 선택 사항) */}
+      <div>
+        <label className={labelClass}>{tfee("roomType")}</label>
+        <RoomTypeSelect
+          roomTypes={roomTypes}
+          value={roomTypeId}
+          onChange={setRoomTypeId}
+          className={inputClass}
+        />
+      </div>
 
       {/* 가구주 / 개인 */}
       <section className="rounded-2xl bg-white/70 p-5 ring-1 ring-line">
