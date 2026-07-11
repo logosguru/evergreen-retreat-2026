@@ -41,22 +41,32 @@ export default async function ManagePage({
   const { data: feeData } = await supabase.rpc("my_household_fee").single();
   const fee = feeData as {
     total: number;
-    unassigned_count: number;
+    type_selected: boolean;
     paid: boolean;
   } | null;
 
-  // PayPal 결제 링크: 미납 + 금액확정(미배정 0) + 이메일설정 + 가구주존재일 때만.
+  // PayPal 결제 링크: 미납 + 금액확정(타입선택) + 이메일설정 + 가구주존재일 때만.
   const rows = (attendees as Attendee[] | null) ?? [];
   const head = rows.find((a) => a.is_householder);
   const paypalEmail = process.env.NEXT_PUBLIC_PAYPAL_BUSINESS_EMAIL;
   const tFee = await getTranslations("Fee");
+
+  const { data: roomTypesData } = await supabase
+    .from("room_types")
+    .select("*")
+    .order("sort_order");
+  const roomTypes =
+    (roomTypesData as import("@/lib/types").RoomType[] | null) ?? [];
+  const currentRoomTypeId =
+    (head as { requested_room_type_id?: string | null } | undefined)
+      ?.requested_room_type_id ?? "";
 
   let payUrl: string | null = null;
   if (
     fee &&
     !fee.paid &&
     fee.total > 0 &&
-    fee.unassigned_count === 0 &&
+    fee.type_selected &&
     paypalEmail &&
     head
   ) {
@@ -82,13 +92,18 @@ export default async function ManagePage({
       {fee && (
         <HouseholdFeeCard
           total={fee.total}
-          unassignedCount={fee.unassigned_count}
+          typeSelected={fee.type_selected}
           paid={fee.paid}
           payUrl={payUrl}
         />
       )}
       <div className="mt-8">
-        <EditForm initial={rows} />
+        <EditForm
+          initial={rows}
+          roomTypes={roomTypes}
+          currentRoomTypeId={currentRoomTypeId}
+          paid={!!fee?.paid}
+        />
       </div>
     </div>
   );

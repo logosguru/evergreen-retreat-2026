@@ -4,9 +4,10 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { PersonFields } from "./PersonFields";
-import { updateMyAttendee } from "@/app/[locale]/edit/actions";
+import { RoomTypeSelect } from "./RoomTypeSelect";
+import { updateMyAttendee, updateMyRoomType } from "@/app/[locale]/edit/actions";
 import type { PersonInput } from "@/app/[locale]/register/actions";
-import type { Attendee } from "@/lib/types";
+import type { Attendee, RoomType } from "@/lib/types";
 import { displayName } from "@/lib/names";
 
 function toPersonInput(a: Attendee): PersonInput {
@@ -26,15 +27,29 @@ function toPersonInput(a: Attendee): PersonInput {
   };
 }
 
-export function EditForm({ initial }: { initial: Attendee[] }) {
+export function EditForm({
+  initial,
+  roomTypes,
+  currentRoomTypeId,
+  paid,
+}: {
+  initial: Attendee[];
+  roomTypes: RoomType[];
+  currentRoomTypeId: string;
+  paid: boolean;
+}) {
   const t = useTranslations("Edit");
   const tc = useTranslations("Common");
   const ta = useTranslations("Admin");
+  const tfee = useTranslations("Fee");
   const router = useRouter();
   const [pending, start] = useTransition();
   const [savingId, setSavingId] = useState<string | null>(null);
   const [savedId, setSavedId] = useState<string | null>(null);
   const [errorId, setErrorId] = useState<string | null>(null);
+  const [roomTypeId, setRoomTypeId] = useState(currentRoomTypeId);
+  const [rtSaved, setRtSaved] = useState(false);
+  const [rtError, setRtError] = useState(false);
 
   const [rows, setRows] = useState(() =>
     initial.map((a) => ({
@@ -67,6 +82,21 @@ export function EditForm({ initial }: { initial: Attendee[] }) {
     });
   }
 
+  function saveRoomType(next: string) {
+    setRoomTypeId(next);
+    setRtSaved(false);
+    setRtError(false);
+    start(async () => {
+      const r = await updateMyRoomType(next === "" ? null : next);
+      if (r.ok) {
+        setRtSaved(true);
+        router.refresh();
+      } else {
+        setRtError(true);
+      }
+    });
+  }
+
   if (rows.length === 0) {
     return (
       <p className="rounded-md bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-200">
@@ -77,6 +107,27 @@ export function EditForm({ initial }: { initial: Attendee[] }) {
 
   return (
     <div className="space-y-6">
+      <section className="rounded-2xl bg-white/70 p-5 ring-1 ring-line">
+        <label className="block text-sm font-medium text-bark">
+          {tfee("roomType")}
+        </label>
+        <RoomTypeSelect
+          roomTypes={roomTypes}
+          value={roomTypeId}
+          onChange={saveRoomType}
+          disabled={paid}
+          className="mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm focus:border-moss focus:outline-none focus:ring-1 focus:ring-moss disabled:opacity-60"
+        />
+        {paid ? (
+          <p className="mt-1 text-xs text-bark-soft">
+            {tfee("roomTypeLockedNote")}
+          </p>
+        ) : rtSaved ? (
+          <p className="mt-1 text-xs text-moss">{t("updateSuccess")}</p>
+        ) : rtError ? (
+          <p className="mt-1 text-xs text-rose-700">{t("updateError")}</p>
+        ) : null}
+      </section>
       {rows.map((r) => (
         <section key={r.id} className="rounded-2xl bg-white/70 p-5 ring-1 ring-line">
           <div className="mb-3 flex items-center gap-2">

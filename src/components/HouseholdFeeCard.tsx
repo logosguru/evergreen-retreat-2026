@@ -3,12 +3,12 @@ import { formatUSD } from "@/lib/fees";
 
 export function HouseholdFeeCard({
   total,
-  unassignedCount,
+  typeSelected,
   paid,
   payUrl = null,
 }: {
   total: number;
-  unassignedCount: number;
+  typeSelected: boolean;
   paid: boolean;
   payUrl?: string | null;
 }) {
@@ -33,10 +33,8 @@ export function HouseholdFeeCard({
           {paid ? t("paid") : t("unpaid")}
         </span>
       </div>
-      {unassignedCount > 0 && (
-        <p className="mt-3 text-xs text-ivory/60">
-          {t("unassignedNotice", { count: unassignedCount })}
-        </p>
+      {!typeSelected && (
+        <p className="mt-3 text-xs text-ivory/60">{t("selectTypeNotice")}</p>
       )}
       {payUrl && (
         <div className="mt-5">
