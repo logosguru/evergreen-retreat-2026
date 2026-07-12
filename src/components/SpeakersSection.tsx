@@ -33,7 +33,7 @@ export function SpeakersSection() {
                   alt={t(sp.nameKey)}
                   width={220}
                   height={220}
-                  className="mx-auto h-28 w-28 rounded-full object-cover ring-4 ring-gold/30"
+                  className="mx-auto h-28 w-28 rounded-full object-cover object-top ring-4 ring-gold/30"
                 />
                 <p className="font-display-ko mt-5 text-center text-xl font-bold text-pine">
                   {t(sp.nameKey)}
