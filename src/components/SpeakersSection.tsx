@@ -5,8 +5,8 @@ import { TopoRings } from "./TopoField";
 
 // 강사별 사진은 정적 데이터(번역 불필요), 문구는 messages/Speakers.
 const speakers = [
-  { photo: "/speakers/jung-jungwon.jpg", nameKey: "s1Name", bioKey: "s1Bio" },
-  { photo: "/speakers/park-sunhee.jpg", nameKey: "s2Name", bioKey: "s2Bio" },
+  { photo: "/speakers/jung-jungwon-hd.jpg", nameKey: "s1Name", bioKey: "s1Bio" },
+  { photo: "/speakers/park-sunhee-hd.jpg", nameKey: "s2Name", bioKey: "s2Bio" },
 ] as const;
 
 export function SpeakersSection() {
