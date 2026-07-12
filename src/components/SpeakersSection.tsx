@@ -55,7 +55,6 @@ export function SpeakersSection() {
             </Reveal>
           ))}
         </div>
-        <p className="mt-6 text-center text-xs text-ivory/45">{t("bioNote")}</p>
       </div>
     </section>
   );
