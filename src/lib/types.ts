@@ -57,6 +57,7 @@ export interface Attendee {
   email: string | null; // 본인 수정 scoping 용
   phone: string | null;
   room_id: string | null; // 배정된 호실 (관리자 전용)
+  requested_room_type_id: string | null; // 성도 선택 객실 타입(가구주 행, 회비 소스)
   language: Language; // 성도 언어 (관리자 전용, 기본 'ko')
   is_under_6: boolean; // 6세 미만 (회비 면제·객실 인원 제외)
   attendance: Attendance;

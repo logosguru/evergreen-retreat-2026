@@ -134,6 +134,7 @@
     "newEmailHint": "선택 사항 — 입력하면 참석자가 본인 수정 링크(매직링크)를 사용할 수 있습니다.",
     "adminFields": "관리자 항목",
     "groupLeader": "조장",
+    "roomTypeHeadOnly": "객실 타입은 가구주 행에서 설정합니다.",
     "saved": "저장되었습니다.",
     "saveError": "저장에 실패했습니다.",
     "deleteBtn": "삭제",
@@ -277,7 +278,12 @@
     "pending": "미산정",
     "payWithPaypal": "PayPal로 {amount} 납부하기",
     "payNotice": "결제 후 반영에는 관리자 확인이 필요합니다.",
-    "payItemName": "늘푸른교회 2026 수련회 회비"
+    "payItemName": "늘푸른교회 2026 수련회 회비",
+    "roomType": "객실 타입",
+    "roomTypePlaceholder": "선택 안 함",
+    "perPersonSuffix": "/인",
+    "selectTypeNotice": "객실 타입을 선택하면 회비가 산정됩니다.",
+    "roomTypeLockedNote": "납부 완료되어 변경할 수 없습니다."
   },
   "About": {
     "title": "수련회 소개",

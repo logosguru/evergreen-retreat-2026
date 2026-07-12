@@ -74,3 +74,31 @@ export async function requestEditMagicLink(params: {
   if (error) return { ok: false, error: "sendError" };
   return { ok: true };
 }
+
+// 본인 가구의 객실 타입 선택(가구주 행에 저장). RLS가 본인 가구 행만 허용.
+// paid=true면 납부액과 불일치 방지를 위해 거부.
+export async function updateMyRoomType(
+  roomTypeId: string | null,
+): Promise<EditResult> {
+  const supabase = await createClient();
+  const { data: idData } = await supabase.rpc("my_attendee_ids");
+  const myIds = (idData as string[] | null) ?? [];
+  if (myIds.length === 0) return { ok: false, error: "updateError" };
+
+  // 본인 가구의 가구주 행 찾기 (본인이 head이거나, 본인 id를 householder_id로 갖는 가구)
+  const { data: headRows } = await supabase
+    .from("attendees")
+    .select("id, paid")
+    .eq("is_householder", true)
+    .or(`id.in.(${myIds.join(",")}),householder_id.in.(${myIds.join(",")})`);
+  const head = (headRows as { id: string; paid: boolean }[] | null)?.[0];
+  if (!head) return { ok: false, error: "updateError" };
+  if (head.paid) return { ok: false, error: "updateError" };
+
+  const { error } = await supabase
+    .from("attendees")
+    .update({ requested_room_type_id: roomTypeId })
+    .eq("id", head.id);
+  if (error) return { ok: false, error: "updateError" };
+  return { ok: true };
+}

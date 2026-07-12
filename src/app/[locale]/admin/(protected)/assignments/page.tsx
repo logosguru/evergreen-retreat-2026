@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { AssignmentBoard } from "@/components/AssignmentBoard";
 import type { Room, RoomType } from "@/lib/types";
-import type { AttendeeWithRoom } from "@/lib/fees";
+import { withHouseholdRoomType, type AttendeeWithRoom } from "@/lib/fees";
 
 export default async function AssignmentsPage({
   params,
@@ -20,7 +20,9 @@ export default async function AssignmentsPage({
       .order("sort_order"),
     supabase
       .from("attendees")
-      .select("*, rooms(label, room_types(name, price_per_person))")
+      .select(
+        "*, rooms(label, room_types(name, price_per_person)), requested_room_type:room_types!requested_room_type_id(name, price_per_person)",
+      )
       .order("is_householder", { ascending: false })
       .order("created_at"),
   ]);
@@ -34,7 +36,9 @@ export default async function AssignmentsPage({
       </h1>
       <AssignmentBoard
         rooms={(rooms as (Room & { room_types: RoomType })[] | null) ?? []}
-        attendees={(attendees as AttendeeWithRoom[] | null) ?? []}
+        attendees={withHouseholdRoomType(
+          (attendees as AttendeeWithRoom[] | null) ?? [],
+        )}
       />
     </div>
   );

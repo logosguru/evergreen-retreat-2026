@@ -1,17 +1,23 @@
-import { useTranslations } from "next-intl";
-import { setRequestLocale } from "next-intl/server";
-import { use } from "react";
+import { getTranslations, setRequestLocale } from "next-intl/server";
+import { createClient } from "@/lib/supabase/server";
 import { RegistrationForm } from "@/components/RegistrationForm";
+import type { RoomType } from "@/lib/types";
 
-export default function RegisterPage({
+export default async function RegisterPage({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
-  const { locale } = use(params);
+  const { locale } = await params;
   setRequestLocale(locale);
 
-  const t = useTranslations("Register");
+  const supabase = await createClient();
+  const { data: roomTypes } = await supabase
+    .from("room_types")
+    .select("*")
+    .order("sort_order");
+
+  const t = await getTranslations("Register");
 
   return (
     <div className="mx-auto max-w-2xl px-6 py-16 sm:px-8">
@@ -19,9 +25,11 @@ export default function RegisterPage({
         {t("title")}
       </h1>
       <div className="mt-4 h-px w-14 bg-gold" />
-      <p className="mt-4 text-sm leading-relaxed text-bark-soft">{t("subtitle")}</p>
+      <p className="mt-4 text-sm leading-relaxed text-bark-soft">
+        {t("subtitle")}
+      </p>
       <div className="mt-8">
-        <RegistrationForm />
+        <RegistrationForm roomTypes={(roomTypes as RoomType[] | null) ?? []} />
       </div>
     </div>
   );

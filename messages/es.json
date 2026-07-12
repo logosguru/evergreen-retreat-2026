@@ -134,6 +134,7 @@
     "newEmailHint": "Opcional — si se proporciona, el asistente puede usar el enlace mágico para editar sus datos.",
     "adminFields": "Campos de administrador",
     "groupLeader": "Líder de grupo",
+    "roomTypeHeadOnly": "El tipo de habitación se define en el titular del hogar.",
     "saved": "Guardado.",
     "saveError": "No se pudo guardar.",
     "deleteBtn": "Eliminar",
@@ -277,7 +278,12 @@
     "pending": "Pendiente",
     "payWithPaypal": "Pagar {amount} con PayPal",
     "payNotice": "Tras el pago, un administrador lo confirmará antes de que aparezca aquí.",
-    "payItemName": "Cuota del Retiro 2026 de la Iglesia Evergreen"
+    "payItemName": "Cuota del Retiro 2026 de la Iglesia Evergreen",
+    "roomType": "Tipo de habitación",
+    "roomTypePlaceholder": "Sin seleccionar",
+    "perPersonSuffix": "/persona",
+    "selectTypeNotice": "Seleccione un tipo de habitación para ver su cuota.",
+    "roomTypeLockedNote": "Pagado — ya no se puede cambiar."
   },
   "About": {
     "title": "Sobre el Retiro",

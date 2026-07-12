@@ -3,7 +3,7 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AdminAttendeeTable } from "@/components/AdminAttendeeTable";
 import { EmailRequestBanner, type EmailRequest } from "@/components/EmailRequestBanner";
-import { groupHouseholds, type AttendeeWithRoom } from "@/lib/fees";
+import { groupHouseholds, withHouseholdRoomType, type AttendeeWithRoom } from "@/lib/fees";
 
 export default async function AdminAttendeesPage({
   params,
@@ -16,12 +16,15 @@ export default async function AdminAttendeesPage({
   const supabase = await createClient();
   const { data } = await supabase
     .from("attendees")
-    .select("*, rooms(label, room_types(name, price_per_person))")
+    .select(
+      "*, rooms(label, room_types(name, price_per_person)), requested_room_type:room_types!requested_room_type_id(name, price_per_person)",
+    )
     .order("district", { ascending: true, nullsFirst: false })
     .order("is_householder", { ascending: false })
     .order("created_at", { ascending: true });
 
-  const attendees = (data as AttendeeWithRoom[] | null) ?? [];
+  const raw = (data as AttendeeWithRoom[] | null) ?? [];
+  const attendees = withHouseholdRoomType(raw);
   const households = groupHouseholds(attendees);
   const grandTotal = households.reduce((s, h) => s + h.total, 0);
   const paidHouseholds = households.filter((h) => h.head.paid).length;

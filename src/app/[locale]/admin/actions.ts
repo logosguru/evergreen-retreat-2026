@@ -47,6 +47,7 @@ export type AdminEditInput = PersonInput & {
   language: Language;
   retreat_group?: string;
   is_group_leader?: boolean;
+  requested_room_type_id?: string | null;
 };
 
 // 관리자 수동 입력(가구주 + 가족 일괄). 공개 등록과 달리 Turnstile 없음, admin 필드 포함.
@@ -252,6 +253,7 @@ export async function adminUpdateAttendee(
       language: input.language,
       retreat_group: clean(input.retreat_group),
       is_group_leader: !!input.is_group_leader,
+      requested_room_type_id: clean(input.requested_room_type_id),
     })
     .eq("id", id);
 
