@@ -280,6 +280,7 @@
     "payNotice": "결제 후 반영에는 관리자 확인이 필요합니다.",
     "payItemName": "늘푸른교회 2026 수련회 회비",
     "roomType": "객실 타입",
+    "roomTypeName": "{n}인실",
     "roomTypePlaceholder": "선택 안 함",
     "perPersonSuffix": "/인",
     "selectTypeNotice": "객실 타입을 선택하면 회비가 산정됩니다.",

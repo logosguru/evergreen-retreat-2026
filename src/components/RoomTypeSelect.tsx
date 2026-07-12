@@ -28,7 +28,7 @@ export function RoomTypeSelect({
       <option value="">{t("roomTypePlaceholder")}</option>
       {roomTypes.map((rt) => (
         <option key={rt.id} value={rt.id}>
-          {rt.name} · {formatUSD(rt.price_per_person)}
+          {t("roomTypeName", { n: rt.capacity })} · {formatUSD(rt.price_per_person)}
           {t("perPersonSuffix")}
         </option>
       ))}

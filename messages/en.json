@@ -280,6 +280,7 @@
     "payNotice": "After payment, an admin will confirm it before it shows here.",
     "payItemName": "Evergreen Church 2026 Retreat Fee",
     "roomType": "Room type",
+    "roomTypeName": "{n}-person room",
     "roomTypePlaceholder": "Not selected",
     "perPersonSuffix": "/person",
     "selectTypeNotice": "Select a room type to see your fee.",

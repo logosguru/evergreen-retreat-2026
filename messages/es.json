@@ -280,6 +280,7 @@
     "payNotice": "Tras el pago, un administrador lo confirmará antes de que aparezca aquí.",
     "payItemName": "Cuota del Retiro 2026 de la Iglesia Evergreen",
     "roomType": "Tipo de habitación",
+    "roomTypeName": "Habitación de {n} personas",
     "roomTypePlaceholder": "Sin seleccionar",
     "perPersonSuffix": "/persona",
     "selectTypeNotice": "Seleccione un tipo de habitación para ver su cuota.",
