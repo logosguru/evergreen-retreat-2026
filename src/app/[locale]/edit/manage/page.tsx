@@ -73,11 +73,12 @@ export default async function ManagePage({
     const name =
       head.korean_name?.trim() || head.english_name?.trim() || "";
     const ref = head.district ? `${name} (${head.district})` : name;
+    // 영수증 Reference(item_number)에 수련회명+가구 함께 노출 (Purpose 칸은 인라인 링크로 못 채움).
     payUrl = buildDonateUrl({
       email: paypalEmail,
       amount: fee.total,
       itemName: tFee("payItemName"),
-      itemNumber: ref,
+      itemNumber: `${tFee("payItemName")} · ${ref}`,
     });
   }
 
