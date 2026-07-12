@@ -323,7 +323,8 @@
     "edit": "수정",
     "delete": "삭제",
     "byLanguageBadge": "언어별 진행",
-    "byLanguageLabel": "언어별 진행"
+    "byLanguageLabel": "언어별 진행",
+    "subjectToChange": "상기 일정은 사정에 따라 변경될 수 있습니다."
   },
   "Speakers": {
     "title": "강사 소개",

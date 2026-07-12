@@ -323,7 +323,8 @@
     "edit": "Editar",
     "delete": "Eliminar",
     "byLanguageBadge": "Por idioma",
-    "byLanguageLabel": "Por idioma"
+    "byLanguageLabel": "Por idioma",
+    "subjectToChange": "El programa anterior está sujeto a cambios."
   },
   "Speakers": {
     "title": "Predicadores",

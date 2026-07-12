@@ -26,6 +26,7 @@ export function ScheduleSection({ items }: { items: ScheduleItem[] }) {
         ) : (
           <Reveal delay={80}>
             <ScheduleView items={items} />
+            <p className="mt-6 text-xs text-bark-soft/70">{t("subjectToChange")}</p>
           </Reveal>
         )}
       </div>

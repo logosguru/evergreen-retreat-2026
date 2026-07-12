@@ -323,7 +323,8 @@
     "edit": "Edit",
     "delete": "Delete",
     "byLanguageBadge": "By Language",
-    "byLanguageLabel": "By language"
+    "byLanguageLabel": "By language",
+    "subjectToChange": "The schedule above is subject to change."
   },
   "Speakers": {
     "title": "Speakers",
