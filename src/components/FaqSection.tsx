@@ -3,24 +3,16 @@ import type { Faq } from "@/lib/types";
 import { localized } from "@/lib/localized";
 import { Reveal } from "./Reveal";
 
-// 답변 텍스트 안의 URL을 클릭 가능한 링크로 변환
-const URL_RE = /(https?:\/\/[^\s]+)/g;
+// FAQ 답변은 관리자만 작성(RLS)하므로 raw HTML을 그대로 렌더한다.
+// 관리자가 <ul>/<li>/<strong>/<a> 등 태그를 직접 쓸 수 있다.
+// 태그 밖의 맨 URL은 자동으로 <a>로 감싼다(기존 동작 유지, 태그 안 URL은 건드리지 않음).
+const TAG_OR_URL = /(<[^>]+>)|(https?:\/\/[^\s<]+)/g;
 
-function linkify(text: string) {
-  return text.split(URL_RE).map((part, i) =>
-    part.startsWith("http://") || part.startsWith("https://") ? (
-      <a
-        key={i}
-        href={part}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="break-all font-medium text-moss underline hover:text-pine"
-      >
-        {part}
-      </a>
-    ) : (
-      part
-    ),
+function renderAnswerHtml(raw: string): string {
+  return raw.replace(TAG_OR_URL, (_m, tag, url) =>
+    tag
+      ? tag
+      : `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`,
   );
 }
 
@@ -57,9 +49,16 @@ export function FaqSection({ items }: { items: Faq[] }) {
                     <span className="font-display text-gold">Q.</span>
                     {localized(f, "question", locale)}
                   </dt>
-                  <dd className="mt-3 flex gap-3 whitespace-pre-wrap text-bark-soft">
+                  <dd className="mt-3 flex gap-3 text-bark-soft">
                     <span className="font-display font-semibold text-moss">A.</span>
-                    <span>{linkify(localized(f, "answer", locale) ?? "")}</span>
+                    <span
+                      className="min-w-0 flex-1 whitespace-pre-wrap [&_a]:break-all [&_a]:font-medium [&_a]:text-moss [&_a]:underline [&_ol]:my-2 [&_ol]:list-decimal [&_ol]:space-y-1 [&_ol]:pl-5 [&_strong]:font-semibold [&_strong]:text-pine [&_ul]:my-2 [&_ul]:list-disc [&_ul]:space-y-1 [&_ul]:pl-5"
+                      dangerouslySetInnerHTML={{
+                        __html: renderAnswerHtml(
+                          localized(f, "answer", locale) ?? "",
+                        ),
+                      }}
+                    />
                   </dd>
                 </div>
               ))}
