@@ -9,9 +9,9 @@ import type { FeePayment } from "@/lib/types";
 export default async function HouseholdPaymentsPage({
   params,
 }: {
-  params: Promise<{ locale: string; headId: string }>;
+  params: Promise<{ locale: string; id: string }>;
 }) {
-  const { locale, headId } = await params;
+  const { locale, id: headId } = await params;
   setRequestLocale(locale);
 
   const supabase = await createClient();

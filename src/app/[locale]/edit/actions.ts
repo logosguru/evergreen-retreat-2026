@@ -5,7 +5,9 @@ import { clean, rowFor, validatePerson } from "@/lib/attendee-rows";
 import type { PersonInput } from "@/lib/attendee-rows";
 import { verifyTurnstile } from "@/lib/turnstile";
 
-export type { PersonInput };
+// NOTE: "use server" 파일에서 `export type { PersonInput }`(bare 재수출 지정자)는
+// turbopack action 변환이 값으로 오인해 registerServerReference로 등록 → 런타임
+// ReferenceError. PersonInput 소비자는 @/lib/attendee-rows/register-actions에서 import.
 export type EditResult = { ok: true } | { ok: false; error: string };
 
 // 본인 가구에 비-가구주 멤버 1명 추가. head는 my_household_head_ids로 검증(클라이언트 신뢰 안 함).
