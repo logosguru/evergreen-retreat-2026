@@ -54,7 +54,9 @@ export function HouseholdPaymentManager({
             : m;
 
   function submit(sign: 1 | -1) {
-    const n = Math.round(Number(amount)) * sign;
+    // 버튼(납입=+1/환불=-1)이 부호를 결정한다. 입력값의 부호는 무시(abs)해
+    // 음수 입력 + '납입 기록'이 환불로 잘못 기록되는 것을 막는다.
+    const n = Math.abs(Math.round(Number(amount))) * sign;
     if (!Number.isFinite(n) || n === 0 || !paidAt) {
       setError(true);
       return;
@@ -81,8 +83,12 @@ export function HouseholdPaymentManager({
   function remove(id: string) {
     if (!window.confirm(t("confirmDeletePayment"))) return;
     start(async () => {
-      await deletePayment(id);
-      router.refresh();
+      const r = await deletePayment(id);
+      if (r.ok) {
+        router.refresh();
+      } else {
+        setError(true);
+      }
     });
   }
 
@@ -182,6 +188,7 @@ export function HouseholdPaymentManager({
             <input
               type="number"
               inputMode="numeric"
+              min="0"
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               className={inputClass}
