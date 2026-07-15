@@ -97,7 +97,6 @@ export default async function ManagePage({
       {fee && (
         <HouseholdFeeCard
           total={fee.total}
-          paidTotal={fee.paid_total}
           balance={fee.balance}
           typeSelected={fee.type_selected}
           payUrl={payUrl}

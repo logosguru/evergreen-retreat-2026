@@ -4,15 +4,13 @@ import type { FeePayment } from "@/lib/types";
 
 export function HouseholdFeeCard({
   total,
-  paidTotal,
   balance,
   typeSelected,
   payUrl = null,
   payments = [],
 }: {
   total: number;
-  paidTotal: number;
-  balance: number; // total - paidTotal. 양수=추가납부, 음수=환불
+  balance: number; // total - paid_total. 양수=추가납부, 음수=환불
   typeSelected: boolean;
   payUrl?: string | null;
   payments?: FeePayment[];
