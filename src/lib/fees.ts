@@ -72,3 +72,17 @@ export function groupHouseholds(rows: AttendeeWithRoom[]): Household[] {
     return { head, members, total, unassignedCount };
   });
 }
+
+// 가구주 id → 납입 합계(net, 환불 반영) 맵. 원장 행들을 head_id로 집계.
+export function paidByHead(
+  payments: { head_id: string; amount: number }[],
+): Map<string, number> {
+  const m = new Map<string, number>();
+  for (const p of payments) m.set(p.head_id, (m.get(p.head_id) ?? 0) + p.amount);
+  return m;
+}
+
+// 잔액: 양수 = 추가 납부 필요, 음수 = 환불 필요, 0 = 정산 완료.
+export function householdBalance(total: number, paidTotal: number): number {
+  return total - paidTotal;
+}

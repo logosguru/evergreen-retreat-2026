@@ -85,6 +85,20 @@ export interface AttendeeInput {
   note?: string | null;
 }
 
+export const PAYMENT_METHODS = ["paypal", "cash", "check"] as const;
+export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
+
+// 회비 납입 원장 1건 (관리자 기록). amount 음수 = 환불.
+export interface FeePayment {
+  id: string;
+  head_id: string;
+  amount: number;
+  method: string | null;
+  note: string | null;
+  paid_at: string; // YYYY-MM-DD
+  created_at: string;
+}
+
 export interface RoomType {
   id: string;
   name: string;
