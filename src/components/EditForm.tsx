@@ -114,6 +114,11 @@ export function EditForm({
     start(async () => {
       const r = await addMyMember(newMember);
       if (r.ok) {
+        // 낙관적 반영: rows는 마운트 시 initial로만 초기화되므로 router.refresh()
+        // 만으로는 목록이 갱신되지 않는다. 새 멤버를 즉시 추가하고, refresh는
+        // 서버 렌더(회비 카드/잔액) 갱신용으로 함께 호출.
+        const added = newMember;
+        setRows((prev) => [...prev, { id: r.id, isHead: false, data: added }]);
         setAdding(false);
         setNewMember(emptyPerson());
         router.refresh();

@@ -11,22 +11,26 @@ import { verifyTurnstile } from "@/lib/turnstile";
 export type EditResult = { ok: true } | { ok: false; error: string };
 
 // 본인 가구에 비-가구주 멤버 1명 추가. head는 my_household_head_ids로 검증(클라이언트 신뢰 안 함).
-export async function addMyMember(input: PersonInput): Promise<EditResult> {
+// 성공 시 생성한 행 id를 반환해 클라이언트가 목록에 즉시(낙관적) 반영할 수 있게 한다.
+export async function addMyMember(
+  input: PersonInput,
+): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
   if (validatePerson(input)) return { ok: false, error: "validationName" };
   const supabase = await createClient();
   const { data: headData } = await supabase.rpc("my_household_head_ids");
   const headId = ((headData as string[] | null) ?? [])[0];
   if (!headId) return { ok: false, error: "updateError" };
+  const id = crypto.randomUUID();
   const { error } = await supabase.from("attendees").insert(
     rowFor(input, {
-      id: crypto.randomUUID(),
+      id,
       is_householder: false,
       email: null,
       householder_id: headId,
     }),
   );
   if (error) return { ok: false, error: "updateError" };
-  return { ok: true };
+  return { ok: true, id };
 }
 
 // 본인 가구의 비-가구주 멤버 삭제 (RPC가 head/타 가구 거부).
