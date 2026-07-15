@@ -1,6 +1,7 @@
 import {
   groupHouseholds,
   withHouseholdRoomType,
+  householdBalance,
   type AttendeeWithRoom,
 } from "./fees";
 
@@ -32,9 +33,10 @@ export interface DashboardStats {
   unassigned: number; // 6세미만 아닌데 미배정
   rooms: RoomOccupancy[];
   grandTotal: number;
-  paidTotal: number;
-  unpaidTotal: number;
-  paidHouseholds: number;
+  collected: number; // 수납 합계(net, 환불 반영)
+  outstanding: number; // 미납 합계 Σmax(0, balance)
+  refundDue: number; // 환불 필요 합계 Σmax(0, -balance)
+  settledHouseholds: number; // 정산 완료(total>0 && balance<=0) 가구 수
   byDistrict: CountItem[];
   byRole: CountItem[];
 }
@@ -42,12 +44,22 @@ export interface DashboardStats {
 export function computeDashboard(
   attendees: AttendeeWithRoom[],
   rooms: RoomForStats[],
+  paid: Map<string, number>,
 ): DashboardStats {
   const households = groupHouseholds(withHouseholdRoomType(attendees));
   const grandTotal = households.reduce((s, h) => s + h.total, 0);
-  const paidTotal = households
-    .filter((h) => h.head.paid)
-    .reduce((s, h) => s + h.total, 0);
+  let collected = 0;
+  let outstanding = 0;
+  let refundDue = 0;
+  let settledHouseholds = 0;
+  for (const h of households) {
+    const p = paid.get(h.head.id) ?? 0;
+    const bal = householdBalance(h.total, p);
+    collected += p;
+    if (bal > 0) outstanding += bal;
+    if (bal < 0) refundDue += -bal;
+    if (h.total > 0 && bal <= 0) settledHouseholds += 1;
+  }
 
   // 객실 타입별 정원/방수
   const cap = new Map<string, { capacityTotal: number; roomCount: number }>();
@@ -103,9 +115,10 @@ export function computeDashboard(
       .length,
     rooms: roomsStats,
     grandTotal,
-    paidTotal,
-    unpaidTotal: grandTotal - paidTotal,
-    paidHouseholds: households.filter((h) => h.head.paid).length,
+    collected,
+    outstanding,
+    refundDue,
+    settledHouseholds,
     byDistrict: tally((a) => a.district).sort((x, y) =>
       x.key.localeCompare(y.key),
     ),

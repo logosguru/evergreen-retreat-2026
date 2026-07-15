@@ -42,10 +42,11 @@ export default async function ManagePage({
   const fee = feeData as {
     total: number;
     type_selected: boolean;
-    paid: boolean;
+    paid_total: number;
+    balance: number;
   } | null;
 
-  // PayPal 결제 링크: 미납 + 금액확정(타입선택) + 이메일설정 + 가구주존재일 때만.
+  // PayPal 결제 링크: 잔액>0 + 금액확정(타입선택) + 이메일설정 + 가구주존재일 때만.
   const rows = (attendees as Attendee[] | null) ?? [];
   const head = rows.find((a) => a.is_householder);
   const paypalEmail = process.env.NEXT_PUBLIC_PAYPAL_BUSINESS_EMAIL;
@@ -61,22 +62,25 @@ export default async function ManagePage({
     (head as { requested_room_type_id?: string | null } | undefined)
       ?.requested_room_type_id ?? "";
 
+  const { data: payData } = head
+    ? await supabase
+        .from("fee_payments")
+        .select("*")
+        .eq("head_id", head.id)
+        .order("paid_at", { ascending: true })
+    : { data: [] as import("@/lib/types").FeePayment[] };
+  const payments =
+    (payData as import("@/lib/types").FeePayment[] | null) ?? [];
+
   let payUrl: string | null = null;
-  if (
-    fee &&
-    !fee.paid &&
-    fee.total > 0 &&
-    fee.type_selected &&
-    paypalEmail &&
-    head
-  ) {
+  if (fee && fee.balance > 0 && fee.type_selected && paypalEmail && head) {
     const name =
       head.korean_name?.trim() || head.english_name?.trim() || "";
     const ref = head.district ? `${name} (${head.district})` : name;
     // 영수증 Reference(item_number)에 수련회명+가구 함께 노출 (Purpose 칸은 인라인 링크로 못 채움).
     payUrl = buildDonateUrl({
       email: paypalEmail,
-      amount: fee.total,
+      amount: fee.balance,
       itemName: tFee("payItemName"),
       itemNumber: `${tFee("payItemName")} · ${ref}`,
     });
@@ -93,9 +97,10 @@ export default async function ManagePage({
       {fee && (
         <HouseholdFeeCard
           total={fee.total}
+          balance={fee.balance}
           typeSelected={fee.type_selected}
-          paid={fee.paid}
           payUrl={payUrl}
+          payments={payments}
         />
       )}
       <div className="mt-8">
@@ -103,7 +108,6 @@ export default async function ManagePage({
           initial={rows}
           roomTypes={roomTypes}
           currentRoomTypeId={currentRoomTypeId}
-          paid={!!fee?.paid}
         />
       </div>
     </div>

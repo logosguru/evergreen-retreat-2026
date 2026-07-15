@@ -2,7 +2,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { computeDashboard, type RoomForStats } from "@/lib/dashboard";
-import type { AttendeeWithRoom } from "@/lib/fees";
+import { paidByHead, type AttendeeWithRoom } from "@/lib/fees";
 
 export default async function AdminDashboardPage({
   params,
@@ -13,7 +13,7 @@ export default async function AdminDashboardPage({
   setRequestLocale(locale);
 
   const supabase = await createClient();
-  const [{ data: aData }, { data: rData }, { count: reqCount }] =
+  const [{ data: aData }, { data: rData }, { count: reqCount }, { data: payData }] =
     await Promise.all([
       supabase
         .from("attendees")
@@ -25,11 +25,15 @@ export default async function AdminDashboardPage({
         .from("email_requests")
         .select("id", { count: "exact", head: true })
         .eq("processed", false),
+      supabase.from("fee_payments").select("head_id, amount"),
     ]);
 
   const stats = computeDashboard(
     (aData as AttendeeWithRoom[] | null) ?? [],
     (rData as RoomForStats[] | null) ?? [],
+    paidByHead(
+      (payData as { head_id: string; amount: number }[] | null) ?? [],
+    ),
   );
 
   const t = await getTranslations("Admin");

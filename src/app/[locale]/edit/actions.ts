@@ -1,14 +1,40 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import type { PersonInput } from "../register/actions";
+import { clean, rowFor, validatePerson } from "@/lib/attendee-rows";
+import type { PersonInput } from "@/lib/attendee-rows";
 import { verifyTurnstile } from "@/lib/turnstile";
 
+export type { PersonInput };
 export type EditResult = { ok: true } | { ok: false; error: string };
 
-function clean(s?: string | null): string | null {
-  const v = (s ?? "").trim();
-  return v === "" ? null : v;
+// 본인 가구에 비-가구주 멤버 1명 추가. head는 my_household_head_ids로 검증(클라이언트 신뢰 안 함).
+export async function addMyMember(input: PersonInput): Promise<EditResult> {
+  if (validatePerson(input)) return { ok: false, error: "validationName" };
+  const supabase = await createClient();
+  const { data: headData } = await supabase.rpc("my_household_head_ids");
+  const headId = ((headData as string[] | null) ?? [])[0];
+  if (!headId) return { ok: false, error: "updateError" };
+  const { error } = await supabase.from("attendees").insert(
+    rowFor(input, {
+      id: crypto.randomUUID(),
+      is_householder: false,
+      email: null,
+      householder_id: headId,
+    }),
+  );
+  if (error) return { ok: false, error: "updateError" };
+  return { ok: true };
+}
+
+// 본인 가구의 비-가구주 멤버 삭제 (RPC가 head/타 가구 거부).
+export async function removeMyMember(memberId: string): Promise<EditResult> {
+  const supabase = await createClient();
+  const { error } = await supabase.rpc("remove_my_member", {
+    member_id: memberId,
+  });
+  if (error) return { ok: false, error: "updateError" };
+  return { ok: true };
 }
 
 // 본인(또는 가구 구성원) 행 수정. RLS가 본인 가구 행만 허용하고,
@@ -75,30 +101,18 @@ export async function requestEditMagicLink(params: {
   return { ok: true };
 }
 
-// 본인 가구의 객실 타입 선택(가구주 행에 저장). RLS가 본인 가구 행만 허용.
-// paid=true면 납부액과 불일치 방지를 위해 거부.
+// 본인 가구의 객실 타입 선택(가구주 행). 납부 여부와 무관하게 변경 허용(차액은 원장/잔액으로 정산).
 export async function updateMyRoomType(
   roomTypeId: string | null,
 ): Promise<EditResult> {
   const supabase = await createClient();
-  const { data: idData } = await supabase.rpc("my_attendee_ids");
-  const myIds = (idData as string[] | null) ?? [];
-  if (myIds.length === 0) return { ok: false, error: "updateError" };
-
-  // 본인 가구의 가구주 행 찾기 (본인이 head이거나, 본인 id를 householder_id로 갖는 가구)
-  const { data: headRows } = await supabase
-    .from("attendees")
-    .select("id, paid")
-    .eq("is_householder", true)
-    .or(`id.in.(${myIds.join(",")}),householder_id.in.(${myIds.join(",")})`);
-  const head = (headRows as { id: string; paid: boolean }[] | null)?.[0];
-  if (!head) return { ok: false, error: "updateError" };
-  if (head.paid) return { ok: false, error: "updateError" };
-
+  const { data: headData } = await supabase.rpc("my_household_head_ids");
+  const headId = ((headData as string[] | null) ?? [])[0];
+  if (!headId) return { ok: false, error: "updateError" };
   const { error } = await supabase
     .from("attendees")
     .update({ requested_room_type_id: roomTypeId })
-    .eq("id", head.id);
+    .eq("id", headId);
   if (error) return { ok: false, error: "updateError" };
   return { ok: true };
 }
