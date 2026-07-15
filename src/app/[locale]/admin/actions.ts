@@ -32,6 +32,38 @@ export async function setPaid(id: string, paid: boolean) {
   return { ok: !error };
 }
 
+// 회비 납입/환불 1건 기록 (관리자 전용). amount 양수=납입, 음수=환불.
+export async function addPayment(input: {
+  headId: string;
+  amount: number;
+  method: string | null;
+  paidAt: string; // YYYY-MM-DD
+  note?: string | null;
+}): Promise<{ ok: boolean; error?: string }> {
+  const supabase = await createClient();
+  if (!(await isAdminSession(supabase))) return { ok: false, error: "notAdmin" };
+  if (!Number.isFinite(input.amount) || Math.round(input.amount) === 0) {
+    return { ok: false, error: "validationAmount" };
+  }
+  if (!input.paidAt) return { ok: false, error: "validationDate" };
+  const { error } = await supabase.from("fee_payments").insert({
+    head_id: input.headId,
+    amount: Math.round(input.amount),
+    method: clean(input.method),
+    note: clean(input.note ?? null),
+    paid_at: input.paidAt,
+  });
+  return error ? { ok: false, error: "paymentError" } : { ok: true };
+}
+
+// 납입 기록 삭제 (오기재 정정, 관리자 전용).
+export async function deletePayment(id: string): Promise<{ ok: boolean }> {
+  const supabase = await createClient();
+  if (!(await isAdminSession(supabase))) return { ok: false };
+  const { error } = await supabase.from("fee_payments").delete().eq("id", id);
+  return { ok: !error };
+}
+
 // 성도 언어 지정 (관리자 전용).
 export async function setLanguage(id: string, language: Language) {
   const supabase = await createClient();
