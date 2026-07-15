@@ -164,25 +164,33 @@ export function AdminDashboard({ stats }: { stats: DashboardStats }) {
         {/* 회비 현황 */}
         <Card tone="amber" title={t("dashFees")}>
           <p className="text-3xl font-bold text-amber-800">
-            {formatUSD(stats.paidTotal)}
+            {formatUSD(stats.collected)}
           </p>
           <p className="mt-1 text-sm text-amber-700">
             / {formatUSD(stats.grandTotal)} {t("dashExpected")}
           </p>
           <div className="mt-2">
-            <Bar value={stats.paidTotal} total={stats.grandTotal} tone="amber" />
+            <Bar value={stats.collected} total={stats.grandTotal} tone="amber" />
           </div>
           <div className="mt-3 flex flex-wrap justify-between gap-x-4 gap-y-1 text-sm">
             <span className="text-amber-700">
-              {t("dashUnpaid")}{" "}
+              {t("dashOutstanding")}{" "}
               <span className="font-medium text-amber-900">
-                {formatUSD(stats.unpaidTotal)}
+                {formatUSD(stats.outstanding)}
               </span>
             </span>
+            {stats.refundDue > 0 && (
+              <span className="text-rose-700">
+                {t("dashRefundDue")}{" "}
+                <span className="font-medium text-rose-900">
+                  {formatUSD(stats.refundDue)}
+                </span>
+              </span>
+            )}
             <span className="text-amber-700">
-              {t("dashPaidHouseholds")}{" "}
+              {t("dashSettledHouseholds")}{" "}
               <span className="font-medium text-amber-900">
-                {stats.paidHouseholds}/{stats.households}
+                {stats.settledHouseholds}/{stats.households}
               </span>
             </span>
           </div>
