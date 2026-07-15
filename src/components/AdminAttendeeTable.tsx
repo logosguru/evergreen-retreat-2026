@@ -9,12 +9,13 @@ import {
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
-import { setPaid, setLanguage } from "@/app/[locale]/admin/actions";
+import { setLanguage } from "@/app/[locale]/admin/actions";
 import { LANGUAGES, type Language } from "@/lib/types";
 import {
   personFee,
   formatUSD,
   groupHouseholds,
+  householdBalance,
   type AttendeeWithRoom,
 } from "@/lib/fees";
 import { displayName, nameKey } from "@/lib/names";
@@ -70,8 +71,10 @@ function SortTh({
 
 export function AdminAttendeeTable({
   attendees,
+  paidByHead,
 }: {
   attendees: AttendeeWithRoom[];
+  paidByHead: Record<string, number>;
 }) {
   const t = useTranslations("Admin");
   const tr = useTranslations("Role");
@@ -87,7 +90,6 @@ export function AdminAttendeeTable({
   );
   const router = useRouter();
   const [, start] = useTransition();
-  const [busy, setBusy] = useState<string | null>(null);
   const [sort, setSort] = useState<SortState>({ key: null, dir: "asc" });
   // 보기 모드: 기본 가구별. 마지막 선택을 localStorage에 보존해
   // 편집 페이지에서 돌아와도(어떤 경로든) 이전 보기로 복원된다.
@@ -117,15 +119,6 @@ export function AdminAttendeeTable({
     });
   }
 
-  function togglePaid(headId: string, current: boolean) {
-    setBusy(headId);
-    start(async () => {
-      await setPaid(headId, !current);
-      setBusy(null);
-      router.refresh();
-    });
-  }
-
   function feeText(a: AttendeeWithRoom) {
     const f = personFee(a);
     if (a.is_under_6) return tf("exempt");
@@ -133,20 +126,33 @@ export function AdminAttendeeTable({
     return formatUSD(f);
   }
 
-  function paidButton(headId: string, headPaid: boolean) {
+  const totalByHead = new Map(
+    groupHouseholds(attendees).map((h) => [h.head.id, h.total]),
+  );
+
+  function balanceBadge(headId: string) {
+    const total = totalByHead.get(headId) ?? 0;
+    const paid = paidByHead[headId] ?? 0;
+    const bal = householdBalance(total, paid);
+    const cls =
+      bal > 0
+        ? "bg-amber-100 text-amber-800"
+        : bal < 0
+          ? "bg-rose-100 text-rose-700"
+          : "bg-emerald-100 text-emerald-700";
+    const label =
+      bal > 0
+        ? t("balanceOwe", { amount: formatUSD(bal) })
+        : bal < 0
+          ? t("balanceRefund", { amount: formatUSD(-bal) })
+          : t("balanceSettled");
     return (
-      <button
-        type="button"
-        disabled={busy === headId}
-        onClick={() => togglePaid(headId, headPaid)}
-        className={
-          headPaid
-            ? "rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700 hover:bg-emerald-200 disabled:opacity-60"
-            : "rounded-full bg-slate-200 px-3 py-1 text-xs font-medium text-slate-600 hover:bg-slate-300 disabled:opacity-60"
-        }
+      <Link
+        href={`/admin/attendees/${headId}/payments`}
+        className={`inline-block rounded-full px-3 py-1 text-xs font-medium hover:brightness-95 ${cls}`}
       >
-        {headPaid ? tf("paid") : tf("unpaid")}
-      </button>
+        {label}
+      </Link>
     );
   }
 
@@ -168,8 +174,9 @@ export function AdminAttendeeTable({
     );
   }
 
-  // 두 보기가 공유하는 셀: 직분/구역/참석/방/언어/회비
-  function personCells(a: AttendeeWithRoom) {
+  // 두 보기가 공유하는 셀: 직분/구역/참석/방/언어(+회비, 리스트 보기는 잔액 배지로 대체하므로 생략 가능)
+  function personCells(a: AttendeeWithRoom, opts?: { fee?: boolean }) {
+    const showFee = opts?.fee ?? true;
     return (
       <>
         <td className="px-3 py-2 text-slate-600">
@@ -205,7 +212,9 @@ export function AdminAttendeeTable({
             ))}
           </select>
         </td>
-        <td className="px-3 py-2 text-right text-slate-700">{feeText(a)}</td>
+        {showFee && (
+          <td className="px-3 py-2 text-right text-slate-700">{feeText(a)}</td>
+        )}
       </>
     );
   }
@@ -283,7 +292,7 @@ export function AdminAttendeeTable({
                             </span>
                           )}
                           <span className="flex-1" />
-                          {paidButton(h.head.id, h.head.paid)}
+                          {balanceBadge(h.head.id)}
                         </div>
                       </td>
                     </tr>
@@ -350,9 +359,8 @@ export function AdminAttendeeTable({
                 sort={sort}
                 onToggle={toggleSort}
               />
-              <th className="px-3 py-2 text-right font-medium">{t("colPaid")}</th>
               <th className="px-3 py-2 text-left font-medium">
-                {t("colPayment")}
+                {t("colBalance")}
               </th>
               <SortTh
                 k="registered"
@@ -366,7 +374,6 @@ export function AdminAttendeeTable({
             {rows.map((a) => {
               const head = headOf(a, heads);
               const headId = head?.id ?? a.id;
-              const headPaid = head?.paid ?? a.paid;
               return (
                 <tr key={a.id}>
                   <td className="px-3 py-2">{nameLink(a)}</td>
@@ -378,8 +385,10 @@ export function AdminAttendeeTable({
                       </span>
                     )}
                   </td>
-                  {personCells(a)}
-                  <td className="px-3 py-2">{paidButton(headId, headPaid)}</td>
+                  {personCells(a, { fee: false })}
+                  <td className="px-3 py-2">
+                    {a.is_householder ? balanceBadge(headId) : null}
+                  </td>
                   <td className="whitespace-nowrap px-3 py-2 text-slate-500">
                     {dateFmt.format(new Date(a.created_at))}
                   </td>

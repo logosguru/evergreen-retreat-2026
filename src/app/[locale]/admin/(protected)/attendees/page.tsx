@@ -3,7 +3,13 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { AdminAttendeeTable } from "@/components/AdminAttendeeTable";
 import { EmailRequestBanner, type EmailRequest } from "@/components/EmailRequestBanner";
-import { groupHouseholds, withHouseholdRoomType, type AttendeeWithRoom } from "@/lib/fees";
+import {
+  groupHouseholds,
+  withHouseholdRoomType,
+  paidByHead,
+  householdBalance,
+  type AttendeeWithRoom,
+} from "@/lib/fees";
 
 export default async function AdminAttendeesPage({
   params,
@@ -27,7 +33,18 @@ export default async function AdminAttendeesPage({
   const attendees = withHouseholdRoomType(raw);
   const households = groupHouseholds(attendees);
   const grandTotal = households.reduce((s, h) => s + h.total, 0);
-  const paidHouseholds = households.filter((h) => h.head.paid).length;
+
+  const { data: payData } = await supabase
+    .from("fee_payments")
+    .select("head_id, amount");
+  const paid = paidByHead(
+    (payData as { head_id: string; amount: number }[] | null) ?? [],
+  );
+  // 요약 통계: 수납 합계 + 정산 가구 수
+  const collected = [...paid.values()].reduce((s, v) => s + v, 0);
+  const settledHouseholds = households.filter(
+    (h) => h.total > 0 && householdBalance(h.total, paid.get(h.head.id) ?? 0) <= 0,
+  ).length;
 
   const { data: reqData } = await supabase
     .from("email_requests")
@@ -52,15 +69,18 @@ export default async function AdminAttendeesPage({
       <div className="mt-2 flex flex-wrap gap-4 text-sm text-slate-600">
         <span>{t("total", { count: attendees.length })}</span>
         <span>·</span>
-        <span>{t("paidCount", { count: paidHouseholds })}</span>
+        <span>{t("dashSettledHouseholds")}: {settledHouseholds}/{households.length}</span>
         <span>·</span>
-        <span>${grandTotal.toLocaleString("en-US")}</span>
+        <span>${collected.toLocaleString("en-US")} / ${grandTotal.toLocaleString("en-US")}</span>
       </div>
       <div className="mt-6">
         <EmailRequestBanner requests={requests} />
       </div>
       <div className="mt-6">
-        <AdminAttendeeTable attendees={attendees} />
+        <AdminAttendeeTable
+          attendees={attendees}
+          paidByHead={Object.fromEntries(paid)}
+        />
       </div>
     </div>
   );
