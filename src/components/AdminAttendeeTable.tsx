@@ -134,14 +134,20 @@ export function AdminAttendeeTable({
     const total = totalByHead.get(headId) ?? 0;
     const paid = paidByHead[headId] ?? 0;
     const bal = householdBalance(total, paid);
-    const cls =
-      bal > 0
+    // 회비 total=0(객실 타입 미선택 등)이면 아직 낼 금액이 정해지지 않은 상태 →
+    // '정산 완료'가 아니라 중립 '회비 미산정'으로 표시(오해 방지). 납입액이 있으면
+    // 예외적으로 잔액에 따라 처리(초과=환불).
+    const noFee = total === 0 && paid === 0;
+    const cls = noFee
+      ? "bg-slate-100 text-slate-500"
+      : bal > 0
         ? "bg-amber-100 text-amber-800"
         : bal < 0
           ? "bg-rose-100 text-rose-700"
           : "bg-emerald-100 text-emerald-700";
-    const label =
-      bal > 0
+    const label = noFee
+      ? t("balanceNoFee")
+      : bal > 0
         ? t("balanceOwe", { amount: formatUSD(bal) })
         : bal < 0
           ? t("balanceRefund", { amount: formatUSD(-bal) })
