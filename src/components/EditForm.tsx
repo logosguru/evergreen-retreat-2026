@@ -125,11 +125,14 @@ export function EditForm({
 
   function removeMember(id: string) {
     if (!window.confirm(t("confirmRemove"))) return;
+    setErrorId(null);
     start(async () => {
       const r = await removeMyMember(id);
       if (r.ok) {
         setRows((prev) => prev.filter((row) => row.id !== id));
         router.refresh();
+      } else {
+        setErrorId(id);
       }
     });
   }
