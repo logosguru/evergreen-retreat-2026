@@ -26,18 +26,23 @@ language sql stable security definer set search_path = public as $$
 $$;
 grant execute on function public.my_household_head_ids to authenticated;
 
--- 가구 회비 total = 선택 타입 1인 단가 × (해당 가구 6세 이상 인원수). 미선택/미존재 = 0.
+-- 가구 회비 total = 선택 타입 1인 단가 × 6세 이상 인원수. 관리자 또는 본인 가구만 실값, 그 외 0.
 create or replace function public.household_total(head_id uuid)
 returns int
 language sql stable security definer set search_path = public as $$
-  select (
-    coalesce(
-      (select rt.price_per_person from public.room_types rt
-        where rt.id = (select requested_room_type_id from public.attendees where id = head_id)),
-      0)
-    * (select count(*) from public.attendees a
-        where (a.id = head_id or a.householder_id = head_id) and not a.is_under_6)
-  )::int;
+  select case
+    when public.is_admin()
+      or head_id in (select public.my_household_head_ids())
+    then (
+      coalesce(
+        (select rt.price_per_person from public.room_types rt
+          where rt.id = (select requested_room_type_id from public.attendees where id = head_id)),
+        0)
+      * (select count(*) from public.attendees a
+          where (a.id = head_id or a.householder_id = head_id) and not a.is_under_6)
+    )
+    else 0
+  end::int;
 $$;
 grant execute on function public.household_total to authenticated;
 
@@ -88,21 +93,130 @@ language sql stable security definer set search_path = public as $$
     from public.attendees
     where id in (select public.my_household_head_ids())
     limit 1
+  ),
+  c as (
+    select
+      public.household_total((select id from h)) as total,
+      (select requested_room_type_id from h) is not null as type_selected,
+      coalesce((select sum(amount)::int from public.fee_payments
+                where head_id = (select id from h)), 0) as paid_total
   )
-  select
-    public.household_total((select id from h)) as total,
-    (select requested_room_type_id from h) is not null as type_selected,
-    coalesce((select sum(amount)::int from public.fee_payments
-              where head_id = (select id from h)), 0) as paid_total,
-    (public.household_total((select id from h))
-      - coalesce((select sum(amount)::int from public.fee_payments
-                  where head_id = (select id from h)), 0))::int as balance;
+  select total, type_selected, paid_total, (total - paid_total)::int as balance from c;
 $$;
 grant execute on function public.my_household_fee to authenticated;
 
--- 백필: 기존 paid=true 가구주는 원장 1건('import')으로 이관해 잔액을 0에서 출발.
+-- 백필: 기존 paid=true 가구주는 원장 1건('import')으로 이관 (household_total 대신 공식 인라인 — 가드 우회).
 insert into public.fee_payments (head_id, amount, method, note, paid_at)
-select a.id, public.household_total(a.id), 'import', '기존 납부 이관',
-       coalesce(a.paid_at::date, current_date)
+select a.id,
+  (coalesce((select rt.price_per_person from public.room_types rt
+              where rt.id = a.requested_room_type_id), 0)
+   * (select count(*) from public.attendees m
+        where (m.id = a.id or m.householder_id = a.id) and not m.is_under_6))::int,
+  'import', '기존 납부 이관', coalesce(a.paid_at::date, current_date)
 from public.attendees a
-where a.is_householder and a.paid and public.household_total(a.id) > 0;
+where a.is_householder and a.paid
+  and (coalesce((select rt.price_per_person from public.room_types rt
+                  where rt.id = a.requested_room_type_id), 0)
+       * (select count(*) from public.attendees m
+            where (m.id = a.id or m.householder_id = a.id) and not m.is_under_6)) > 0;
+
+-- 가구주 삭제/강등 시 회비 납입 이력을 후속 가구주로 이관 (cascade 소실/orphan 방지).
+create or replace function public.admin_delete_attendee(target uuid)
+returns void
+language plpgsql
+as $$
+declare
+  is_head boolean;
+  new_head uuid;
+begin
+  if not public.is_admin() then
+    raise exception 'not authorized';
+  end if;
+
+  select is_householder into is_head from public.attendees where id = target;
+  if is_head is null then
+    return;
+  end if;
+
+  if is_head then
+    select id into new_head
+      from public.attendees
+      where householder_id = target
+      order by created_at asc
+      limit 1;
+    if new_head is not null then
+      update public.attendees
+        set is_householder = true, householder_id = null
+        where id = new_head;
+      update public.attendees
+        set householder_id = new_head
+        where householder_id = target and id <> new_head;
+      -- 납입 이력을 승격된 새 가구주로 이관 (없으면 solo 가구 → cascade 정리)
+      update public.fee_payments set head_id = new_head where head_id = target;
+    end if;
+  end if;
+
+  delete from public.attendees where id = target;
+end $$;
+
+create or replace function public.admin_set_householder(target uuid, new_head uuid)
+returns void
+language plpgsql
+as $$
+declare
+  t_is_head boolean;
+  nh_is_head boolean;
+  promoted uuid;
+begin
+  if not public.is_admin() then
+    raise exception 'not authorized';
+  end if;
+
+  select is_householder into t_is_head from public.attendees where id = target;
+  if t_is_head is null then
+    raise exception 'target not found';
+  end if;
+
+  if new_head is not null then
+    if new_head = target then
+      raise exception 'cannot attach to self';
+    end if;
+    select is_householder into nh_is_head from public.attendees where id = new_head;
+    if nh_is_head is null then
+      raise exception 'new head not found';
+    end if;
+    if not nh_is_head then
+      raise exception 'new head is not a householder';
+    end if;
+  end if;
+
+  if t_is_head and new_head is not null then
+    select id into promoted
+      from public.attendees
+      where householder_id = target
+      order by created_at asc
+      limit 1;
+    if promoted is not null then
+      update public.attendees
+        set is_householder = true, householder_id = null
+        where id = promoted;
+      update public.attendees
+        set householder_id = promoted
+        where householder_id = target and id <> promoted;
+    end if;
+    -- 강등되는 가구주의 납입 이력을 후속 가구주(승격 구성원, 없으면 편입 가구)로 이관
+    update public.fee_payments
+      set head_id = coalesce(promoted, new_head)
+      where head_id = target;
+  end if;
+
+  if new_head is null then
+    update public.attendees
+      set is_householder = true, householder_id = null
+      where id = target;
+  else
+    update public.attendees
+      set is_householder = false, householder_id = new_head
+      where id = target;
+  end if;
+end $$;
