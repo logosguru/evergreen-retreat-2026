@@ -224,6 +224,7 @@
     "dashSettledHouseholds": "Familias liquidadas",
     "dashNeedsAction": "Requiere revisión",
     "dashNeedsActionEmpty": "No hay nada por revisar.",
+    "dashNeedsActionNote": "Los pagos de PayPal no se registran automáticamente. La lista siguiente muestra todas las familias con saldo pendiente (no pagadas y pagadas-pero-aún-no-registradas).",
     "dashNeedsActionHint": "Coteje cada uno en PayPal por nombre, grupo celular y monto, luego registre el pago.",
     "dashNeedsPayment": "Pago / verificación pendiente",
     "dashNeedsRefund": "Reembolso pendiente"

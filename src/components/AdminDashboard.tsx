@@ -248,16 +248,18 @@ export function AdminDashboard({ stats }: { stats: DashboardStats }) {
             </span>
           )}
         </h2>
+        <div className="mt-3 rounded-lg bg-sky-50 px-4 py-3 text-xs leading-relaxed ring-1 ring-sky-100">
+          <p className="font-semibold text-sky-900">
+            {t("dashNeedsActionNote")}
+          </p>
+          <p className="mt-1 text-sky-800">{t("dashNeedsActionHint")}</p>
+        </div>
         {stats.needsAction.length === 0 ? (
           <p className="mt-3 text-sm text-slate-400">
             {t("dashNeedsActionEmpty")}
           </p>
         ) : (
-          <>
-            <p className="mt-1 text-xs text-slate-500">
-              {t("dashNeedsActionHint")}
-            </p>
-            <div className="mt-3 space-y-4">
+          <div className="mt-3 space-y-4">
               {oweItems.length > 0 && (
                 <div>
                   <p className="mb-1.5 text-xs font-medium text-amber-700">
@@ -274,8 +276,7 @@ export function AdminDashboard({ stats }: { stats: DashboardStats }) {
                   <ul className="space-y-1.5">{refundItems.map(needsRow)}</ul>
                 </div>
               )}
-            </div>
-          </>
+          </div>
         )}
       </section>
 

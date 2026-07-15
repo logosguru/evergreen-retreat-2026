@@ -224,6 +224,7 @@
     "dashSettledHouseholds": "Settled households",
     "dashNeedsAction": "Needs review",
     "dashNeedsActionEmpty": "Nothing needs review.",
+    "dashNeedsActionNote": "PayPal payments are not recorded automatically. The list below shows every household with a remaining balance (both unpaid and paid-but-not-yet-recorded).",
     "dashNeedsActionHint": "Cross-check each against PayPal by name, cell group, and amount, then record the payment.",
     "dashNeedsPayment": "Awaiting payment / verification",
     "dashNeedsRefund": "Refund due"
