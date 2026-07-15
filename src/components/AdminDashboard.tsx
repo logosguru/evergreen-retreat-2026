@@ -1,6 +1,8 @@
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import { formatUSD } from "@/lib/fees";
-import type { DashboardStats } from "@/lib/dashboard";
+import { displayName } from "@/lib/names";
+import type { DashboardStats, NeedsActionItem } from "@/lib/dashboard";
 
 // 카드 색 = 영역(등록/언어/방/회비)을 구분하는 정보. 정적 클래스 문자열(Tailwind 스캔용).
 const TONES = {
@@ -95,6 +97,45 @@ export function AdminDashboard({ stats }: { stats: DashboardStats }) {
     { key: "es", count: stats.language.es },
   ];
   const langMax = Math.max(1, ...languages.map((l) => l.count));
+
+  const oweItems = stats.needsAction.filter((n) => n.balance > 0);
+  const refundItems = stats.needsAction.filter((n) => n.balance < 0);
+
+  const needsRow = (n: NeedsActionItem) => (
+    <li
+      key={n.headId}
+      className="flex flex-wrap items-center justify-between gap-2 rounded-lg bg-slate-50 px-3 py-2"
+    >
+      <div className="flex items-center gap-2">
+        <Link
+          href={`/admin/attendees/${n.headId}/payments`}
+          className="font-medium text-emerald-700 hover:underline"
+        >
+          {displayName(n)}
+        </Link>
+        {n.district && (
+          <span className="text-xs text-slate-500">{td(n.district)}</span>
+        )}
+      </div>
+      <div className="flex items-center gap-3 text-sm">
+        <span className="text-slate-500">
+          {t("paymentTotal")} {formatUSD(n.total)} · {t("paymentPaid")}{" "}
+          {formatUSD(n.paid)}
+        </span>
+        <span
+          className={
+            n.balance > 0
+              ? "rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800"
+              : "rounded-full bg-rose-100 px-2.5 py-0.5 text-xs font-semibold text-rose-700"
+          }
+        >
+          {n.balance > 0
+            ? `+${formatUSD(n.balance)}`
+            : `-${formatUSD(-n.balance)}`}
+        </span>
+      </div>
+    </li>
+  );
 
   return (
     <div className="space-y-4">
@@ -196,6 +237,47 @@ export function AdminDashboard({ stats }: { stats: DashboardStats }) {
           </div>
         </Card>
       </div>
+
+      {/* 확인 필요: 잔액≠0 가구(추가납부·확인 대기 / 환불 대기) — 관리자가 PayPal 대조 후 기록 */}
+      <section className="rounded-2xl bg-white p-5 ring-1 ring-slate-200">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+          {t("dashNeedsAction")}
+          {stats.needsAction.length > 0 && (
+            <span className="ml-1 text-slate-400">
+              ({stats.needsAction.length})
+            </span>
+          )}
+        </h2>
+        {stats.needsAction.length === 0 ? (
+          <p className="mt-3 text-sm text-slate-400">
+            {t("dashNeedsActionEmpty")}
+          </p>
+        ) : (
+          <>
+            <p className="mt-1 text-xs text-slate-500">
+              {t("dashNeedsActionHint")}
+            </p>
+            <div className="mt-3 space-y-4">
+              {oweItems.length > 0 && (
+                <div>
+                  <p className="mb-1.5 text-xs font-medium text-amber-700">
+                    {t("dashNeedsPayment")} ({oweItems.length})
+                  </p>
+                  <ul className="space-y-1.5">{oweItems.map(needsRow)}</ul>
+                </div>
+              )}
+              {refundItems.length > 0 && (
+                <div>
+                  <p className="mb-1.5 text-xs font-medium text-rose-700">
+                    {t("dashNeedsRefund")} ({refundItems.length})
+                  </p>
+                  <ul className="space-y-1.5">{refundItems.map(needsRow)}</ul>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </section>
 
       {/* 보조: 구역별 · 직분별 (중립 카드, 칩 목록) */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">

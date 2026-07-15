@@ -22,6 +22,17 @@ export interface CountItem {
   count: number;
 }
 
+// 관리자 확인/조치가 필요한 가구(잔액≠0). balance>0=추가납부·확인 대기, <0=환불 대기.
+export interface NeedsActionItem {
+  headId: string;
+  korean_name: string | null;
+  english_name: string | null;
+  district: string | null;
+  total: number;
+  paid: number;
+  balance: number;
+}
+
 export interface DashboardStats {
   totalPeople: number;
   households: number;
@@ -37,6 +48,7 @@ export interface DashboardStats {
   outstanding: number; // 미납 합계 Σmax(0, balance)
   refundDue: number; // 환불 필요 합계 Σmax(0, -balance)
   settledHouseholds: number; // 정산 완료(total>0 && balance<=0) 가구 수
+  needsAction: NeedsActionItem[]; // 잔액≠0 가구(추가납부·확인/환불 대기), 잔액 큰 순
   byDistrict: CountItem[];
   byRole: CountItem[];
 }
@@ -52,6 +64,7 @@ export function computeDashboard(
   let outstanding = 0;
   let refundDue = 0;
   let settledHouseholds = 0;
+  const needsAction: NeedsActionItem[] = [];
   for (const h of households) {
     const p = paid.get(h.head.id) ?? 0;
     const bal = householdBalance(h.total, p);
@@ -59,7 +72,20 @@ export function computeDashboard(
     if (bal > 0) outstanding += bal;
     if (bal < 0) refundDue += -bal;
     if (h.total > 0 && bal <= 0) settledHouseholds += 1;
+    if (bal !== 0) {
+      needsAction.push({
+        headId: h.head.id,
+        korean_name: h.head.korean_name,
+        english_name: h.head.english_name,
+        district: h.head.district,
+        total: h.total,
+        paid: p,
+        balance: bal,
+      });
+    }
   }
+  // 잔액 절댓값 큰 순(조치 우선순위)
+  needsAction.sort((a, b) => Math.abs(b.balance) - Math.abs(a.balance));
 
   // 객실 타입별 정원/방수
   const cap = new Map<string, { capacityTotal: number; roomCount: number }>();
@@ -119,6 +145,7 @@ export function computeDashboard(
     outstanding,
     refundDue,
     settledHouseholds,
+    needsAction,
     byDistrict: tally((a) => a.district).sort((x, y) =>
       x.key.localeCompare(y.key),
     ),

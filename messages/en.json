@@ -221,7 +221,12 @@
     "dashCollected": "Collected",
     "dashOutstanding": "Outstanding",
     "dashRefundDue": "Refunds due",
-    "dashSettledHouseholds": "Settled households"
+    "dashSettledHouseholds": "Settled households",
+    "dashNeedsAction": "Needs review",
+    "dashNeedsActionEmpty": "Nothing needs review.",
+    "dashNeedsActionHint": "Cross-check each against PayPal by name, cell group, and amount, then record the payment.",
+    "dashNeedsPayment": "Awaiting payment / verification",
+    "dashNeedsRefund": "Refund due"
   },
   "Fields": {
     "korean_name": "Korean name",

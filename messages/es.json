@@ -221,7 +221,12 @@
     "dashCollected": "Recaudado",
     "dashOutstanding": "Pendiente",
     "dashRefundDue": "Reembolsos pendientes",
-    "dashSettledHouseholds": "Familias liquidadas"
+    "dashSettledHouseholds": "Familias liquidadas",
+    "dashNeedsAction": "Requiere revisión",
+    "dashNeedsActionEmpty": "No hay nada por revisar.",
+    "dashNeedsActionHint": "Coteje cada uno en PayPal por nombre, grupo celular y monto, luego registre el pago.",
+    "dashNeedsPayment": "Pago / verificación pendiente",
+    "dashNeedsRefund": "Reembolso pendiente"
   },
   "Fields": {
     "korean_name": "Nombre en coreano",
