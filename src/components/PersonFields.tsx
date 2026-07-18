@@ -186,6 +186,7 @@ export function PersonFields({
           rows={2}
           value={value.note ?? ""}
           onChange={(e) => onChange({ note: e.target.value })}
+          placeholder={t("notePlaceholder")}
           className={inputClass}
         />
       </div>

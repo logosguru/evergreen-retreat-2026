@@ -245,7 +245,8 @@
     "departure_at": "Fecha de salida",
     "partialDateHint": "Puede dejarlas en blanco si las fechas aún no están confirmadas.",
     "is_under_6": "Menor de 6 años (exento de cuota, no cuenta en la ocupación de la habitación)",
-    "note": "Nota"
+    "note": "Solicitudes",
+    "notePlaceholder": "Indíquenos con quién le gustaría compartir habitación o cualquier otra solicitud."
   },
   "Gender": {
     "male": "Hombre",

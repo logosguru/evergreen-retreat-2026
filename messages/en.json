@@ -245,7 +245,8 @@
     "departure_at": "Departure date",
     "partialDateHint": "You can leave these blank if the dates are not confirmed yet.",
     "is_under_6": "Under age 6 (fee exempt, not counted in room occupancy)",
-    "note": "Note"
+    "note": "Requests",
+    "notePlaceholder": "Let us know who you'd like to room with, or any other requests."
   },
   "Gender": {
     "male": "Male",
