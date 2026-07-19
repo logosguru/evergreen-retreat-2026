@@ -253,7 +253,7 @@
     "notePlaceholder": "Let us know who you'd like to room with, or any other requests.",
     "pickup": "Ride pickup (church van)",
     "pickupNone": "Not needed",
-    "pickupHint": "We are planning to run a church van for those who need a ride. If you need pickup, choose a location."
+    "pickupHint": "Please drive your own vehicle if you can. The church van is for those who are unable to drive or do not have a car — choose a pickup location only if you need one."
   },
   "Gender": {
     "male": "Male",
