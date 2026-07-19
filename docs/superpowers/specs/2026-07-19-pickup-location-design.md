@@ -42,12 +42,14 @@
 
 ### 3. 폼 — `src/components/PersonFields.tsx` (4개 폼 공용)
 
-- "차량 필요 (교회 밴)" 체크박스 — 기본 해제
-- 체크 시 픽업 장소 select 노출(3개 옵션, 부분참석 날짜 필드와 같은 조건부
-  패턴). 장소 미선택 상태로 제출 시 해당 폼의 기존 검증 방식대로 차단
-- 체크 해제 시 `pickup_location`을 빈값으로 리셋 (stale 값 방지)
-- `emptyPerson()`에 초기값 추가
-- 기존 값 → 폼 초기값 매핑(`EditForm`, `AdminEditForm` 등 attendee→PersonInput
+- **단일 select 하나**: "차량 픽업 (교회 밴)" — 기본 옵션 "필요 없음" +
+  장소 3개. (계획 단계 수정: 체크박스+조건부 select 안은 체크박스 상태가
+  `PersonInput` 밖의 UI 전용 상태라 "체크했는데 장소 미선택" 차단을 4개
+  폼에 각각 구현해야 함. 단일 select는 그 모순 상태 자체가 표현 불가 →
+  Q3-A "필요 시 장소 필수"가 구조적으로 보장됨)
+- 안내 문구: 교회 밴 운영 예정, 픽업 필요 시 장소 선택
+- `emptyPerson()`에 초기값(`""` = 필요 없음) 추가
+- 기존 값 → 폼 초기값 매핑(`EditForm`, `AdminEditForm`의 attendee→input
   변환 지점)에 `pickup_location` 추가
 
 ### 4. 관리자 화면
@@ -56,19 +58,22 @@
 - `src/lib/dashboard.ts` `computeDashboard()`: 장소별 픽업 인원 집계 추가
 - `src/components/AdminDashboard.tsx`: 픽업 집계 카드 (장소별 인원 + 합계)
 
-### 5. i18n — `messages/{ko,en}.json`
+### 5. i18n — `messages/{ko,en,es}.json`
 
-- `Fields`: 체크박스 라벨("차량이 필요해요 (교회 밴)" / "I need a ride (church van)"),
-  장소 select 라벨
+- `Fields`: select 라벨("차량 픽업 (교회 밴)"), "필요 없음" 옵션, 안내 문구
 - `Pickup`: `manhattan` → "Manhattan", `flushing` → "Flushing",
-  `long_island` → "Long Island (교회)" / "Long Island (Church)"
-- `Admin`(대시보드): 픽업 카드 제목·합계 문구
-- es UI 번역은 기존 방침대로 후속 (ko/en만)
+  `long_island` → "Long Island (교회)" / "Long Island (Church)" /
+  "Long Island (Iglesia)"
+- `Admin`: 참석자 테이블 "차량" 열 제목 + 대시보드 픽업 카드 문구
+- (계획 단계 수정: Spanish UI가 이미 완성돼 `messages/es.json`에 `Fields`가
+  존재 → 키 누락 시 es 화면이 깨지므로 es도 함께 추가)
 
 ## 오류 처리
 
-- 서버 액션: `pickup_location` 값이 3개 토큰 외이면 검증 오류 반환
-- 클라이언트: 체크 상태에서 장소 미선택이면 제출 차단
+- 서버: `pickup_location` 값이 3개 토큰 외이면 `null`(차량 불필요)로 정규화
+  (`cleanPickup()` — 위조 요청만 해당, 정상 UI에선 발생 불가. DB enum이
+  최종 방어선)
+- 클라이언트: 단일 select 구조상 잘못된 상태 입력 자체가 불가능
 
 ## 테스트/검증
 
