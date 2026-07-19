@@ -83,6 +83,7 @@ export function AdminAttendeeTable({
   const tf = useTranslations("Fee");
   const trm = useTranslations("Rooms");
   const tl = useTranslations("Language");
+  const tp = useTranslations("Pickup");
   const locale = useLocale();
   const dateFmt = new Intl.DateTimeFormat(
     locale === "en" ? "en-US" : locale === "es" ? "es-ES" : "ko-KR",
@@ -205,6 +206,9 @@ export function AdminAttendeeTable({
         <td className="px-3 py-2 text-slate-600">
           {a.rooms?.label ?? trm("unassigned")}
         </td>
+        <td className="px-3 py-2 text-slate-600">
+          {a.pickup_location ? tp(a.pickup_location) : "—"}
+        </td>
         <td className="px-3 py-2">
           <select
             value={a.language}
@@ -266,6 +270,7 @@ export function AdminAttendeeTable({
                 <th className="px-3 py-2 text-left font-medium">{t("colDistrict")}</th>
                 <th className="px-3 py-2 text-left font-medium">{t("colAttendance")}</th>
                 <th className="px-3 py-2 text-left font-medium">{t("colRoom")}</th>
+                <th className="px-3 py-2 text-left font-medium">{t("colPickup")}</th>
                 <th className="px-3 py-2 text-left font-medium">{t("colLanguage")}</th>
                 <th className="px-3 py-2 text-right font-medium">{t("colPaid")}</th>
               </tr>
@@ -281,7 +286,7 @@ export function AdminAttendeeTable({
                 return (
                   <Fragment key={h.head.id}>
                     <tr className="bg-slate-50">
-                      <td colSpan={7} className="px-3 py-2">
+                      <td colSpan={8} className="px-3 py-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="font-semibold text-slate-900">
                             {t("groupHeader", {
@@ -359,6 +364,9 @@ export function AdminAttendeeTable({
                 sort={sort}
                 onToggle={toggleSort}
               />
+              <th className="px-3 py-2 text-left font-medium">
+                {t("colPickup")}
+              </th>
               <SortTh
                 k="language"
                 label={t("colLanguage")}
