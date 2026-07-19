@@ -3,7 +3,7 @@ import { redirect } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { EditForm } from "@/components/EditForm";
 import { HouseholdFeeCard } from "@/components/HouseholdFeeCard";
-import { buildDonateUrl } from "@/lib/paypal";
+import { buildDonateUrl, PAYPAL_ITEM_NAME } from "@/lib/paypal";
 import type { Attendee } from "@/lib/types";
 
 export default async function ManagePage({
@@ -50,7 +50,6 @@ export default async function ManagePage({
   const rows = (attendees as Attendee[] | null) ?? [];
   const head = rows.find((a) => a.is_householder);
   const paypalEmail = process.env.NEXT_PUBLIC_PAYPAL_BUSINESS_EMAIL;
-  const tFee = await getTranslations("Fee");
 
   const { data: roomTypesData } = await supabase
     .from("room_types")
@@ -74,15 +73,18 @@ export default async function ManagePage({
 
   let payUrl: string | null = null;
   if (fee && fee.balance > 0 && fee.type_selected && paypalEmail && head) {
+    // PayPal remark는 영어 고정(PAYPAL_ITEM_NAME). 한글은 PayPal 계정 기본
+    // 인코딩(windows-1252)에서 깨져 수취측 거래내역에 안 남는다.
+    // 대조용 이름도 영문 우선 (english_name → korean_name 폴백, charset=utf-8 방어).
     const name =
-      head.korean_name?.trim() || head.english_name?.trim() || "";
+      head.english_name?.trim() || head.korean_name?.trim() || "";
     const ref = head.district ? `${name} (${head.district})` : name;
     // 영수증 Reference(item_number)에 수련회명+가구 함께 노출 (Purpose 칸은 인라인 링크로 못 채움).
     payUrl = buildDonateUrl({
       email: paypalEmail,
       amount: fee.balance,
-      itemName: tFee("payItemName"),
-      itemNumber: `${tFee("payItemName")} · ${ref}`,
+      itemName: PAYPAL_ITEM_NAME,
+      itemNumber: `${PAYPAL_ITEM_NAME} - ${ref}`,
     });
   }
 
