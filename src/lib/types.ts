@@ -42,6 +42,10 @@ export type Attendance = (typeof ATTENDANCE)[number];
 export const LANGUAGES = ["ko", "en", "es"] as const; // 한국어/영어/Spanish (관리자 지정)
 export type Language = (typeof LANGUAGES)[number];
 
+// 차량(교회 밴) 픽업 장소 토큰. 라벨은 i18n "Pickup" 네임스페이스에서 번역.
+export const PICKUP_LOCATIONS = ["manhattan", "flushing", "long_island"] as const;
+export type PickupLocation = (typeof PICKUP_LOCATIONS)[number];
+
 export interface Attendee {
   id: string;
   korean_name: string | null; // korean_name 또는 english_name 중 하나 필수 (DB name_required 제약)
@@ -61,6 +65,7 @@ export interface Attendee {
   language: Language; // 성도 언어 (관리자 전용, 기본 'ko')
   is_under_6: boolean; // 6세 미만 (회비 면제·객실 인원 제외)
   attendance: Attendance;
+  pickup_location: PickupLocation | null; // 차량(교회 밴) 픽업 장소. null=불필요
   arrival_at: string | null; // 부분 참석 도착일 YYYY-MM-DD (선택, 추후 확정 가능)
   departure_at: string | null; // 부분 참석 출발일 YYYY-MM-DD (선택)
   paid: boolean; // 회비 (관리자 전용)
