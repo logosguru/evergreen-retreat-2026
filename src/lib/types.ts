@@ -74,22 +74,6 @@ export interface Attendee {
   updated_at: string;
 }
 
-// 등록 폼에서 성도가 직접 입력하는 필드 (관리자 전용 컬럼 제외)
-export interface AttendeeInput {
-  korean_name: string;
-  english_name?: string | null;
-  district?: string | null;
-  gender?: Gender | null;
-  role?: Role;
-  email?: string | null;
-  phone?: string | null;
-  is_under_6?: boolean;
-  attendance: Attendance;
-  arrival_at?: string | null;
-  departure_at?: string | null;
-  note?: string | null;
-}
-
 export const PAYMENT_METHODS = ["paypal", "cash", "check"] as const;
 export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 

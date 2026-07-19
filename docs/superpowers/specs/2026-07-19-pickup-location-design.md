@@ -25,7 +25,7 @@
 
 ### 1. DB — `supabase/migrations/0020_pickup_location.sql`
 
-- enum 타입 `pickup_location`: `'manhattan' | 'flushing' | 'long_island'`
+- enum 타입 `pickup_location_t`(기존 `language_t` 관례): `'manhattan' | 'flushing' | 'long_island'`
 - `attendees.pickup_location pickup_location NULL` 컬럼 추가
 - RLS/guard 변경 없음 (기존 정책이 행 단위로 이미 커버, 관리자 전용 컬럼 아님)
 
