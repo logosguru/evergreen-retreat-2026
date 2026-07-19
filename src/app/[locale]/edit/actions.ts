@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import { clean, rowFor, validatePerson } from "@/lib/attendee-rows";
+import { clean, cleanPickup, rowFor, validatePerson } from "@/lib/attendee-rows";
 import type { PersonInput } from "@/lib/attendee-rows";
 import { verifyTurnstile } from "@/lib/turnstile";
 
@@ -68,6 +68,7 @@ export async function updateMyAttendee(
       arrival_at: input.attendance === "partial" ? clean(input.arrival_at) : null,
       departure_at:
         input.attendance === "partial" ? clean(input.departure_at) : null,
+      pickup_location: cleanPickup(input.pickup_location),
       note: clean(input.note),
     })
     .eq("id", id);

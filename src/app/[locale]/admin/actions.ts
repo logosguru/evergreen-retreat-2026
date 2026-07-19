@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Language } from "@/lib/types";
 import {
   clean,
+  cleanPickup,
   rowFor,
   validatePerson,
   type PersonInput,
@@ -271,6 +272,7 @@ export async function adminUpdateAttendee(
         input.attendance === "partial" ? clean(input.arrival_at) : null,
       departure_at:
         input.attendance === "partial" ? clean(input.departure_at) : null,
+      pickup_location: cleanPickup(input.pickup_location),
       note: clean(input.note),
       language: input.language,
       retreat_group: clean(input.retreat_group),

@@ -1,4 +1,10 @@
-import type { Attendance, Gender, Role } from "@/lib/types";
+import {
+  PICKUP_LOCATIONS,
+  type Attendance,
+  type Gender,
+  type PickupLocation,
+  type Role,
+} from "@/lib/types";
 
 // 공개 등록·관리자 수동 입력이 공유하는 참석자 입력 shape + 행 생성/검증 로직.
 // (서버 액션 아님 — 순수 함수라 register/actions·admin/actions 양쪽에서 재사용)
@@ -14,6 +20,7 @@ export type PersonInput = {
   attendance: Attendance;
   arrival_at?: string; // 부분 참석 도착일 "YYYY-MM-DD" (선택)
   departure_at?: string; // 부분 참석 출발일 "YYYY-MM-DD" (선택)
+  pickup_location?: PickupLocation | ""; // 차량 픽업 장소. ""/미지정 = 불필요
   note?: string;
 };
 
@@ -25,6 +32,14 @@ export function clean(s?: string | null): string | null {
 // date input "YYYY-MM-DD" 문자열을 그대로 저장(DB도 date 타입 — 타임존 무관).
 export function toTimestamp(s?: string): string | null {
   return clean(s);
+}
+
+// 클라이언트 값 불신: 3개 토큰 외(빈값 포함)는 null(차량 불필요)로 정규화.
+// 위조 요청만 해당 — 정상 UI(select)에선 발생 불가. DB enum이 최종 방어선.
+export function cleanPickup(v?: string | null): PickupLocation | null {
+  return PICKUP_LOCATIONS.includes(v as PickupLocation)
+    ? (v as PickupLocation)
+    : null;
 }
 
 // 이름(한글/영문 중 하나) 필수. 부분 참석 도착/출발일은 선택(추후 확정 가능).
@@ -55,6 +70,7 @@ export function rowFor(
     arrival_at: p.attendance === "partial" ? toTimestamp(p.arrival_at) : null,
     departure_at:
       p.attendance === "partial" ? toTimestamp(p.departure_at) : null,
+    pickup_location: cleanPickup(p.pickup_location),
     note: clean(p.note),
     is_householder: opts.is_householder,
     householder_id: opts.householder_id,
