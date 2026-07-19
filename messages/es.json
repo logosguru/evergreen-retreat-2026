@@ -246,7 +246,10 @@
     "partialDateHint": "Puede dejarlas en blanco si las fechas aún no están confirmadas.",
     "is_under_6": "Menor de 6 años (exento de cuota, no cuenta en la ocupación de la habitación)",
     "note": "Solicitudes",
-    "notePlaceholder": "Indíquenos con quién le gustaría compartir habitación o cualquier otra solicitud."
+    "notePlaceholder": "Indíquenos con quién le gustaría compartir habitación o cualquier otra solicitud.",
+    "pickup": "Transporte (van de la iglesia)",
+    "pickupNone": "No lo necesito",
+    "pickupHint": "Estamos planeando operar una van de la iglesia para quienes necesiten transporte. Si necesita que lo recojan, elija un lugar."
   },
   "Gender": {
     "male": "Hombre",
@@ -400,6 +403,11 @@
     "ko": "Coreano",
     "en": "Inglés",
     "es": "Español"
+  },
+  "Pickup": {
+    "manhattan": "Manhattan",
+    "flushing": "Flushing",
+    "long_island": "Long Island (Iglesia)"
   },
   "Footer": {
     "copyright": "© 2026 New York Evergreen Presbyterian Church",

@@ -246,7 +246,10 @@
     "partialDateHint": "You can leave these blank if the dates are not confirmed yet.",
     "is_under_6": "Under age 6 (fee exempt, not counted in room occupancy)",
     "note": "Requests",
-    "notePlaceholder": "Let us know who you'd like to room with, or any other requests."
+    "notePlaceholder": "Let us know who you'd like to room with, or any other requests.",
+    "pickup": "Ride pickup (church van)",
+    "pickupNone": "Not needed",
+    "pickupHint": "We are planning to run a church van for those who need a ride. If you need pickup, choose a location."
   },
   "Gender": {
     "male": "Male",
@@ -400,6 +403,11 @@
     "ko": "Korean",
     "en": "English",
     "es": "Spanish"
+  },
+  "Pickup": {
+    "manhattan": "Manhattan",
+    "flushing": "Flushing",
+    "long_island": "Long Island (Church)"
   },
   "Footer": {
     "copyright": "© 2026 New York Evergreen Presbyterian Church",

@@ -34,6 +34,7 @@ function toInput(a: Attendee): AdminEditInput {
     attendance: a.attendance,
     arrival_at: a.arrival_at ? a.arrival_at.slice(0, 10) : "",
     departure_at: a.departure_at ? a.departure_at.slice(0, 10) : "",
+    pickup_location: a.pickup_location ?? "",
     note: a.note ?? "",
     language: a.language,
     retreat_group: a.retreat_group ?? "",

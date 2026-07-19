@@ -246,7 +246,10 @@
     "partialDateHint": "날짜가 아직 확정되지 않았다면 비워두셔도 됩니다.",
     "is_under_6": "6세 미만 (등록비 면제·객실 인원 미집계)",
     "note": "요청사항",
-    "notePlaceholder": "같은 방에 배정 받고 싶은 사람이나 기타 요청사항을 적어주세요."
+    "notePlaceholder": "같은 방에 배정 받고 싶은 사람이나 기타 요청사항을 적어주세요.",
+    "pickup": "차량 픽업 (교회 밴)",
+    "pickupNone": "필요 없음",
+    "pickupHint": "차량이 필요한 분을 위해 교회 밴 운행을 계획하고 있습니다. 픽업이 필요하면 장소를 선택해 주세요."
   },
   "Gender": {
     "male": "남",
@@ -400,6 +403,11 @@
     "ko": "한국어",
     "en": "영어",
     "es": "스페인어"
+  },
+  "Pickup": {
+    "manhattan": "Manhattan",
+    "flushing": "Flushing",
+    "long_island": "Long Island (교회)"
   },
   "Footer": {
     "copyright": "© 2026 늘푸른교회 (New York Evergreen Presbyterian Church)",

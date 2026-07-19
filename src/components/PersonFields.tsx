@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl";
 import {
   DISTRICTS,
   GENDERS,
+  PICKUP_LOCATIONS,
   ROLES,
   RETREAT_START,
   RETREAT_END,
@@ -33,6 +34,7 @@ export function PersonFields({
   const tr = useTranslations("Role");
   const td = useTranslations("District");
   const ta = useTranslations("Attendance");
+  const tp = useTranslations("Pickup");
 
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
@@ -181,6 +183,27 @@ export function PersonFields({
       )}
 
       <div className="sm:col-span-2">
+        <label className={labelClass}>{t("pickup")}</label>
+        <select
+          value={value.pickup_location ?? ""}
+          onChange={(e) =>
+            onChange({
+              pickup_location: e.target.value as PersonInput["pickup_location"],
+            })
+          }
+          className={inputClass}
+        >
+          <option value="">{t("pickupNone")}</option>
+          {PICKUP_LOCATIONS.map((p) => (
+            <option key={p} value={p}>
+              {tp(p)}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-xs text-bark-soft">{t("pickupHint")}</p>
+      </div>
+
+      <div className="sm:col-span-2">
         <label className={labelClass}>{t("note")}</label>
         <textarea
           rows={2}
@@ -205,5 +228,6 @@ export const emptyPerson = (): PersonInput => ({
   attendance: "full",
   arrival_at: "",
   departure_at: "",
+  pickup_location: "",
   note: "",
 });
