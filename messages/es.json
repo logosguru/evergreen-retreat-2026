@@ -253,7 +253,7 @@
     "notePlaceholder": "Indíquenos con quién le gustaría compartir habitación o cualquier otra solicitud.",
     "pickup": "Transporte (van de la iglesia)",
     "pickupNone": "No lo necesito",
-    "pickupHint": "Si le es posible, le pedimos que venga en su propio vehículo. La van de la iglesia es para quienes no pueden conducir o no tienen auto — elija un lugar de recogida solo si lo necesita."
+    "pickupHint": "Si le es posible, le pedimos que venga en su propio vehículo. La van de la iglesia es para quienes no pueden conducir o no tienen auto. Elija un lugar de recogida solo si lo necesita."
   },
   "Gender": {
     "male": "Hombre",
