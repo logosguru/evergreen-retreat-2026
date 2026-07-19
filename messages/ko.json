@@ -197,6 +197,8 @@
     "dashPaidHouseholds": "납부 가구",
     "dashByDistrict": "구역별",
     "dashByRole": "직분별",
+    "dashPickup": "차량 픽업",
+    "dashPickupTotal": "픽업 필요 인원",
     "requestsTitle": "이메일 등록 신청",
     "requestsHint": "본인 확인 후 참석자 편집에서 이메일을 입력하고 처리 완료를 눌러 주세요.",
     "requestProcessed": "처리 완료",

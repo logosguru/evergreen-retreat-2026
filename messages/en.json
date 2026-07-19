@@ -197,6 +197,8 @@
     "dashPaidHouseholds": "Paid households",
     "dashByDistrict": "By district",
     "dashByRole": "By role",
+    "dashPickup": "Van pickup",
+    "dashPickupTotal": "need a ride",
     "requestsTitle": "Email registration requests",
     "requestsHint": "After verifying identity, enter the email on the attendee edit page and mark it processed.",
     "requestProcessed": "Mark processed",

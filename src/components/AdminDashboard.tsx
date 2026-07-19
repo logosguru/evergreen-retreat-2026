@@ -34,6 +34,13 @@ const TONES = {
     bar: "bg-amber-500",
     track: "bg-amber-100",
   },
+  violet: {
+    card: "bg-violet-50 ring-violet-100",
+    eyebrow: "text-violet-700",
+    hero: "text-violet-800",
+    bar: "bg-violet-500",
+    track: "bg-violet-100",
+  },
 } as const;
 
 type Tone = keyof typeof TONES;
@@ -90,6 +97,7 @@ export function AdminDashboard({ stats }: { stats: DashboardStats }) {
   const tl = useTranslations("Language");
   const td = useTranslations("District");
   const tr = useTranslations("Role");
+  const tp = useTranslations("Pickup");
 
   const languages = [
     { key: "ko", count: stats.language.ko },
@@ -235,6 +243,35 @@ export function AdminDashboard({ stats }: { stats: DashboardStats }) {
               </span>
             </span>
           </div>
+        </Card>
+
+        {/* 차량 픽업 (교회 밴) — 장소별 필요 인원 */}
+        <Card tone="violet" title={t("dashPickup")}>
+          <div className="flex items-baseline gap-2">
+            <p className="text-4xl font-bold text-violet-800">
+              {stats.pickupTotal}
+            </p>
+            <p className="text-sm text-violet-700">{t("dashPickupTotal")}</p>
+          </div>
+          <ul className="mt-3 space-y-2">
+            {stats.pickup.map((p) => (
+              <li key={p.key}>
+                <div className="flex items-baseline justify-between text-sm">
+                  <span className="text-violet-900">{tp(p.key)}</span>
+                  <span className="font-semibold text-violet-800">
+                    {p.count}
+                  </span>
+                </div>
+                <div className="mt-1">
+                  <Bar
+                    value={p.count}
+                    total={Math.max(1, stats.pickupTotal)}
+                    tone="violet"
+                  />
+                </div>
+              </li>
+            ))}
+          </ul>
         </Card>
       </div>
 

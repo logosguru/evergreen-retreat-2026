@@ -197,6 +197,8 @@
     "dashPaidHouseholds": "Familias que pagaron",
     "dashByDistrict": "Por grupo celular",
     "dashByRole": "Por cargo",
+    "dashPickup": "Transporte en van",
+    "dashPickupTotal": "necesitan transporte",
     "requestsTitle": "Solicitudes de registro de correo",
     "requestsHint": "Tras verificar la identidad, ingrese el correo en la página de edición del asistente y márquela como procesada.",
     "requestProcessed": "Marcar procesada",

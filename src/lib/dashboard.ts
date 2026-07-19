@@ -4,6 +4,7 @@ import {
   householdBalance,
   type AttendeeWithRoom,
 } from "./fees";
+import { PICKUP_LOCATIONS } from "./types";
 
 // 대시보드 정원 집계용 rooms 조회 형태: rooms + room_types(name, capacity)
 export type RoomForStats = {
@@ -51,6 +52,8 @@ export interface DashboardStats {
   needsAction: NeedsActionItem[]; // 잔액≠0 가구(추가납부·확인/환불 대기), 잔액 큰 순
   byDistrict: CountItem[];
   byRole: CountItem[];
+  pickup: CountItem[]; // 장소별 픽업 필요 인원 (PICKUP_LOCATIONS 순, 0 포함)
+  pickupTotal: number;
 }
 
 export function computeDashboard(
@@ -150,5 +153,10 @@ export function computeDashboard(
       x.key.localeCompare(y.key),
     ),
     byRole: tally((a) => a.role),
+    pickup: PICKUP_LOCATIONS.map((key) => ({
+      key,
+      count: attendees.filter((a) => a.pickup_location === key).length,
+    })),
+    pickupTotal: attendees.filter((a) => a.pickup_location != null).length,
   };
 }
