@@ -147,7 +147,8 @@ export function HouseholdPaymentManager({
                 className="flex items-center justify-between gap-3 px-4 py-2 text-sm"
               >
                 <span className="text-slate-600">
-                  {dateFmt.format(new Date(p.paid_at))}
+                  {/* date-only는 정오 기준 파싱 — UTC 자정 해석으로 하루 밀리는 것 방지 */}
+                  {dateFmt.format(new Date(`${p.paid_at}T12:00:00`))}
                   {p.method ? ` · ${methodLabel(p.method)}` : ""}
                   {p.note ? ` · ${p.note}` : ""}
                 </span>

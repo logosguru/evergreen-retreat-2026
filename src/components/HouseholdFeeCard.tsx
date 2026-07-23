@@ -103,7 +103,8 @@ export function HouseholdFeeCard({
             {payments.map((p) => (
               <li key={p.id} className="flex items-center justify-between gap-3">
                 <span>
-                  {dateFmt.format(new Date(p.paid_at))}
+                  {/* date-only는 정오 기준 파싱 — UTC 자정 해석으로 하루 밀리는 것 방지 */}
+                  {dateFmt.format(new Date(`${p.paid_at}T12:00:00`))}
                   {p.method ? ` · ${methodLabel(p.method)}` : ""}
                 </span>
                 <span className={p.amount < 0 ? "text-rose-300" : "text-ivory"}>
