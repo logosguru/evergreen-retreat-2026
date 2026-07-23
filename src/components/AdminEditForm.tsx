@@ -13,7 +13,12 @@ import {
 } from "@/app/[locale]/admin/actions";
 import { RoomTypeSelect } from "./RoomTypeSelect";
 import { HouseholdPaymentManager } from "./HouseholdPaymentManager";
-import { LANGUAGES, type Attendee, type FeePayment, type RoomType } from "@/lib/types";
+import {
+  LANGUAGES,
+  type Attendee,
+  type HouseholdPaymentData,
+  type RoomType,
+} from "@/lib/types";
 import { displayName } from "@/lib/names";
 
 type HeadOption = Pick<Attendee, "id" | "korean_name" | "english_name">;
@@ -57,8 +62,8 @@ export function AdminEditForm({
   isAttendeeAdmin: boolean;
   currentEmail: string | null;
   roomTypes: RoomType[];
-  // 가구 회비 납입(가구주 기준). 가구주가 없으면 null → 섹션 미표시.
-  payment: { headId: string; total: number; payments: FeePayment[] } | null;
+  // 가구 회비 납입(가구주 기준). 가구주가 없거나 조회 실패면 null → 섹션 미표시.
+  payment: HouseholdPaymentData | null;
 }) {
   const t = useTranslations("Admin");
   const tc = useTranslations("Common");

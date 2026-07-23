@@ -88,6 +88,13 @@ export interface FeePayment {
   created_at: string;
 }
 
+// 가구 납입 현황 묶음 (관리자 상세 페이지 → HouseholdPaymentManager 전달용)
+export interface HouseholdPaymentData {
+  headId: string;
+  total: number;
+  payments: FeePayment[];
+}
+
 export interface RoomType {
   id: string;
   name: string;

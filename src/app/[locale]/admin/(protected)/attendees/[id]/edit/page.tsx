@@ -3,7 +3,12 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { AdminEditForm } from "@/components/AdminEditForm";
 import { displayName } from "@/lib/names";
-import type { Attendee, FeePayment, RoomType } from "@/lib/types";
+import type {
+  Attendee,
+  FeePayment,
+  HouseholdPaymentData,
+  RoomType,
+} from "@/lib/types";
 
 export default async function AdminEditAttendeePage({
   params,
@@ -56,10 +61,9 @@ export default async function AdminEditAttendeePage({
     Attendee,
     "id" | "korean_name" | "english_name" | "is_householder" | "email"
   >[] = [];
-  let payment: { headId: string; total: number; payments: FeePayment[] } | null =
-    null;
+  let payment: HouseholdPaymentData | null = null;
   if (headId) {
-    const [{ data }, { data: totalData }, { data: payData }] = await Promise.all([
+    const [{ data }, totalRes, payRes] = await Promise.all([
       supabase
         .from("attendees")
         .select("id, korean_name, english_name, is_householder, email")
@@ -73,11 +77,14 @@ export default async function AdminEditAttendeePage({
         .order("paid_at", { ascending: true }),
     ]);
     household = data ?? [];
-    payment = {
-      headId,
-      total: (totalData as number | null) ?? 0,
-      payments: (payData as FeePayment[] | null) ?? [],
-    };
+    // 조회 실패 시 $0/빈 내역으로 오인되지 않도록 섹션 자체를 숨긴다.
+    if (!totalRes.error && !payRes.error) {
+      payment = {
+        headId,
+        total: (totalRes.data as number | null) ?? 0,
+        payments: (payRes.data as FeePayment[] | null) ?? [],
+      };
+    }
   }
   const headEmail = household.find((m) => m.is_householder)?.email ?? null;
 
