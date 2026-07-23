@@ -209,6 +209,8 @@
     "balanceSettled": "Liquidado",
     "balanceNoFee": "Sin cuota aún",
     "paymentsTitle": "Pagos de cuota",
+    "paymentInlineHint": "Los registros de pago se guardan de inmediato, independientemente del botón Guardar de abajo.",
+    "headEmail": "Correo registrado (jefe de familia)",
     "paymentTotal": "Cuota familiar",
     "paymentPaid": "Total pagado",
     "paymentBalance": "Saldo",

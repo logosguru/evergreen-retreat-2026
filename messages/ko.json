@@ -209,6 +209,8 @@
     "balanceSettled": "정산 완료",
     "balanceNoFee": "회비 미산정",
     "paymentsTitle": "회비 납입 관리",
+    "paymentInlineHint": "납입 기록·삭제는 아래 저장 버튼과 관계없이 즉시 반영됩니다.",
+    "headEmail": "등록 이메일(가구주)",
     "paymentTotal": "가구 회비",
     "paymentPaid": "납입 합계",
     "paymentBalance": "잔액",

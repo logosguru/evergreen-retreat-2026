@@ -209,6 +209,8 @@
     "balanceSettled": "Settled",
     "balanceNoFee": "No fee yet",
     "paymentsTitle": "Fee payments",
+    "paymentInlineHint": "Payment records are saved immediately, independent of the Save button below.",
+    "headEmail": "Registered email (householder)",
     "paymentTotal": "Household fee",
     "paymentPaid": "Total paid",
     "paymentBalance": "Balance",

@@ -3,7 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { AdminEditForm } from "@/components/AdminEditForm";
 import { displayName } from "@/lib/names";
-import type { Attendee, RoomType } from "@/lib/types";
+import type { Attendee, FeePayment, RoomType } from "@/lib/types";
 
 export default async function AdminEditAttendeePage({
   params,
@@ -50,17 +50,36 @@ export default async function AdminEditAttendeePage({
     .select("*")
     .order("sort_order");
 
-  // 읽기전용 가구 맥락
+  // 읽기전용 가구 맥락 + 가구 회비 납입(가구주 기준, 가구원 페이지에서도 동일 데이터)
   const headId = a.is_householder ? a.id : a.householder_id;
-  let household: Pick<Attendee, "id" | "korean_name" | "english_name" | "is_householder">[] = [];
+  let household: Pick<
+    Attendee,
+    "id" | "korean_name" | "english_name" | "is_householder" | "email"
+  >[] = [];
+  let payment: { headId: string; total: number; payments: FeePayment[] } | null =
+    null;
   if (headId) {
-    const { data } = await supabase
-      .from("attendees")
-      .select("id, korean_name, english_name, is_householder")
-      .or(`id.eq.${headId},householder_id.eq.${headId}`)
-      .order("is_householder", { ascending: false });
+    const [{ data }, { data: totalData }, { data: payData }] = await Promise.all([
+      supabase
+        .from("attendees")
+        .select("id, korean_name, english_name, is_householder, email")
+        .or(`id.eq.${headId},householder_id.eq.${headId}`)
+        .order("is_householder", { ascending: false }),
+      supabase.rpc("household_total", { head_id: headId }),
+      supabase
+        .from("fee_payments")
+        .select("*")
+        .eq("head_id", headId)
+        .order("paid_at", { ascending: true }),
+    ]);
     household = data ?? [];
+    payment = {
+      headId,
+      total: (totalData as number | null) ?? 0,
+      payments: (payData as FeePayment[] | null) ?? [],
+    };
   }
+  const headEmail = household.find((m) => m.is_householder)?.email ?? null;
 
   const t = await getTranslations("Admin");
 
@@ -79,6 +98,12 @@ export default async function AdminEditAttendeePage({
         </p>
       )}
 
+      {headEmail && (
+        <p className="mt-1 text-sm text-slate-500">
+          {t("headEmail")}: <span className="text-slate-700">{headEmail}</span>
+        </p>
+      )}
+
       <div className="mt-6">
         <AdminEditForm
           initial={a}
@@ -86,6 +111,7 @@ export default async function AdminEditAttendeePage({
           isAttendeeAdmin={isAttendeeAdmin}
           currentEmail={currentEmail}
           roomTypes={(roomTypesData as RoomType[] | null) ?? []}
+          payment={payment}
         />
       </div>
     </div>

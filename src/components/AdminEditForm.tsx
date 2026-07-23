@@ -12,7 +12,8 @@ import {
   type AdminEditInput,
 } from "@/app/[locale]/admin/actions";
 import { RoomTypeSelect } from "./RoomTypeSelect";
-import { LANGUAGES, type Attendee, type RoomType } from "@/lib/types";
+import { HouseholdPaymentManager } from "./HouseholdPaymentManager";
+import { LANGUAGES, type Attendee, type FeePayment, type RoomType } from "@/lib/types";
 import { displayName } from "@/lib/names";
 
 type HeadOption = Pick<Attendee, "id" | "korean_name" | "english_name">;
@@ -49,12 +50,15 @@ export function AdminEditForm({
   isAttendeeAdmin,
   currentEmail,
   roomTypes,
+  payment,
 }: {
   initial: Attendee;
   heads: HeadOption[];
   isAttendeeAdmin: boolean;
   currentEmail: string | null;
   roomTypes: RoomType[];
+  // 가구 회비 납입(가구주 기준). 가구주가 없으면 null → 섹션 미표시.
+  payment: { headId: string; total: number; payments: FeePayment[] } | null;
 }) {
   const t = useTranslations("Admin");
   const tc = useTranslations("Common");
@@ -247,6 +251,22 @@ export function AdminEditForm({
                 : t("adminRoleHint")}
           </p>
         </div>
+
+        {payment && (
+          <div className="mt-4 border-t border-slate-200 pt-4">
+            <p className="text-sm font-semibold text-slate-700">
+              {t("paymentsTitle")}
+            </p>
+            <p className="mt-1 text-xs text-slate-500">{t("paymentInlineHint")}</p>
+            <div className="mt-3">
+              <HouseholdPaymentManager
+                headId={payment.headId}
+                total={payment.total}
+                payments={payment.payments}
+              />
+            </div>
+          </div>
+        )}
       </fieldset>
 
       <div className="flex flex-wrap items-center gap-3">
