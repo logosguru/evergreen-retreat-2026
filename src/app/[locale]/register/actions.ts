@@ -108,8 +108,9 @@ export type CheckNameResult =
   | { ok: true; matched: boolean; maskedEmails: string[] }
   | { ok: false; error: string };
 
-// 이름(한글/영어 표기 무관)으로 등록 여부 확인. 정규화 정확 일치만 —
-// 명단 비노출 RPC가 마스킹된 가구 대표 이메일 배열만 반환한다.
+// 이름(한글/영어 표기 무관)으로 등록 여부 확인. 정규화 후 전체 이름 정확 일치
+// 또는 이름 토큰(first/last name 단독) 일치 — 명단 비노출 RPC가 마스킹된
+// 가구 대표 이메일 배열만 반환한다.
 export async function checkName(nameRaw: string): Promise<CheckNameResult> {
   const name = clean(nameRaw);
   if (!name || name.replace(/\s/g, "").length < 2) {

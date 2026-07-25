@@ -91,7 +91,11 @@ export function AdminAttendeeTable({
   );
   const router = useRouter();
   const [, start] = useTransition();
-  const [sort, setSort] = useState<SortState>({ key: null, dir: "asc" });
+  // 기본 정렬: 등록일 최신순 (최근 등록자가 위로)
+  const [sort, setSort] = useState<SortState>({
+    key: "registered",
+    dir: "desc",
+  });
   // 보기 모드: 기본 가구별. 마지막 선택을 localStorage에 보존해
   // 편집 페이지에서 돌아와도(어떤 경로든) 이전 보기로 복원된다.
   // 세션 내 전환은 override(state), 초기값은 저장소 구독 — SSR은 기본값.
@@ -255,8 +259,17 @@ export function AdminAttendeeTable({
 
   // ── 가구별 보기 ──
   if (view === "grouped") {
-    const households = groupHouseholds(attendees).sort((x, y) =>
-      nameKey(x.head).localeCompare(nameKey(y.head)),
+    // 등록일 최신순: 가구 구성원 중 가장 최근 created_at 기준 desc
+    // (한 명이라도 최근 등록이면 그 가구가 맨 위로).
+    const latestOf = (h: { head: AttendeeWithRoom; members: AttendeeWithRoom[] }) =>
+      [h.head, ...h.members].reduce(
+        (m, a) => (a.created_at > m ? a.created_at : m),
+        "",
+      );
+    const households = groupHouseholds(attendees).sort(
+      (x, y) =>
+        latestOf(y).localeCompare(latestOf(x)) ||
+        nameKey(x.head).localeCompare(nameKey(y.head)),
     );
     return (
       <div>
