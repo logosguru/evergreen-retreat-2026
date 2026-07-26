@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
+import type { BedType } from "@/lib/types";
 
 type Result = { ok: boolean };
 
@@ -37,6 +38,8 @@ export async function upsertRoom(input: {
   id?: string;
   label: string;
   room_type_id: string;
+  grade_id: string;
+  bed_type: BedType;
   note?: string;
   sort_order?: number;
 }): Promise<Result> {
@@ -44,6 +47,8 @@ export async function upsertRoom(input: {
   const row = {
     label: input.label.trim(),
     room_type_id: input.room_type_id,
+    grade_id: input.grade_id,
+    bed_type: input.bed_type,
     note: input.note?.trim() || null,
     sort_order: input.sort_order ?? 0,
   };
@@ -58,5 +63,19 @@ export async function deleteRoom(id: string): Promise<Result> {
   const supabase = await createClient();
   const { error } = await supabase.from("rooms").delete().eq("id", id);
   revalidatePath("/[locale]/admin/rooms", "page");
+  return { ok: !error };
+}
+
+export async function updateGradeQuota(
+  id: string,
+  quota: number | null,
+): Promise<Result> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("room_grades")
+    .update({ quota })
+    .eq("id", id);
+  revalidatePath("/[locale]/admin/rooms", "page");
+  revalidatePath("/[locale]/admin/assignments", "page");
   return { ok: !error };
 }

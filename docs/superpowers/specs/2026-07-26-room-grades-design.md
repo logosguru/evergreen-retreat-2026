@@ -102,7 +102,7 @@ create policy "room_grades_admin" on public.room_grades
 
 ## 6. i18n — `messages/{ko,en}.json` `Rooms` 네임스페이스
 
-`grades`(섹션 제목), `grade.premium/luxury/juniorSuite`, `bed.single/bed.double`,
+`grades`(섹션 제목), `grade.premium/luxury/junior_suite`(DB 토큰과 동일 키), `bed.single/bed.double`,
 `quota`, `unlimited`, `gradeUsage`(사용 n/쿼터), `quotaOver` 등.
 es UI 번역은 기존 방침대로 후속 (관리자 화면은 ko/en만).
 
