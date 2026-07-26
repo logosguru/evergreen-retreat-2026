@@ -46,6 +46,19 @@ export type Language = (typeof LANGUAGES)[number];
 export const PICKUP_LOCATIONS = ["manhattan", "flushing", "long_island"] as const;
 export type PickupLocation = (typeof PICKUP_LOCATIONS)[number];
 
+// 객실 등급/침대 (관리자 전용). bed_type은 침대 "개수": single=1, double=2.
+// 등급 라벨은 i18n "Rooms.grade", 침대 라벨은 "Rooms.bed"에서 번역.
+export const BED_TYPES = ["single", "double"] as const;
+export type BedType = (typeof BED_TYPES)[number];
+
+export interface RoomGrade {
+  id: string;
+  name: string; // 토큰: premium | luxury | junior_suite
+  quota: number | null; // 보유 호실 수량. null = 무제한 (Premium)
+  sort_order: number;
+  created_at: string;
+}
+
 export interface Attendee {
   id: string;
   korean_name: string | null; // korean_name 또는 english_name 중 하나 필수 (DB name_required 제약)
@@ -108,6 +121,8 @@ export interface Room {
   id: string;
   label: string;
   room_type_id: string;
+  grade_id: string; // 객실 등급 (관리자 전용)
+  bed_type: BedType; // 침대 개수: single=1, double=2
   note: string | null;
   sort_order: number;
   created_at: string;
