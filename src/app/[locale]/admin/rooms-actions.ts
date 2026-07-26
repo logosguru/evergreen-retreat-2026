@@ -60,3 +60,17 @@ export async function deleteRoom(id: string): Promise<Result> {
   revalidatePath("/[locale]/admin/rooms", "page");
   return { ok: !error };
 }
+
+export async function updateGradeQuota(
+  id: string,
+  quota: number | null,
+): Promise<Result> {
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("room_grades")
+    .update({ quota })
+    .eq("id", id);
+  revalidatePath("/[locale]/admin/rooms", "page");
+  revalidatePath("/[locale]/admin/assignments", "page");
+  return { ok: !error };
+}
