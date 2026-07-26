@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { AssignmentBoard } from "@/components/AssignmentBoard";
-import type { Room, RoomType } from "@/lib/types";
+import type { Room, RoomGrade, RoomType } from "@/lib/types";
 import { withHouseholdRoomType, type AttendeeWithRoom } from "@/lib/fees";
 
 export default async function AssignmentsPage({
@@ -13,19 +13,21 @@ export default async function AssignmentsPage({
   setRequestLocale(locale);
 
   const supabase = await createClient();
-  const [{ data: rooms }, { data: attendees }] = await Promise.all([
-    supabase
-      .from("rooms")
-      .select("*, room_types(*)")
-      .order("sort_order"),
-    supabase
-      .from("attendees")
-      .select(
-        "*, rooms(label, room_types(name, price_per_person)), requested_room_type:room_types!requested_room_type_id(name, price_per_person)",
-      )
-      .order("is_householder", { ascending: false })
-      .order("created_at"),
-  ]);
+  const [{ data: grades }, { data: rooms }, { data: attendees }] =
+    await Promise.all([
+      supabase.from("room_grades").select("*").order("sort_order"),
+      supabase
+        .from("rooms")
+        .select("*, room_types(*)")
+        .order("sort_order"),
+      supabase
+        .from("attendees")
+        .select(
+          "*, rooms(label, room_types(name, price_per_person)), requested_room_type:room_types!requested_room_type_id(name, price_per_person)",
+        )
+        .order("is_householder", { ascending: false })
+        .order("created_at"),
+    ]);
 
   const t = await getTranslations("Rooms");
 
@@ -35,6 +37,7 @@ export default async function AssignmentsPage({
         {t("assignments")}
       </h1>
       <AssignmentBoard
+        grades={(grades as RoomGrade[] | null) ?? []}
         rooms={(rooms as (Room & { room_types: RoomType })[] | null) ?? []}
         attendees={withHouseholdRoomType(
           (attendees as AttendeeWithRoom[] | null) ?? [],
