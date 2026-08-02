@@ -120,7 +120,8 @@
     "loginHint": "Solo el personal pastoral y los miembros del comité autorizados pueden acceder.",
     "notAdmin": "Esta cuenta no tiene acceso de administrador.",
     "signOut": "Cerrar sesión",
-    "total": "{count} asistentes",    "colName": "Nombre",
+    "total": "{count} asistentes",
+    "colName": "Nombre",
     "colDistrict": "Grupo celular",
     "colRole": "Cargo",
     "colGender": "Género",
@@ -294,8 +295,15 @@
     "title": "Gestión de habitaciones",
     "roomTypes": "Tipos de cuota (visible para miembros)",
     "grades": "Categorías de habitación",
-    "grade": { "premium": "Premium", "luxury": "Luxury", "junior_suite": "Junior Suite" },
-    "bed": { "single": "Individual (1 cama)", "double": "Doble (2 camas)" },
+    "grade": {
+      "premium": "Premium",
+      "luxury": "Luxury",
+      "junior_suite": "Junior Suite"
+    },
+    "bed": {
+      "single": "Individual (1 cama)",
+      "double": "Doble (2 camas)"
+    },
     "bedType": "Camas",
     "quota": "Cupo",
     "unlimited": "Ilimitado",
@@ -423,6 +431,29 @@
     "manhattan": "Manhattan",
     "flushing": "Flushing",
     "long_island": "Long Island (Iglesia)"
+  },
+  "HotelEstimate": {
+    "title": "Habitaciones estimadas para el hotel",
+    "subtitle": "Estimación para la reserva — la asignación real está en la página de asignaciones",
+    "totalRooms": "{count} habitaciones estimadas",
+    "assumptionLabel": "Supuesto para los indecisos",
+    "capacityRoom": "Habitación de {n}",
+    "colType": "Tipo",
+    "colHouseholds": "Familias",
+    "colPeople": "Personas",
+    "colRooms": "Habitaciones",
+    "decidedRow": "{room} (confirmado)",
+    "assumedRow": "{room} (supuesto)",
+    "totalRow": "Total",
+    "roomBreakdown": "{family} familiar + {shared} compartida",
+    "households": "{count}",
+    "people": "{count}",
+    "noteUnder6": "{count} menores de 6 años no cuentan para la ocupación — avisar al hotel por separado",
+    "notePartial": "{count} asistentes parciales contados como alojados",
+    "noteUnknownGender": "{count} familias sin sexo registrado reciben habitación propia — completarlo reduce la estimación",
+    "noteZeroOccupancy": "{count} familias solo de menores de 6 años excluidas",
+    "noteUnlinked": "⚠ {count} asistentes sin familia vinculada quedaron fuera — revisar los datos",
+    "rule": "Las familias tienen habitación propia; las de 1–2 personas se agrupan por sexo"
   },
   "Footer": {
     "copyright": "© 2026 New York Evergreen Presbyterian Church",

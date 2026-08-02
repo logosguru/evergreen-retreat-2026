@@ -120,7 +120,8 @@
     "loginHint": "Only authorized pastoral staff and committee members can access this.",
     "notAdmin": "This account does not have admin access.",
     "signOut": "Sign out",
-    "total": "{count} attendees",    "colName": "Name",
+    "total": "{count} attendees",
+    "colName": "Name",
     "colDistrict": "Cell Group",
     "colRole": "Title",
     "colGender": "Gender",
@@ -294,8 +295,15 @@
     "title": "Room Management",
     "roomTypes": "Fee types (member-facing)",
     "grades": "Room grades",
-    "grade": { "premium": "Premium", "luxury": "Luxury", "junior_suite": "Junior Suite" },
-    "bed": { "single": "Single (1 bed)", "double": "Double (2 beds)" },
+    "grade": {
+      "premium": "Premium",
+      "luxury": "Luxury",
+      "junior_suite": "Junior Suite"
+    },
+    "bed": {
+      "single": "Single (1 bed)",
+      "double": "Double (2 beds)"
+    },
     "bedType": "Beds",
     "quota": "Quota",
     "unlimited": "Unlimited",
@@ -423,6 +431,29 @@
     "manhattan": "Manhattan",
     "flushing": "Flushing",
     "long_island": "Long Island (Church)"
+  },
+  "HotelEstimate": {
+    "title": "Estimated rooms for the hotel",
+    "subtitle": "Reservation estimate — actual placement is on the assignments page",
+    "totalRooms": "{count} rooms estimated",
+    "assumptionLabel": "Assumption for undecided",
+    "capacityRoom": "{n}-person room",
+    "colType": "Type",
+    "colHouseholds": "Households",
+    "colPeople": "People",
+    "colRooms": "Rooms",
+    "decidedRow": "{room} (confirmed)",
+    "assumedRow": "{room} (assumed)",
+    "totalRow": "Total",
+    "roomBreakdown": "{family} family + {shared} shared",
+    "households": "{count}",
+    "people": "{count}",
+    "noteUnder6": "{count} under 6 excluded from occupancy — notify the hotel separately about infants",
+    "notePartial": "{count} partial attendees counted as staying overnight",
+    "noteUnknownGender": "{count} households with no gender recorded get their own room — filling gender in lowers the estimate",
+    "noteZeroOccupancy": "{count} households of only under-6 children excluded",
+    "noteUnlinked": "⚠ {count} attendees not linked to a household were left out — check the data",
+    "rule": "Families get their own room; 1–2 person households share by gender"
   },
   "Footer": {
     "copyright": "© 2026 New York Evergreen Presbyterian Church",
