@@ -3,6 +3,8 @@ import { createClient } from "@/lib/supabase/server";
 import { AdminDashboard } from "@/components/AdminDashboard";
 import { computeDashboard, type RoomForStats } from "@/lib/dashboard";
 import { paidByHead, type AttendeeWithRoom } from "@/lib/fees";
+import { HotelEstimateSection } from "@/components/HotelEstimate";
+import { ASSUMED_CAPACITIES, estimateHotelRooms } from "@/lib/hotel-estimate";
 
 export default async function AdminDashboardPage({
   params,
@@ -28,12 +30,19 @@ export default async function AdminDashboardPage({
       supabase.from("fee_payments").select("head_id, amount"),
     ]);
 
+  const attendeeRows = (aData as AttendeeWithRoom[] | null) ?? [];
+
   const stats = computeDashboard(
-    (aData as AttendeeWithRoom[] | null) ?? [],
+    attendeeRows,
     (rData as RoomForStats[] | null) ?? [],
     paidByHead(
       (payData as { head_id: string; amount: number }[] | null) ?? [],
     ),
+  );
+
+  // 2/3/4인실 가정 3시나리오를 서버에서 미리 계산 — 클라이언트엔 요약만 넘긴다.
+  const estimates = ASSUMED_CAPACITIES.map((c) =>
+    estimateHotelRooms(attendeeRows, c),
   );
 
   const t = await getTranslations("Admin");
@@ -61,6 +70,9 @@ export default async function AdminDashboardPage({
       )}
       <div className="mt-6">
         <AdminDashboard stats={stats} />
+      </div>
+      <div className="mt-6">
+        <HotelEstimateSection estimates={estimates} />
       </div>
     </div>
   );
