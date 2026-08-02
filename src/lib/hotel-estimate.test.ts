@@ -80,3 +80,140 @@ test("soleGender: 성별 미입력이 섞이면 null", () => {
 test("soleGender: 빈 배열이면 null", () => {
   assert.equal(soleGender([]), null);
 });
+
+const TWO = { name: "2인실", price_per_person: 300, capacity: 2 };
+const THREE = { name: "3인실", price_per_person: 250, capacity: 3 };
+const FOUR = { name: "4인실", price_per_person: 200, capacity: 4 };
+
+// 가구 1개 생성: head + (size-1)명. type=null 이면 미선택 가구.
+function household(
+  id: string,
+  size: number,
+  type: { name: string; price_per_person: number; capacity: number } | null,
+  over: Partial<AttendeeWithRoom> = {},
+): AttendeeWithRoom[] {
+  const head = makeAttendee({
+    id,
+    is_householder: true,
+    requested_room_type_id: type ? `rt-${type.capacity}` : null,
+    requested_room_type: type,
+    ...over,
+  });
+  const rest = Array.from({ length: size - 1 }, () =>
+    makeAttendee({ householder_id: id, ...over }),
+  );
+  return [head, ...rest];
+}
+
+test("occupancy 5명 / 4인실 → ceil = 2방", () => {
+  const est = estimateHotelRooms(household("h1", 5, FOUR), 4);
+  assert.equal(est.decided.length, 1);
+  assert.equal(est.decided[0].capacity, 4);
+  assert.equal(est.decided[0].familyRooms, 2);
+  assert.equal(est.decided[0].sharedRooms, 0);
+  assert.equal(est.totalRooms, 2);
+  assert.equal(est.totalPeople, 5);
+});
+
+test("성인 4 + 유아 1 / 4인실 → 1방 (유아는 정원 미집계)", () => {
+  const rows = household("h1", 4, FOUR);
+  rows.push(makeAttendee({ householder_id: "h1", is_under_6: true }));
+  const est = estimateHotelRooms(rows, 4);
+  assert.equal(est.totalRooms, 1);
+  assert.equal(est.totalPeople, 4);
+  assert.equal(est.under6, 1);
+});
+
+test("동일 성별 1인 가구 3개 / 4인실 → 합방 1방", () => {
+  const rows = [
+    ...household("h1", 1, FOUR, { gender: "male" }),
+    ...household("h2", 1, FOUR, { gender: "male" }),
+    ...household("h3", 1, FOUR, { gender: "male" }),
+  ];
+  const est = estimateHotelRooms(rows, 4);
+  assert.equal(est.decided[0].sharedRooms, 1);
+  assert.equal(est.decided[0].familyRooms, 0);
+  assert.equal(est.totalRooms, 1);
+});
+
+test("남/여 합방 풀은 서로 섞이지 않음", () => {
+  const rows = [
+    ...household("h1", 1, FOUR, { gender: "male" }),
+    ...household("h2", 1, FOUR, { gender: "female" }),
+  ];
+  const est = estimateHotelRooms(rows, 4);
+  assert.equal(est.totalRooms, 2);
+});
+
+test("혼성 2인 가구(부부)는 전용방 1개, unknownGender 아님", () => {
+  const rows = household("h1", 2, FOUR);
+  rows[1] = makeAttendee({ householder_id: "h1", gender: "female" });
+  const est = estimateHotelRooms(rows, 4);
+  assert.equal(est.decided[0].familyRooms, 1);
+  assert.equal(est.decided[0].sharedRooms, 0);
+  assert.equal(est.unknownGenderHouseholds, 0);
+});
+
+test("성별 미입력 1인 가구는 전용방 + unknownGenderHouseholds 증가", () => {
+  const est = estimateHotelRooms(household("h1", 1, FOUR, { gender: null }), 4);
+  assert.equal(est.decided[0].familyRooms, 1);
+  assert.equal(est.unknownGenderHouseholds, 1);
+});
+
+test("전원 6세 미만 가구는 버킷 제외 + zeroOccupancy 증가", () => {
+  const est = estimateHotelRooms(
+    household("h1", 2, FOUR, { is_under_6: true }),
+    4,
+  );
+  assert.equal(est.decided.length, 0);
+  assert.equal(est.totalRooms, 0);
+  assert.equal(est.zeroOccupancyHouseholds, 1);
+});
+
+test("확정과 가정은 같은 성별·정원이어도 합방하지 않음", () => {
+  const rows = [
+    ...household("h1", 1, FOUR, { gender: "male" }),
+    ...household("h2", 1, null, { gender: "male" }),
+  ];
+  const est = estimateHotelRooms(rows, 4);
+  assert.equal(est.decided[0].sharedRooms, 1);
+  assert.equal(est.assumed?.sharedRooms, 1);
+  assert.equal(est.totalRooms, 2);
+});
+
+test("assumedCapacity 전환은 가정 버킷만 바꾼다", () => {
+  const rows = [...household("h1", 3, TWO), ...household("h2", 6, null)];
+  const at4 = estimateHotelRooms(rows, 4);
+  const at2 = estimateHotelRooms(rows, 2);
+  assert.equal(at4.assumed?.rooms, 2); // ceil(6/4)
+  assert.equal(at2.assumed?.rooms, 3); // ceil(6/2)
+  assert.equal(at4.decided[0].rooms, at2.decided[0].rooms); // ceil(3/2)=2
+  assert.equal(at2.assumedCapacity, 2);
+});
+
+test("decided 버킷은 capacity 오름차순", () => {
+  const rows = [
+    ...household("h1", 3, FOUR),
+    ...household("h2", 3, TWO),
+    ...household("h3", 3, THREE),
+  ];
+  const est = estimateHotelRooms(rows, 4);
+  assert.deepEqual(
+    est.decided.map((b) => b.capacity),
+    [2, 3, 4],
+  );
+});
+
+test("partial 참석자도 방 산정에 포함되고 별도 카운트된다", () => {
+  const rows = household("h1", 3, FOUR, { attendance: "partial" });
+  const est = estimateHotelRooms(rows, 4);
+  assert.equal(est.totalPeople, 3);
+  assert.equal(est.partialCount, 3);
+});
+
+test("가구에 연결되지 않은 행은 unlinkedAttendees로 드러난다", () => {
+  const orphan = makeAttendee({ is_householder: false, householder_id: null });
+  const est = estimateHotelRooms([orphan], 4);
+  assert.equal(est.unlinkedAttendees, 1);
+  assert.equal(est.totalRooms, 0);
+});
