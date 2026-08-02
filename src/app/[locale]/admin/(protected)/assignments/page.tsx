@@ -23,7 +23,7 @@ export default async function AssignmentsPage({
       supabase
         .from("attendees")
         .select(
-          "*, rooms(label, room_types(name, price_per_person)), requested_room_type:room_types!requested_room_type_id(name, price_per_person)",
+          "*, rooms(label, room_types(name, price_per_person, capacity)), requested_room_type:room_types!requested_room_type_id(name, price_per_person, capacity)",
         )
         .order("is_householder", { ascending: false })
         .order("created_at"),

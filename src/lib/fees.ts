@@ -2,7 +2,11 @@ import type { Attendee } from "./types";
 
 // Supabase 중첩 select 결과 형태.
 // rooms = 물리적 배정(로지스틱스), requested_room_type = 성도 선택(회비 소스, head 행).
-export type RoomTypeLite = { name: string; price_per_person: number };
+export type RoomTypeLite = {
+  name: string;
+  price_per_person: number;
+  capacity: number;
+};
 export type AttendeeWithRoom = Attendee & {
   rooms:
     | {
