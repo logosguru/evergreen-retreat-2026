@@ -18,9 +18,10 @@ import {
   householdBalance,
   type AttendeeWithRoom,
 } from "@/lib/fees";
-import { displayName, nameKey } from "@/lib/names";
+import { displayName } from "@/lib/names";
 import {
   sortAttendees,
+  sortHouseholds,
   buildHeads,
   headOf,
   type SortKey,
@@ -48,19 +49,29 @@ function SortTh({
   label,
   sort,
   onToggle,
+  align = "left",
 }: {
   k: SortKey;
   label: string;
   sort: SortState;
   onToggle: (key: SortKey) => void;
+  align?: "left" | "right";
 }) {
-  const arrow = sort.key === k ? (sort.dir === "asc" ? " ▲" : " ▼") : "";
+  const active = sort.key === k;
+  const arrow = active ? (sort.dir === "asc" ? "▲" : "▼") : "";
   return (
-    <th className="px-3 py-2 text-left font-medium">
+    <th
+      className={`px-3 py-2 font-medium ${align === "right" ? "text-right" : "text-left"}`}
+      aria-sort={
+        active ? (sort.dir === "asc" ? "ascending" : "descending") : "none"
+      }
+    >
       <button
         type="button"
         onClick={() => onToggle(k)}
-        className="inline-flex items-center gap-0.5 hover:text-slate-900"
+        className={`inline-flex items-center gap-0.5 hover:text-slate-900 ${
+          active ? "text-slate-900" : ""
+        }`}
       >
         {label}
         <span className="text-emerald-600">{arrow}</span>
@@ -259,18 +270,9 @@ export function AdminAttendeeTable({
 
   // ── 가구별 보기 ──
   if (view === "grouped") {
-    // 등록일 최신순: 가구 구성원 중 가장 최근 created_at 기준 desc
-    // (한 명이라도 최근 등록이면 그 가구가 맨 위로).
-    const latestOf = (h: { head: AttendeeWithRoom; members: AttendeeWithRoom[] }) =>
-      [h.head, ...h.members].reduce(
-        (m, a) => (a.created_at > m ? a.created_at : m),
-        "",
-      );
-    const households = groupHouseholds(attendees).sort(
-      (x, y) =>
-        latestOf(y).localeCompare(latestOf(x)) ||
-        nameKey(x.head).localeCompare(nameKey(y.head)),
-    );
+    // 가구는 항상 한 덩어리로 유지하고, 가구 사이 순서만 정렬(기준=가구주 행).
+    // 기본은 등록일 최신순 — 한 명이라도 최근 등록이면 그 가구가 맨 위로.
+    const households = sortHouseholds(groupHouseholds(attendees), sort);
     return (
       <div>
         {toggle}
@@ -278,14 +280,14 @@ export function AdminAttendeeTable({
           <table className="min-w-full divide-y divide-slate-100 bg-white text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
               <tr>
-                <th className="px-3 py-2 text-left font-medium">{t("colName")}</th>
-                <th className="px-3 py-2 text-left font-medium">{t("colRole")}</th>
-                <th className="px-3 py-2 text-left font-medium">{t("colDistrict")}</th>
-                <th className="px-3 py-2 text-left font-medium">{t("colAttendance")}</th>
-                <th className="px-3 py-2 text-left font-medium">{t("colRoom")}</th>
-                <th className="px-3 py-2 text-left font-medium">{t("colPickup")}</th>
-                <th className="px-3 py-2 text-left font-medium">{t("colLanguage")}</th>
-                <th className="px-3 py-2 text-right font-medium">{t("colPaid")}</th>
+                <SortTh k="name" label={t("colName")} sort={sort} onToggle={toggleSort} />
+                <SortTh k="role" label={t("colRole")} sort={sort} onToggle={toggleSort} />
+                <SortTh k="district" label={t("colDistrict")} sort={sort} onToggle={toggleSort} />
+                <SortTh k="attendance" label={t("colAttendance")} sort={sort} onToggle={toggleSort} />
+                <SortTh k="room" label={t("colRoom")} sort={sort} onToggle={toggleSort} />
+                <SortTh k="pickup" label={t("colPickup")} sort={sort} onToggle={toggleSort} />
+                <SortTh k="language" label={t("colLanguage")} sort={sort} onToggle={toggleSort} />
+                <SortTh k="fee" label={t("colPaid")} sort={sort} onToggle={toggleSort} align="right" />
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -354,17 +356,20 @@ export function AdminAttendeeTable({
         <table className="min-w-full divide-y divide-slate-100 bg-white text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
             <tr>
-              <th className="px-3 py-2 text-left font-medium">{t("colName")}</th>
+              <SortTh k="name" label={t("colName")} sort={sort} onToggle={toggleSort} />
               <SortTh
                 k="household"
                 label={t("colHousehold")}
                 sort={sort}
                 onToggle={toggleSort}
               />
-              <th className="px-3 py-2 text-left font-medium">{t("colRole")}</th>
-              <th className="px-3 py-2 text-left font-medium">
-                {t("colDistrict")}
-              </th>
+              <SortTh k="role" label={t("colRole")} sort={sort} onToggle={toggleSort} />
+              <SortTh
+                k="district"
+                label={t("colDistrict")}
+                sort={sort}
+                onToggle={toggleSort}
+              />
               <SortTh
                 k="attendance"
                 label={t("colAttendance")}
@@ -377,15 +382,19 @@ export function AdminAttendeeTable({
                 sort={sort}
                 onToggle={toggleSort}
               />
-              <th className="px-3 py-2 text-left font-medium">
-                {t("colPickup")}
-              </th>
+              <SortTh
+                k="pickup"
+                label={t("colPickup")}
+                sort={sort}
+                onToggle={toggleSort}
+              />
               <SortTh
                 k="language"
                 label={t("colLanguage")}
                 sort={sort}
                 onToggle={toggleSort}
               />
+              {/* 잔액은 가구 단위 배지라 정렬 대상 아님 */}
               <th className="px-3 py-2 text-left font-medium">
                 {t("colBalance")}
               </th>
