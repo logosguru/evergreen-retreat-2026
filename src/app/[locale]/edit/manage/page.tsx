@@ -41,12 +41,12 @@ export default async function ManagePage({
   const { data: feeData } = await supabase.rpc("my_household_fee").single();
   const fee = feeData as {
     total: number;
-    type_selected: boolean;
+    fee_determined: boolean;
     paid_total: number;
     balance: number;
   } | null;
 
-  // PayPal 결제 링크: 잔액>0 + 금액확정(타입선택) + 이메일설정 + 가구주존재일 때만.
+  // PayPal 결제 링크: 잔액>0 + 회비확정 + 이메일설정 + 가구주존재일 때만.
   const rows = (attendees as Attendee[] | null) ?? [];
   const head = rows.find((a) => a.is_householder);
   const paypalEmail = process.env.NEXT_PUBLIC_PAYPAL_BUSINESS_EMAIL;
@@ -72,7 +72,7 @@ export default async function ManagePage({
     (payData as import("@/lib/types").FeePayment[] | null) ?? [];
 
   let payUrl: string | null = null;
-  if (fee && fee.balance > 0 && fee.type_selected && paypalEmail && head) {
+  if (fee && fee.balance > 0 && fee.fee_determined && paypalEmail && head) {
     // PayPal remark는 영어 고정(PAYPAL_ITEM_NAME). 한글은 PayPal 계정 기본
     // 인코딩(windows-1252)에서 깨져 수취측 거래내역에 안 남는다.
     // 대조용 이름도 영문 우선 (english_name → korean_name 폴백, charset=utf-8 방어).
@@ -100,7 +100,7 @@ export default async function ManagePage({
         <HouseholdFeeCard
           total={fee.total}
           balance={fee.balance}
-          typeSelected={fee.type_selected}
+          feeDetermined={fee.fee_determined}
           payUrl={payUrl}
           payments={payments}
         />

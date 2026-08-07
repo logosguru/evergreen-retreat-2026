@@ -24,6 +24,7 @@ const L: ExportLabels = {
     role: "직분",
     gender: "성별",
     under6: "6세 미만",
+    child612: "6~12세",
     language: "언어",
     attendance: "참석",
     arrival: "도착일",

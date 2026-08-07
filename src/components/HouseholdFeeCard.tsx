@@ -5,13 +5,13 @@ import type { FeePayment } from "@/lib/types";
 export function HouseholdFeeCard({
   total,
   balance,
-  typeSelected,
+  feeDetermined,
   payUrl = null,
   payments = [],
 }: {
   total: number;
   balance: number; // total - paid_total. 양수=추가납부, 음수=환불
-  typeSelected: boolean;
+  feeDetermined: boolean; // 회비 금액 확정 여부(객실 타입 선택 또는 부분참석 전용 가구)
   payUrl?: string | null;
   payments?: FeePayment[];
 }) {
@@ -61,7 +61,7 @@ export function HouseholdFeeCard({
         </span>
       </div>
 
-      {!typeSelected && (
+      {!feeDetermined && (
         <p className="mt-3 text-xs text-ivory/60">{t("selectTypeNotice")}</p>
       )}
 

@@ -17,6 +17,7 @@ export type PersonInput = {
   role?: Role | "";
   phone?: string;
   is_under_6?: boolean;
+  is_child_6_12?: boolean;
   attendance: Attendance;
   arrival_at?: string; // 부분 참석 도착일 "YYYY-MM-DD" (선택)
   departure_at?: string; // 부분 참석 출발일 "YYYY-MM-DD" (선택)
@@ -66,6 +67,8 @@ export function rowFor(
     role: p.role ? p.role : "member",
     phone: clean(p.phone),
     is_under_6: !!p.is_under_6,
+    // 두 연령 플래그는 상호 배타(DB check 제약) — 6세 미만이 우선
+    is_child_6_12: !p.is_under_6 && !!p.is_child_6_12,
     attendance: p.attendance,
     arrival_at: p.attendance === "partial" ? toTimestamp(p.arrival_at) : null,
     departure_at:

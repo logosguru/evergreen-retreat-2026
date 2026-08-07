@@ -84,6 +84,7 @@ export async function GET(request: Request) {
       role: t("colRole"),
       gender: t("colGender"),
       under6: t("under6"),
+      child612: t("child612"),
       language: t("colLanguage"),
       attendance: t("colAttendance"),
       arrival: tfd("arrival_at"),

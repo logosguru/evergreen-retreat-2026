@@ -27,6 +27,7 @@ export interface ExportLabels {
     role: string;
     gender: string;
     under6: string;
+    child612: string;
     language: string;
     attendance: string;
     arrival: string;
@@ -170,6 +171,7 @@ export function buildAttendeeSheet(
       a.role ? L.role(a.role) : "",
       a.gender ? L.gender(a.gender) : "",
       bool(a.is_under_6, L),
+      bool(a.is_child_6_12, L),
       L.language(a.language),
       L.attendance(a.attendance),
       a.arrival_at ?? "",
@@ -205,6 +207,7 @@ export function buildAttendeeSheet(
       { header: L.h.role },
       { header: L.h.gender },
       { header: L.h.under6 },
+      { header: L.h.child612 },
       { header: L.h.language },
       { header: L.h.attendance },
       { header: L.h.arrival },

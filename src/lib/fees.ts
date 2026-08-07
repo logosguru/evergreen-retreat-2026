@@ -24,10 +24,21 @@ export interface Household {
   unassignedCount: number; // 6세 미만 아닌데 회비 미산정(타입 미선택)인 인원
 }
 
-// 사람별 회비: 6세미만=0, 미선택=null, 그 외=가구주 선택 타입 단가.
+// 정액 회비(객실 타입 단가와 무관).
+export const PARTIAL_FEE = 100; // 성인 부분 참석(주일만) — 숙박 없음
+export const CHILD_PARTIAL_FEE = 50; // 6~12세 부분 참석
+export const CHILD_FULL_FEE = 100; // 6~12세 전일 참석 (방 종류 무관)
+
+// 사람별 회비. 우선순위:
+//   6세 미만 → $0 (면제)
+//   6~12세   → 부분 $50 / 전일 $100
+//   성인     → 부분 $100 / 전일 = 가구주 선택 타입 단가 (미선택이면 null=미산정)
 // (requested_room_type는 withHouseholdRoomType로 가구원 행에도 채워져 있어야 정확)
 export function personFee(a: AttendeeWithRoom): number | null {
   if (a.is_under_6) return 0;
+  if (a.is_child_6_12)
+    return a.attendance === "partial" ? CHILD_PARTIAL_FEE : CHILD_FULL_FEE;
+  if (a.attendance === "partial") return PARTIAL_FEE;
   const price = a.requested_room_type?.price_per_person;
   return price == null ? null : price;
 }
