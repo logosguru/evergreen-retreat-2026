@@ -81,6 +81,8 @@ src/
     fees.ts                      # 회비 계산: personFee, groupHouseholds, formatUSD, AttendeeWithRoom
     schedule.ts                  # 스케줄 날짜 그룹/요일·시간 포맷: groupByDay, formatDayLabel, formatTime
     dashboard.ts                 # 대시보드 집계(순수): computeDashboard → DashboardStats (fees 재사용)
+    xlsx.ts                      # 의존성 없는 최소 XLSX 작성기(무압축 ZIP + inlineStr): buildXlsx(XlsxSheet[])
+    attendee-export.ts           # 참석자 Excel 시트 데이터(순수): buildAttendeeWorkbook — 라벨은 ExportLabels로 주입
     supabase/{client,server,middleware}.ts  # 브라우저/서버/proxy용 클라이언트
   app/
     [locale]/
@@ -100,6 +102,7 @@ src/
           layout.tsx             # getClaims() → app_role=admin 확인 + 서브내비(대시보드/참석자/객실/방배치/일정/FAQ)
           page.tsx               # 대시보드 (AdminDashboard, computeDashboard 집계)
           attendees/page.tsx     # 참석자 정렬 표(사람당 1행, 참석·방타입·언어 정렬, 구역 열, 회비·납부·언어 인라인) — AdminAttendeeTable + lib/attendee-sort
+                                 #   + [Excel 내보내기] → /api/admin/attendees/export?locale=
           rooms/page.tsx         # 객실 타입/호실 관리 (RoomManager)
           assignments/page.tsx   # 호실 배치 보드 + 정원경고 + 현황표 (AssignmentBoard)
           schedule/page.tsx      # 일정 CRUD (ScheduleManager)
@@ -138,7 +141,9 @@ supabase/migrations/
 
 ## 컨벤션 / 주의점
 
-- **서버 액션**으로 모든 폼 mutation. **Route Handler**는 OAuth 콜백·매직링크 confirm·signout만.
+- **서버 액션**으로 모든 폼 mutation. **Route Handler**는 OAuth 콜백·매직링크 confirm·signout + 파일 다운로드(Excel export)만.
+- `/api/*` 는 `proxy.ts` matcher 제외 → 로케일이 없다. 번역이 필요하면 `?locale=` 로 받아 `getTranslations({ locale, namespace })` 사용.
+  (Next는 `_`/`__` 로 시작하는 폴더를 라우팅에서 제외하므로 api 하위 폴더명에 쓰지 말 것)
 - 인증 라우트는 `[locale]` **밖**(`src/app/auth/...`)에 두고 `proxy.ts` matcher에서 제외 (locale 재작성 방지).
 - DB enum은 영문 토큰 저장, 화면 라벨은 messages로 번역 (직분 등). DB에 표시 문자열 저장 금지.
 - 부분 참석 도착/출발은 **날짜만**(`date` 컬럼, 0011) + **선택 사항**(추후 확정 가능, partial이어도 null 허용). date input `min/max`=수련회 기간(`RETREAT_START/END` in lib/types). 폼 초기값은 `slice(0,10)`.
