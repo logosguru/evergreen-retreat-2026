@@ -357,6 +357,17 @@
     "methodCheck": "Check",
     "methodImport": "Imported"
   },
+  "Export": {
+    "button": "Export to Excel",
+    "sheetAttendees": "Attendees",
+    "sheetPayments": "Payments",
+    "no": "No.",
+    "householdSize": "Household size",
+    "personFee": "Fee per person",
+    "status": "Payment status",
+    "payMethods": "Payment method",
+    "recordedAt": "Recorded at"
+  },
   "About": {
     "title": "About the Retreat",
     "theme": "Blessed Encounter",

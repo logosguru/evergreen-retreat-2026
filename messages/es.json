@@ -357,6 +357,17 @@
     "methodCheck": "Cheque",
     "methodImport": "Importado"
   },
+  "Export": {
+    "button": "Exportar a Excel",
+    "sheetAttendees": "Asistentes",
+    "sheetPayments": "Pagos",
+    "no": "N.º",
+    "householdSize": "Personas por familia",
+    "personFee": "Cuota por persona",
+    "status": "Estado de pago",
+    "payMethods": "Método de pago",
+    "recordedAt": "Registrado"
+  },
   "About": {
     "title": "Sobre el Retiro",
     "theme": "Encuentro Bendito",

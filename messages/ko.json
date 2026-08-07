@@ -357,6 +357,17 @@
     "methodCheck": "수표",
     "methodImport": "기존 이관"
   },
+  "Export": {
+    "button": "Excel 내보내기",
+    "sheetAttendees": "참석자",
+    "sheetPayments": "납입 내역",
+    "no": "번호",
+    "householdSize": "가구 인원",
+    "personFee": "1인 회비",
+    "status": "정산 상태",
+    "payMethods": "납부 수단",
+    "recordedAt": "기록 시각"
+  },
   "About": {
     "title": "수련회 소개",
     "theme": "복된 만남 / Blessed Encounter",
