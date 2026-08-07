@@ -267,6 +267,7 @@ export async function adminUpdateAttendee(
       phone: clean(input.phone),
       email: clean(input.email),
       is_under_6: !!input.is_under_6,
+      is_child_6_12: !input.is_under_6 && !!input.is_child_6_12,
       attendance: input.attendance,
       arrival_at:
         input.attendance === "partial" ? clean(input.arrival_at) : null,

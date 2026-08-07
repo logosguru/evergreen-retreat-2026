@@ -77,6 +77,7 @@ export interface Attendee {
   requested_room_type_id: string | null; // 성도 선택 객실 타입(가구주 행, 회비 소스)
   language: Language; // 성도 언어 (관리자 전용, 기본 'ko')
   is_under_6: boolean; // 6세 미만 (회비 면제·객실 인원 제외)
+  is_child_6_12: boolean; // 6~12세 (회비 정액: 부분 $50 / 전일 $100. 객실 인원엔 집계)
   attendance: Attendance;
   pickup_location: PickupLocation | null; // 차량(교회 밴) 픽업 장소. null=불필요
   arrival_at: string | null; // 부분 참석 도착일 YYYY-MM-DD (선택, 추후 확정 가능)

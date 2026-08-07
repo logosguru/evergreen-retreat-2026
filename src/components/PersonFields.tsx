@@ -124,14 +124,33 @@ export function PersonFields({
         </div>
       )}
 
-      <div className="sm:col-span-2">
+      {/* 연령 구간은 상호 배타 — 하나를 켜면 다른 하나를 끈다 (DB check 제약과 일치) */}
+      <div className="sm:col-span-2 flex flex-wrap gap-x-6 gap-y-2">
         <label className="flex items-center gap-2 text-sm text-bark">
           <input
             type="checkbox"
             checked={!!value.is_under_6}
-            onChange={(e) => onChange({ is_under_6: e.target.checked })}
+            onChange={(e) =>
+              onChange({
+                is_under_6: e.target.checked,
+                is_child_6_12: e.target.checked ? false : value.is_child_6_12,
+              })
+            }
           />
           {t("is_under_6")}
+        </label>
+        <label className="flex items-center gap-2 text-sm text-bark">
+          <input
+            type="checkbox"
+            checked={!!value.is_child_6_12}
+            onChange={(e) =>
+              onChange({
+                is_child_6_12: e.target.checked,
+                is_under_6: e.target.checked ? false : value.is_under_6,
+              })
+            }
+          />
+          {t("is_child_6_12")}
         </label>
       </div>
 
@@ -225,6 +244,7 @@ export const emptyPerson = (): PersonInput => ({
   role: "",
   phone: "",
   is_under_6: false,
+  is_child_6_12: false,
   attendance: "full",
   arrival_at: "",
   departure_at: "",

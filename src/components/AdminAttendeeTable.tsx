@@ -192,6 +192,11 @@ export function AdminAttendeeTable({
             {t("under6")}
           </span>
         )}
+        {a.is_child_6_12 && (
+          <span className="ml-2 rounded bg-sky-100 px-1.5 py-0.5 text-[11px] font-medium text-sky-700">
+            {t("child612")}
+          </span>
+        )}
       </>
     );
   }

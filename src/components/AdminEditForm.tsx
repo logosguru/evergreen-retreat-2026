@@ -37,6 +37,7 @@ function toInput(a: Attendee): AdminEditInput {
     phone: a.phone ?? "",
     email: a.email ?? "",
     is_under_6: a.is_under_6,
+    is_child_6_12: a.is_child_6_12,
     attendance: a.attendance,
     arrival_at: a.arrival_at ? a.arrival_at.slice(0, 10) : "",
     departure_at: a.departure_at ? a.departure_at.slice(0, 10) : "",
