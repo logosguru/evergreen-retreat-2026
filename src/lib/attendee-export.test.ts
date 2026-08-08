@@ -162,6 +162,42 @@ test("사람당 1행 평면 리스트를 만든다", () => {
   );
 });
 
+test("앞쪽 열 순서는 가구주 → 이름 → 정산/금액 → 객실 타입 → 구역 → 직분", () => {
+  const sheet = buildAttendeeSheet(
+    { attendees: household(), payments: PAYMENTS },
+    L,
+  );
+  assert.deepEqual(
+    sheet.columns.slice(0, 11).map((c) => c.header),
+    [
+      "가구",
+      "한글 이름",
+      "영어 이름",
+      "정산 상태",
+      "가구 회비",
+      "납입 합계",
+      "잔액",
+      "1인 회비",
+      "객실 타입",
+      "구역",
+      "직분",
+    ],
+  );
+  assert.deepEqual(sheet.rows[0].slice(0, 11), [
+    "김가장",
+    "김가장",
+    "",
+    "미납",
+    500,
+    300,
+    200,
+    250,
+    "3인실",
+    "3",
+    "member",
+  ]);
+});
+
 test("가구 단위 금액은 가구주 행에만, 정산 상태는 전 행에 채운다", () => {
   const sheet = buildAttendeeSheet(
     { attendees: household(), payments: PAYMENTS },
