@@ -52,11 +52,12 @@ test("빈 명단이면 방 0개", () => {
   assert.deepEqual(est.decided, []);
 });
 
-test("householdOccupants: 6세 미만은 정원 집계에서 제외", () => {
+test("householdOccupants: 6세 미만·부분참석은 정원 집계에서 제외", () => {
   const head = makeAttendee({ id: "h1", is_householder: true });
   const adult = makeAttendee({ householder_id: "h1" });
   const baby = makeAttendee({ householder_id: "h1", is_under_6: true });
-  const [hh] = groupHouseholds([head, adult, baby]);
+  const dayOnly = makeAttendee({ householder_id: "h1", attendance: "partial" });
+  const [hh] = groupHouseholds([head, adult, baby, dayOnly]);
   assert.equal(householdOccupants(hh).length, 2);
 });
 
@@ -205,11 +206,26 @@ test("decided 버킷은 capacity 오름차순", () => {
   );
 });
 
-test("partial 참석자도 방 산정에 포함되고 별도 카운트된다", () => {
+test("전원 부분참석 가구는 숙박이 없어 방 산정에서 빠진다", () => {
   const rows = household("h1", 3, FOUR, { attendance: "partial" });
   const est = estimateHotelRooms(rows, 4);
+  assert.equal(est.totalPeople, 0);
+  assert.equal(est.totalRooms, 0);
+  assert.equal(est.zeroOccupancyHouseholds, 1);
+  assert.equal(est.partialCount, 3); // 카운터는 유지 (안내 문구용)
+});
+
+test("부분참석자는 같은 가구 안에서도 정원에서 빠진다", () => {
+  // 전일 3 + 부분 2 → 정원 3명 → 4인실 1방 (부분참석 포함이면 2방이 됐을 것)
+  const rows = household("h1", 3, FOUR);
+  rows.push(
+    makeAttendee({ householder_id: "h1", attendance: "partial" }),
+    makeAttendee({ householder_id: "h1", attendance: "partial" }),
+  );
+  const est = estimateHotelRooms(rows, 4);
   assert.equal(est.totalPeople, 3);
-  assert.equal(est.partialCount, 3);
+  assert.equal(est.totalRooms, 1);
+  assert.equal(est.partialCount, 2);
 });
 
 test("가구에 연결되지 않은 행은 unlinkedAttendees로 드러난다", () => {
