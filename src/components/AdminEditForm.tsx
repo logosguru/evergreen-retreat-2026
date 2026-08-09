@@ -269,6 +269,7 @@ export function AdminEditForm({
                 headId={payment.headId}
                 total={payment.total}
                 payments={payment.payments}
+                people={payment.people}
               />
             </div>
           </div>

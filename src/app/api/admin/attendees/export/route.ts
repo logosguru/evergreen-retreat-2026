@@ -108,6 +108,7 @@ export async function GET(request: Request) {
     p: {
       head: t("householder"),
       district: t("colDistrict"),
+      payer: t("paymentTarget"),
       date: t("paymentDate"),
       amount: t("paymentAmount"),
       method: t("paymentMethod"),
@@ -130,6 +131,7 @@ export async function GET(request: Request) {
     statusOwe: t("dashOutstanding"),
     statusRefund: t("dashRefundDue"),
     statusNoFee: t("balanceNoFee"),
+    payerHousehold: t("payerHousehold"),
   };
 
   const bytes = buildXlsx(buildAttendeeWorkbook({ attendees, payments }, labels));

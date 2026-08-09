@@ -48,6 +48,7 @@ const L: ExportLabels = {
   p: {
     head: "가구주",
     district: "구역",
+    payer: "납부 대상",
     date: "날짜",
     amount: "금액",
     method: "수단",
@@ -70,6 +71,7 @@ const L: ExportLabels = {
   statusOwe: "미납",
   statusRefund: "환불 필요",
   statusNoFee: "회비 미산정",
+  payerHousehold: "가구 전체",
 };
 
 const TYPE_3 = { name: "3인실", price_per_person: 250, capacity: 3 };
@@ -141,6 +143,7 @@ const PAYMENTS: FeePayment[] = [
   {
     id: "p1",
     head_id: "head",
+    attendee_id: null,
     amount: 300,
     method: "paypal",
     note: null,
@@ -243,14 +246,27 @@ test("1인 회비: 6세 미만은 면제, 타입 미선택은 미산정", () => 
   assert.equal(byName.get("홍길동"), "미산정");
 });
 
-test("납입 시트는 가구주 이름·구역을 붙인다", () => {
+test("납입 시트는 가구주 이름·구역·납부 대상을 붙인다", () => {
   const sheet = buildPaymentSheet(
     { attendees: household(), payments: PAYMENTS },
     L,
   );
   assert.deepEqual(sheet.rows, [
-    ["김가장", "3", "2026-07-01", 300, "paypal", "", "2026-07-01 10:00"],
+    ["김가장", "3", "가구 전체", "2026-07-01", 300, "paypal", "", "2026-07-01 10:00"],
   ]);
+});
+
+test("개인 납입은 대상 참석자 이름으로 표시한다", () => {
+  const sheet = buildPaymentSheet(
+    {
+      attendees: household(),
+      payments: [
+        { ...PAYMENTS[0], id: "p2", attendee_id: "spouse", amount: 250 },
+      ],
+    },
+    L,
+  );
+  assert.equal(sheet.rows[0][2], "이배우");
 });
 
 test("납입 기록이 없으면 정산 상태는 '회비 미산정'이 아니라 미납으로 나온다", () => {

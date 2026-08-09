@@ -4,6 +4,11 @@ import { Link } from "@/i18n/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { HouseholdPaymentManager } from "@/components/HouseholdPaymentManager";
 import { displayName } from "@/lib/names";
+import {
+  personFee,
+  withHouseholdRoomType,
+  type AttendeeWithRoom,
+} from "@/lib/fees";
 import type { FeePayment } from "@/lib/types";
 
 export default async function HouseholdPaymentsPage({
@@ -22,16 +27,34 @@ export default async function HouseholdPaymentsPage({
     .single();
   if (!head || !head.is_householder) notFound();
 
-  const [{ data: totalData }, { data: payData }] = await Promise.all([
-    supabase.rpc("household_total", { head_id: headId }),
-    supabase
-      .from("fee_payments")
-      .select("*")
-      .eq("head_id", headId)
-      .order("paid_at", { ascending: true }),
-  ]);
+  const [{ data: totalData }, { data: payData }, { data: memberData }] =
+    await Promise.all([
+      supabase.rpc("household_total", { head_id: headId }),
+      supabase
+        .from("fee_payments")
+        .select("*")
+        .eq("head_id", headId)
+        .order("paid_at", { ascending: true }),
+      // 개인별 납부 대상 목록 = 가구주 + 구성원 (회비 몫 계산에 객실 타입 임베드 필요)
+      supabase
+        .from("attendees")
+        .select(
+          "*, rooms(label, room_types(name, price_per_person, capacity)), requested_room_type:room_types!requested_room_type_id(name, price_per_person, capacity)",
+        )
+        .or(`id.eq.${headId},householder_id.eq.${headId}`)
+        .order("is_householder", { ascending: false })
+        .order("created_at", { ascending: true }),
+    ]);
   const total = (totalData as number | null) ?? 0;
   const payments = (payData as FeePayment[] | null) ?? [];
+  const members = withHouseholdRoomType(
+    (memberData as AttendeeWithRoom[] | null) ?? [],
+  );
+  const people = members.map((m) => ({
+    id: m.id,
+    name: displayName(m),
+    fee: personFee(m),
+  }));
 
   const t = await getTranslations("Admin");
 
@@ -52,6 +75,7 @@ export default async function HouseholdPaymentsPage({
           headId={headId}
           total={total}
           payments={payments}
+          people={people}
         />
       </div>
     </div>
