@@ -126,7 +126,7 @@
     "colRole": "Title",
     "colGender": "Gender",
     "colHousehold": "Household",
-    "colAttendance": "Attendance",
+    "colPartial": "Partial",
     "colGroup": "Group",
     "colPaid": "Fee",
     "colRoom": "Room",

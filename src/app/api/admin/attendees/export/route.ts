@@ -55,14 +55,13 @@ export async function GET(request: Request) {
   }
   const payments = (payData as FeePayment[] | null) ?? [];
 
-  const [t, tf, tx, tr, tdi, tg, ta, tl, tp, tfd, tc, trm] = await Promise.all([
+  const [t, tf, tx, tr, tdi, tg, tl, tp, tfd, tc, trm] = await Promise.all([
     getTranslations({ locale, namespace: "Admin" }),
     getTranslations({ locale, namespace: "Fee" }),
     getTranslations({ locale, namespace: "Export" }),
     getTranslations({ locale, namespace: "Role" }),
     getTranslations({ locale, namespace: "District" }),
     getTranslations({ locale, namespace: "Gender" }),
-    getTranslations({ locale, namespace: "Attendance" }),
     getTranslations({ locale, namespace: "Language" }),
     getTranslations({ locale, namespace: "Pickup" }),
     getTranslations({ locale, namespace: "Fields" }),
@@ -86,7 +85,7 @@ export async function GET(request: Request) {
       under6: t("under6"),
       child612: t("child612"),
       language: t("colLanguage"),
-      attendance: t("colAttendance"),
+      partial: t("colPartial"),
       arrival: tfd("arrival_at"),
       departure: tfd("departure_at"),
       pickup: t("colPickup"),
@@ -118,7 +117,6 @@ export async function GET(request: Request) {
     role: (v) => tr(v),
     district: (v) => tdi(v),
     gender: (v) => tg(v),
-    attendance: (v) => ta(v),
     language: (v) => tl(v),
     pickup: (v) => tp(v),
     method: (v) => (METHOD_KEYS[v] ? tf(METHOD_KEYS[v]) : v),

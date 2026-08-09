@@ -29,7 +29,7 @@ export interface ExportLabels {
     under6: string;
     child612: string;
     language: string;
-    attendance: string;
+    partial: string; // 부분 참석 여부 (Y / 공란)
     arrival: string;
     departure: string;
     pickup: string;
@@ -62,7 +62,6 @@ export interface ExportLabels {
   role: Label;
   district: Label;
   gender: Label;
-  attendance: Label;
   language: Label;
   pickup: Label;
   method: Label;
@@ -183,7 +182,7 @@ export function buildAttendeeSheet(
       bool(a.is_under_6, L),
       bool(a.is_child_6_12, L),
       L.language(a.language),
-      L.attendance(a.attendance),
+      a.attendance === "partial" ? "Y" : "",
       a.arrival_at ?? "",
       a.departure_at ?? "",
       a.pickup_location ? L.pickup(a.pickup_location) : "",
@@ -219,7 +218,7 @@ export function buildAttendeeSheet(
       { header: L.h.under6 },
       { header: L.h.child612 },
       { header: L.h.language },
-      { header: L.h.attendance },
+      { header: L.h.partial },
       { header: L.h.arrival },
       { header: L.h.departure },
       { header: L.h.pickup },

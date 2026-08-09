@@ -26,7 +26,7 @@ const L: ExportLabels = {
     under6: "6세 미만",
     child612: "6~12세",
     language: "언어",
-    attendance: "참석",
+    partial: "부분참석",
     arrival: "도착일",
     departure: "출발일",
     pickup: "차량",
@@ -58,7 +58,6 @@ const L: ExportLabels = {
   role: id,
   district: id,
   gender: id,
-  attendance: id,
   language: id,
   pickup: id,
   method: id,
@@ -278,4 +277,21 @@ test("납입 기록이 없으면 정산 상태는 '회비 미산정'이 아니�
   const solo = [person({ id: "solo", korean_name: "홍길동", is_householder: true })];
   const s2 = buildAttendeeSheet({ attendees: solo, payments: [] }, L);
   assert.equal(s2.rows[0][status], "회비 미산정");
+});
+
+test("부분 참석만 Y로 표시하고 전일 참석은 공란", () => {
+  const rows = [
+    person({ id: "h", korean_name: "전일", is_householder: true }),
+    person({
+      id: "p",
+      korean_name: "부분",
+      householder_id: "h",
+      attendance: "partial",
+    }),
+  ];
+  const sheet = buildAttendeeSheet({ attendees: rows, payments: [] }, L);
+  const col = sheet.columns.findIndex((c) => c.header === "부분참석");
+  const by = new Map(sheet.rows.map((r) => [r[1], r[col]]));
+  assert.equal(by.get("부분"), "Y");
+  assert.equal(by.get("전일"), "");
 });
