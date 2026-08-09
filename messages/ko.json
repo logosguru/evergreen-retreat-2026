@@ -472,9 +472,9 @@
     "households": "{count}가구",
     "people": "{count}명",
     "noteUnder6": "6세 미만 {count}명은 정원 미집계 — 호텔에 유아 동반 별도 고지",
-    "notePartial": "부분참석 {count}명도 숙박으로 포함",
+    "notePartial": "부분참석 {count}명은 당일 참석(숙박 없음) — 방 산정 제외",
     "noteUnknownGender": "성별 미입력 {count}가구는 합방 불가로 전용방 처리 — 성별을 채우면 예상치가 줄어듭니다",
-    "noteZeroOccupancy": "전원 6세 미만 {count}가구는 방 산정 제외",
+    "noteZeroOccupancy": "전원 6세 미만 또는 부분참석인 {count}가구는 방 산정 제외",
     "noteUnlinked": "⚠ 가구 미연결 {count}명은 방 산정에서 빠졌습니다 — 데이터 확인 필요",
     "rule": "가족은 전용방, 1~2인 소가구는 같은 성별끼리 합방 기준"
   },

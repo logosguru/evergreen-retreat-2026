@@ -472,9 +472,9 @@
     "households": "{count}",
     "people": "{count}",
     "noteUnder6": "{count} menores de 6 años no cuentan para la ocupación — avisar al hotel por separado",
-    "notePartial": "{count} asistentes parciales contados como alojados",
+    "notePartial": "{count} asistentes parciales vienen solo por el día (sin alojamiento) — excluidos del cálculo",
     "noteUnknownGender": "{count} familias sin sexo registrado reciben habitación propia — completarlo reduce la estimación",
-    "noteZeroOccupancy": "{count} familias solo de menores de 6 años excluidas",
+    "noteZeroOccupancy": "{count} familias solo con menores de 6 años o asistentes parciales excluidas",
     "noteUnlinked": "⚠ {count} asistentes sin familia vinculada quedaron fuera — revisar los datos",
     "rule": "Las familias tienen habitación propia; las de 1–2 personas se agrupan por sexo"
   },

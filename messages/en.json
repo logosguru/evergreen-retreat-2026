@@ -472,9 +472,9 @@
     "households": "{count}",
     "people": "{count}",
     "noteUnder6": "{count} under 6 excluded from occupancy — notify the hotel separately about infants",
-    "notePartial": "{count} partial attendees counted as staying overnight",
+    "notePartial": "{count} partial attendees are day-only (no overnight) — excluded from rooms",
     "noteUnknownGender": "{count} households with no gender recorded get their own room — filling gender in lowers the estimate",
-    "noteZeroOccupancy": "{count} households of only under-6 children excluded",
+    "noteZeroOccupancy": "{count} households with only under-6 children or partial attendees excluded",
     "noteUnlinked": "⚠ {count} attendees not linked to a household were left out — check the data",
     "rule": "Families get their own room; 1–2 person households share by gender"
   },
