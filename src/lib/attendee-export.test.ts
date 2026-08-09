@@ -25,6 +25,8 @@ const L: ExportLabels = {
     gender: "성별",
     under6: "6세 미만",
     child612: "6~12세",
+    feeWaived: "회비 면제",
+    tshirt: "티셔츠",
     language: "언어",
     partial: "부분참석",
     arrival: "도착일",
@@ -61,9 +63,11 @@ const L: ExportLabels = {
   language: id,
   pickup: id,
   method: id,
+  tshirt: id,
   yes: "예",
   no: "아니오",
   feeExempt: "면제",
+  feeWaivedValue: "면제(강사 등)",
   feePending: "미산정",
   roomUnassigned: "미배정",
   statusSettled: "정산 완료",
@@ -277,6 +281,23 @@ test("납입 기록이 없으면 정산 상태는 '회비 미산정'이 아니�
   const solo = [person({ id: "solo", korean_name: "홍길동", is_householder: true })];
   const s2 = buildAttendeeSheet({ attendees: solo, payments: [] }, L);
   assert.equal(s2.rows[0][status], "회비 미산정");
+});
+
+test("전원 면제(강사)인 방은 '회비 미산정'이 아니라 정산 완료", () => {
+  const speaker = [
+    person({
+      id: "sp",
+      korean_name: "박강사",
+      role: "speaker",
+      is_householder: true,
+      fee_waived: true,
+    }),
+  ];
+  const sheet = buildAttendeeSheet({ attendees: speaker, payments: [] }, L);
+  const status = sheet.columns.findIndex((c) => c.header === "정산 상태");
+  const fee = sheet.columns.findIndex((c) => c.header === "1인 회비");
+  assert.equal(sheet.rows[0][status], "정산 완료");
+  assert.equal(sheet.rows[0][fee], "면제(강사 등)");
 });
 
 test("부분 참석만 Y로 표시하고 전일 참석은 공란", () => {

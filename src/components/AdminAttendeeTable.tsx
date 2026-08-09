@@ -92,6 +92,7 @@ export function AdminAttendeeTable({
   const tf = useTranslations("Fee");
   const trm = useTranslations("Rooms");
   const tl = useTranslations("Language");
+  const tts = useTranslations("Tshirt");
   const tp = useTranslations("Pickup");
   const locale = useLocale();
   const dateFmt = new Intl.DateTimeFormat(
@@ -135,23 +136,26 @@ export function AdminAttendeeTable({
 
   function feeText(a: AttendeeWithRoom) {
     const f = personFee(a);
+    if (a.fee_waived) return tf("waived");
     if (a.is_under_6) return tf("exempt");
     if (f == null) return tf("pending");
     return formatUSD(f);
   }
 
-  const totalByHead = new Map(
-    groupHouseholds(attendees).map((h) => [h.head.id, h.total]),
+  const householdsById = new Map(
+    groupHouseholds(attendees).map((h) => [h.head.id, h]),
   );
 
   function balanceBadge(headId: string) {
-    const total = totalByHead.get(headId) ?? 0;
+    const h = householdsById.get(headId);
+    const total = h?.total ?? 0;
     const paid = paidByHead[headId] ?? 0;
     const bal = householdBalance(total, paid);
-    // 회비 total=0(객실 타입 미선택 등)이면 아직 낼 금액이 정해지지 않은 상태 →
+    // 미산정 인원(객실 타입 미선택)이 있으면 아직 낼 금액이 정해지지 않은 상태 →
     // '정산 완료'가 아니라 중립 '회비 미산정'으로 표시(오해 방지). 납입액이 있으면
     // 예외적으로 잔액에 따라 처리(초과=환불).
-    const noFee = total === 0 && paid === 0;
+    // 전원 면제(강사 등)·6세 미만이라 합계가 0인 방은 미산정이 아니라 정산 완료.
+    const noFee = (h?.unassignedCount ?? 0) > 0 && paid === 0;
     const cls = noFee
       ? "bg-slate-100 text-slate-500"
       : bal > 0
@@ -195,6 +199,12 @@ export function AdminAttendeeTable({
             {t("child612")}
           </span>
         )}
+        {/* 리스트 보기엔 회비 열이 없으므로 면제는 배지로 표시 */}
+        {a.fee_waived && (
+          <span className="ml-2 rounded bg-teal-100 px-1.5 py-0.5 text-[11px] font-medium text-teal-700">
+            {tf("waived")}
+          </span>
+        )}
       </>
     );
   }
@@ -234,6 +244,9 @@ export function AdminAttendeeTable({
               </option>
             ))}
           </select>
+        </td>
+        <td className="px-3 py-2 text-slate-600">
+          {a.tshirt_size ? tts(a.tshirt_size) : "—"}
         </td>
         {showFee && (
           <td className="px-3 py-2 text-right text-slate-700">{feeText(a)}</td>
@@ -284,6 +297,7 @@ export function AdminAttendeeTable({
                 <SortTh k="room" label={t("colRoom")} sort={sort} onToggle={toggleSort} />
                 <SortTh k="pickup" label={t("colPickup")} sort={sort} onToggle={toggleSort} />
                 <SortTh k="language" label={t("colLanguage")} sort={sort} onToggle={toggleSort} />
+                <SortTh k="tshirt" label={t("colTshirt")} sort={sort} onToggle={toggleSort} />
                 <SortTh k="fee" label={t("colPaid")} sort={sort} onToggle={toggleSort} align="right" />
               </tr>
             </thead>
@@ -298,7 +312,7 @@ export function AdminAttendeeTable({
                 return (
                   <Fragment key={h.head.id}>
                     <tr className="bg-slate-50">
-                      <td colSpan={7} className="px-3 py-2">
+                      <td colSpan={8} className="px-3 py-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="font-semibold text-slate-900">
                             {t("groupHeader", {
@@ -390,7 +404,13 @@ export function AdminAttendeeTable({
                 sort={sort}
                 onToggle={toggleSort}
               />
-              {/* 잔액은 가구 단위 배지라 정렬 대상 아님 */}
+              <SortTh
+                k="tshirt"
+                label={t("colTshirt")}
+                sort={sort}
+                onToggle={toggleSort}
+              />
+              {/* 잔액은 방 단위 배지라 정렬 대상 아님 */}
               <th className="px-3 py-2 text-left font-medium">
                 {t("colBalance")}
               </th>

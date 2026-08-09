@@ -30,11 +30,14 @@ export const CHILD_PARTIAL_FEE = 50; // 6~12세 부분 참석
 export const CHILD_FULL_FEE = 100; // 6~12세 전일 참석 (방 종류 무관)
 
 // 사람별 회비. 우선순위:
+//   면제(fee_waived, 강사 등) → $0
 //   6세 미만 → $0 (면제)
 //   6~12세   → 부분 $50 / 전일 $100
 //   성인     → 부분 $100 / 전일 = 가구주 선택 타입 단가 (미선택이면 null=미산정)
 // (requested_room_type는 withHouseholdRoomType로 가구원 행에도 채워져 있어야 정확)
+// SQL 쪽 동일 규칙: supabase/migrations/0028_fee_waived.sql household_total()
 export function personFee(a: AttendeeWithRoom): number | null {
+  if (a.fee_waived) return 0;
   if (a.is_under_6) return 0;
   if (a.is_child_6_12)
     return a.attendance === "partial" ? CHILD_PARTIAL_FEE : CHILD_FULL_FEE;

@@ -36,6 +36,8 @@ function makeAttendee(over: Partial<AttendeeWithRoom> = {}): AttendeeWithRoom {
     language: "ko",
     is_under_6: false,
     is_child_6_12: false,
+    fee_waived: false,
+    tshirt_size: null,
     attendance: "full",
     pickup_location: null,
     arrival_at: null,
@@ -86,6 +88,30 @@ test("6세 미만은 부분 참석이어도 면제", () => {
     personFee(makeAttendee({ attendance: "partial", is_under_6: true })),
     0,
   );
+});
+
+test("회비 면제(강사 등)는 객실 타입을 골랐어도 $0", () => {
+  assert.equal(
+    personFee(makeAttendee({ fee_waived: true, requested_room_type: FOUR })),
+    0,
+  );
+});
+
+test("회비 면제가 부분 참석·6~12세보다 우선", () => {
+  assert.equal(
+    personFee(
+      makeAttendee({
+        fee_waived: true,
+        attendance: "partial",
+        is_child_6_12: true,
+      }),
+    ),
+    0,
+  );
+});
+
+test("면제자는 타입 미선택이어도 미산정(null)이 아니다", () => {
+  assert.equal(personFee(makeAttendee({ fee_waived: true })), 0);
 });
 
 test("6~12세 부분 참석 = $50", () => {
@@ -161,6 +187,33 @@ test("가구 합계: 타입 미선택 부분 참석 가구는 미산정이 아�
   const [h] = groupHouseholds(withHouseholdRoomType(rows));
   assert.equal(h.total, 200);
   assert.equal(h.unassignedCount, 0);
+});
+
+test("방 합계: 면제자는 합계에서 빠지고 미산정으로도 세지 않는다", () => {
+  // 강사 혼자인 방 — 객실 타입 미선택이어도 합계 0, 미산정 0명.
+  const speaker = makeAttendee({
+    is_householder: true,
+    role: "speaker",
+    fee_waived: true,
+  });
+  const [alone] = groupHouseholds(withHouseholdRoomType([speaker]));
+  assert.equal(alone.total, 0);
+  assert.equal(alone.unassignedCount, 0);
+
+  // 일반 방에 면제자가 섞인 경우 — 면제자 몫만 빠진다.
+  const head = makeAttendee({
+    is_householder: true,
+    requested_room_type: FOUR,
+  });
+  const [mixed] = groupHouseholds(
+    withHouseholdRoomType([
+      head,
+      makeAttendee({ householder_id: head.id }), // 전참 → 200
+      makeAttendee({ householder_id: head.id, fee_waived: true }), // → 0
+    ]),
+  );
+  assert.equal(mixed.total, 200 + 200);
+  assert.equal(mixed.unassignedCount, 0);
 });
 
 test("paidByAttendee는 가구 전체(attendee_id=null) 납입을 개인에 귀속시키지 않는다", () => {

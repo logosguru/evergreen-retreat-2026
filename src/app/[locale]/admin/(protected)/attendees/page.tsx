@@ -40,10 +40,12 @@ export default async function AdminAttendeesPage({
   const paid = paidByHead(
     (payData as { head_id: string; amount: number }[] | null) ?? [],
   );
-  // 요약 통계: 수납 합계 + 정산 가구 수
+  // 요약 통계: 수납 합계 + 정산 방 수 (미산정 인원이 없고 잔액이 정리된 방)
   const collected = [...paid.values()].reduce((s, v) => s + v, 0);
   const settledHouseholds = households.filter(
-    (h) => h.total > 0 && householdBalance(h.total, paid.get(h.head.id) ?? 0) <= 0,
+    (h) =>
+      h.unassignedCount === 0 &&
+      householdBalance(h.total, paid.get(h.head.id) ?? 0) <= 0,
   ).length;
 
   const { data: reqData } = await supabase

@@ -55,7 +55,7 @@ export async function GET(request: Request) {
   }
   const payments = (payData as FeePayment[] | null) ?? [];
 
-  const [t, tf, tx, tr, tdi, tg, tl, tp, tfd, tc, trm] = await Promise.all([
+  const [t, tf, tx, tr, tdi, tg, tl, tp, tfd, tc, trm, tts] = await Promise.all([
     getTranslations({ locale, namespace: "Admin" }),
     getTranslations({ locale, namespace: "Fee" }),
     getTranslations({ locale, namespace: "Export" }),
@@ -67,6 +67,7 @@ export async function GET(request: Request) {
     getTranslations({ locale, namespace: "Fields" }),
     getTranslations({ locale, namespace: "Common" }),
     getTranslations({ locale, namespace: "Rooms" }),
+    getTranslations({ locale, namespace: "Tshirt" }),
   ]);
 
   const labels: ExportLabels = {
@@ -84,6 +85,8 @@ export async function GET(request: Request) {
       gender: t("colGender"),
       under6: t("under6"),
       child612: t("child612"),
+      feeWaived: t("colFeeWaived"),
+      tshirt: t("colTshirt"),
       language: t("colLanguage"),
       partial: t("colPartial"),
       arrival: tfd("arrival_at"),
@@ -120,9 +123,11 @@ export async function GET(request: Request) {
     language: (v) => tl(v),
     pickup: (v) => tp(v),
     method: (v) => (METHOD_KEYS[v] ? tf(METHOD_KEYS[v]) : v),
+    tshirt: (v) => tts(v),
     yes: tc("yes"),
     no: tc("no"),
     feeExempt: tf("exempt"),
+    feeWaivedValue: tf("waived"),
     feePending: tf("pending"),
     roomUnassigned: trm("unassigned"),
     statusSettled: t("balanceSettled"),

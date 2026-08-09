@@ -15,6 +15,7 @@ import { RoomTypeSelect } from "./RoomTypeSelect";
 import { HouseholdPaymentManager } from "./HouseholdPaymentManager";
 import {
   LANGUAGES,
+  TSHIRT_SIZES,
   type Attendee,
   type HouseholdPaymentData,
   type RoomType,
@@ -47,6 +48,8 @@ function toInput(a: Attendee): AdminEditInput {
     retreat_group: a.retreat_group ?? "",
     is_group_leader: a.is_group_leader,
     requested_room_type_id: a.requested_room_type_id ?? "",
+    tshirt_size: a.tshirt_size ?? "",
+    fee_waived: a.fee_waived,
   };
 }
 
@@ -70,6 +73,7 @@ export function AdminEditForm({
   const tc = useTranslations("Common");
   const tf = useTranslations("Fields");
   const tl = useTranslations("Language");
+  const tts = useTranslations("Tshirt");
   const tfee = useTranslations("Fee");
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -226,6 +230,25 @@ export function AdminEditForm({
               <p className="mt-1 text-xs text-slate-500">{t("roomTypeHeadOnly")}</p>
             </div>
           )}
+          <div>
+            <label className={labelClass}>{t("colTshirt")}</label>
+            <select
+              value={data.tshirt_size ?? ""}
+              onChange={(e) =>
+                patch({
+                  tshirt_size: e.target.value as AdminEditInput["tshirt_size"],
+                })
+              }
+              className={inputClass}
+            >
+              <option value="">—</option>
+              {TSHIRT_SIZES.map((s) => (
+                <option key={s} value={s}>
+                  {tts(s)}
+                </option>
+              ))}
+            </select>
+          </div>
           <label className="flex items-center gap-2 text-sm text-slate-700">
             <input
               type="checkbox"
@@ -234,6 +257,17 @@ export function AdminEditForm({
             />
             {t("groupLeader")}
           </label>
+          <div>
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={!!data.fee_waived}
+                onChange={(e) => patch({ fee_waived: e.target.checked })}
+              />
+              {t("feeWaived")}
+            </label>
+            <p className="mt-1 text-xs text-slate-500">{t("feeWaivedHint")}</p>
+          </div>
         </div>
 
         <div className="mt-4 border-t border-slate-200 pt-4">

@@ -1,5 +1,11 @@
 // node --test 로 직접 실행되므로 값 import 는 확장자(.ts) 필수.
-import { DISTRICTS, LANGUAGES, PICKUP_LOCATIONS, ROLES } from "./types.ts";
+import {
+  DISTRICTS,
+  LANGUAGES,
+  PICKUP_LOCATIONS,
+  ROLES,
+  TSHIRT_SIZES,
+} from "./types.ts";
 import { personFee, type AttendeeWithRoom, type Household } from "./fees.ts";
 import { nameKey } from "./names.ts";
 
@@ -13,6 +19,7 @@ export const SORT_KEYS = [
   "room",
   "pickup",
   "language",
+  "tshirt",
   "fee",
   "registered",
 ] as const;
@@ -29,6 +36,7 @@ const LANG_INDEX = indexOf(LANGUAGES);
 const ROLE_INDEX = indexOf(ROLES);
 const DISTRICT_INDEX = indexOf(DISTRICTS);
 const PICKUP_INDEX = indexOf(PICKUP_LOCATIONS);
+const TSHIRT_INDEX = indexOf(TSHIRT_SIZES);
 
 // 가구주 id → 가구주 행
 export function buildHeads(
@@ -71,6 +79,7 @@ function isMissing(a: AttendeeWithRoom, key: SortKey): boolean {
   if (key === "role") return a.role == null;
   if (key === "district") return a.district == null;
   if (key === "pickup") return a.pickup_location == null;
+  if (key === "tshirt") return a.tshirt_size == null;
   return false;
 }
 
@@ -104,6 +113,9 @@ function compareKey(
       return byIndex(PICKUP_INDEX, a.pickup_location, b.pickup_location);
     case "language":
       return byIndex(LANG_INDEX, a.language, b.language);
+    case "tshirt":
+      // 사이즈 선언 순서(XXXS→XXXL). 미지정은 isMissing이 뒤로 보낸다.
+      return byIndex(TSHIRT_INDEX, a.tshirt_size, b.tshirt_size);
     case "fee":
       // 6세미만=0, 미산정(null)=0 으로 취급.
       return (personFee(a) ?? 0) - (personFee(b) ?? 0) || byName();

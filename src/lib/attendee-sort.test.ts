@@ -26,6 +26,8 @@ function makeAttendee(over: Partial<AttendeeWithRoom> = {}): AttendeeWithRoom {
     language: "ko",
     is_under_6: false,
     is_child_6_12: false,
+    fee_waived: false,
+    tshirt_size: null,
     attendance: "full",
     pickup_location: null,
     arrival_at: null,
@@ -109,6 +111,26 @@ test("차량 정렬: PICKUP_LOCATIONS 순서 + 미지정 뒤", () => {
     "li",
     "no",
   ]);
+});
+
+test("티셔츠 정렬: 사이즈 선언 순서(XXXS→XXXL) + 미지정 뒤", () => {
+  const rows = [
+    makeAttendee({ id: "xl", tshirt_size: "xl" }),
+    makeAttendee({ id: "none", tshirt_size: null }),
+    makeAttendee({ id: "xxxs", tshirt_size: "xxxs" }),
+    makeAttendee({ id: "m", tshirt_size: "m" }),
+  ];
+  assert.deepEqual(ids(sortAttendees(rows, { key: "tshirt", dir: "asc" })), [
+    "xxxs",
+    "m",
+    "xl",
+    "none",
+  ]);
+  // 방향을 뒤집어도 미지정은 항상 맨 뒤
+  assert.equal(
+    ids(sortAttendees(rows, { key: "tshirt", dir: "desc" })).at(-1),
+    "none",
+  );
 });
 
 test("회비 정렬: 6세미만/미산정은 0으로 취급", () => {

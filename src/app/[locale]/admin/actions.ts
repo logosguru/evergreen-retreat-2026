@@ -1,7 +1,7 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
-import type { Language } from "@/lib/types";
+import { TSHIRT_SIZES, type Language, type TshirtSize } from "@/lib/types";
 import {
   clean,
   cleanPickup,
@@ -89,7 +89,14 @@ export type AdminEditInput = PersonInput & {
   retreat_group?: string;
   is_group_leader?: boolean;
   requested_room_type_id?: string | null;
+  tshirt_size?: TshirtSize | ""; // "" = 미지정
+  fee_waived?: boolean; // 회비 면제 (강사 등)
 };
+
+// 클라이언트 값 불신: enum 토큰 외(빈값 포함)는 null(미지정)로 정규화.
+function cleanTshirt(v?: string | null): TshirtSize | null {
+  return TSHIRT_SIZES.includes(v as TshirtSize) ? (v as TshirtSize) : null;
+}
 
 // 관리자 수동 입력(가구주 + 가족 일괄). 공개 등록과 달리 Turnstile 없음, admin 필드 포함.
 export type AdminInsertPayload = {
@@ -297,6 +304,8 @@ export async function adminUpdateAttendee(
       retreat_group: clean(input.retreat_group),
       is_group_leader: !!input.is_group_leader,
       requested_room_type_id: clean(input.requested_room_type_id),
+      tshirt_size: cleanTshirt(input.tshirt_size),
+      fee_waived: !!input.fee_waived,
     })
     .eq("id", id);
 

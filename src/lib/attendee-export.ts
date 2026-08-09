@@ -28,6 +28,8 @@ export interface ExportLabels {
     gender: string;
     under6: string;
     child612: string;
+    feeWaived: string;
+    tshirt: string;
     language: string;
     partial: string; // 부분 참석 여부 (Y / 공란)
     arrival: string;
@@ -65,9 +67,11 @@ export interface ExportLabels {
   language: Label;
   pickup: Label;
   method: Label;
+  tshirt: Label;
   yes: string;
   no: string;
   feeExempt: string;
+  feeWaivedValue: string; // 회비 칸 표시값(면제 — 강사 등)
   feePending: string;
   roomUnassigned: string;
   statusSettled: string;
@@ -77,13 +81,15 @@ export interface ExportLabels {
   payerHousehold: string; // attendee_id 없는(가구 전체) 납입 표시
 }
 
-// 가구 단위 정산 상태 문자열.
+// 방 단위 정산 상태 문자열. pending = 미산정 인원(객실 타입 미선택)이 있는지 —
+// 전원 면제(강사 등)·6세 미만이라 합계가 0인 방은 미산정이 아니라 정산 완료다.
 export function statusOf(
   total: number,
   paid: number,
   L: ExportLabels,
+  pending = false,
 ): string {
-  if (total === 0 && paid === 0) return L.statusNoFee;
+  if (pending && paid === 0) return L.statusNoFee;
   const bal = householdBalance(total, paid);
   if (bal > 0) return L.statusOwe;
   if (bal < 0) return L.statusRefund;
@@ -119,6 +125,9 @@ export function buildAttendeeSheet(
   const totalByHead = new Map(households.map((h) => [h.head.id, h.total]));
   const sizeByHead = new Map(
     households.map((h) => [h.head.id, h.members.length + 1]),
+  );
+  const pendingByHead = new Map(
+    households.map((h) => [h.head.id, h.unassignedCount > 0]),
   );
   const headById = new Map(households.map((h) => [h.head.id, h.head]));
 
@@ -167,11 +176,17 @@ export function buildAttendeeSheet(
       displayName(head ?? a),
       a.korean_name ?? "",
       a.english_name ?? "",
-      statusOf(total, paid, L),
+      statusOf(total, paid, L, pendingByHead.get(headId) ?? false),
       a.is_householder ? total : "",
       a.is_householder ? paid : "",
       a.is_householder ? householdBalance(total, paid) : "",
-      a.is_under_6 ? L.feeExempt : fee == null ? L.feePending : fee,
+      a.fee_waived
+        ? L.feeWaivedValue
+        : a.is_under_6
+          ? L.feeExempt
+          : fee == null
+            ? L.feePending
+            : fee,
       a.requested_room_type?.name ?? "",
       a.district ? L.district(a.district) : "",
       a.role ? L.role(a.role) : "",
@@ -181,6 +196,8 @@ export function buildAttendeeSheet(
       a.gender ? L.gender(a.gender) : "",
       bool(a.is_under_6, L),
       bool(a.is_child_6_12, L),
+      a.fee_waived ? L.yes : "",
+      a.tshirt_size ? L.tshirt(a.tshirt_size) : "",
       L.language(a.language),
       a.attendance === "partial" ? "Y" : "",
       a.arrival_at ?? "",
@@ -217,6 +234,8 @@ export function buildAttendeeSheet(
       { header: L.h.gender },
       { header: L.h.under6 },
       { header: L.h.child612 },
+      { header: L.h.feeWaived },
+      { header: L.h.tshirt },
       { header: L.h.language },
       { header: L.h.partial },
       { header: L.h.arrival },

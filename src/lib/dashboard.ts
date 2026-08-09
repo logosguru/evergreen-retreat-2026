@@ -74,7 +74,9 @@ export function computeDashboard(
     collected += p;
     if (bal > 0) outstanding += bal;
     if (bal < 0) refundDue += -bal;
-    if (h.total > 0 && bal <= 0) settledHouseholds += 1;
+    // 정산 완료 = 미산정 인원이 없고 잔액 정리됨. 전원 면제(강사 등)·6세 미만이라
+    // 합계가 0인 방도 낼 금액이 없으므로 정산 완료로 센다.
+    if (h.unassignedCount === 0 && bal <= 0) settledHouseholds += 1;
     if (bal !== 0) {
       needsAction.push({
         headId: h.head.id,
