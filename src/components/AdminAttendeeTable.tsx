@@ -88,9 +88,7 @@ export function AdminAttendeeTable({
   paidByHead: Record<string, number>;
 }) {
   const t = useTranslations("Admin");
-  const tr = useTranslations("Role");
   const td = useTranslations("District");
-  const ta = useTranslations("Attendance");
   const tf = useTranslations("Fee");
   const trm = useTranslations("Rooms");
   const tl = useTranslations("Language");
@@ -201,27 +199,22 @@ export function AdminAttendeeTable({
     );
   }
 
-  // 두 보기가 공유하는 셀: 직분/구역/참석/방/언어(+회비, 리스트 보기는 잔액 배지로 대체하므로 생략 가능)
+  // 두 보기가 공유하는 셀: 구역/부분참석/방/언어(+회비, 리스트 보기는 잔액 배지로 대체하므로 생략 가능)
+  // 직분(role)은 화면에서 숨김 — Excel 내보내기에는 그대로 포함된다.
   function personCells(a: AttendeeWithRoom, opts?: { fee?: boolean }) {
     const showFee = opts?.fee ?? true;
     return (
       <>
         <td className="px-3 py-2 text-slate-600">
-          {a.role ? tr(a.role) : "—"}
-        </td>
-        <td className="px-3 py-2 text-slate-600">
           {a.district ? td(a.district) : "—"}
         </td>
+        {/* 부분 참석만 Y로 표시. 전일 참석은 공란(대다수라 잡음이 됨) */}
         <td className="px-3 py-2">
-          <span
-            className={
-              a.attendance === "partial"
-                ? "rounded bg-violet-100 px-1.5 py-0.5 text-[11px] font-medium text-violet-700"
-                : "rounded bg-slate-100 px-1.5 py-0.5 text-[11px] font-medium text-slate-600"
-            }
-          >
-            {ta(a.attendance)}
-          </span>
+          {a.attendance === "partial" && (
+            <span className="rounded bg-violet-100 px-1.5 py-0.5 text-[11px] font-semibold text-violet-700">
+              Y
+            </span>
+          )}
         </td>
         <td className="px-3 py-2 text-slate-600">
           {a.rooms?.label ?? trm("unassigned")}
@@ -286,9 +279,8 @@ export function AdminAttendeeTable({
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
               <tr>
                 <SortTh k="name" label={t("colName")} sort={sort} onToggle={toggleSort} />
-                <SortTh k="role" label={t("colRole")} sort={sort} onToggle={toggleSort} />
                 <SortTh k="district" label={t("colDistrict")} sort={sort} onToggle={toggleSort} />
-                <SortTh k="attendance" label={t("colAttendance")} sort={sort} onToggle={toggleSort} />
+                <SortTh k="attendance" label={t("colPartial")} sort={sort} onToggle={toggleSort} />
                 <SortTh k="room" label={t("colRoom")} sort={sort} onToggle={toggleSort} />
                 <SortTh k="pickup" label={t("colPickup")} sort={sort} onToggle={toggleSort} />
                 <SortTh k="language" label={t("colLanguage")} sort={sort} onToggle={toggleSort} />
@@ -306,7 +298,7 @@ export function AdminAttendeeTable({
                 return (
                   <Fragment key={h.head.id}>
                     <tr className="bg-slate-50">
-                      <td colSpan={8} className="px-3 py-2">
+                      <td colSpan={7} className="px-3 py-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="font-semibold text-slate-900">
                             {t("groupHeader", {
@@ -368,7 +360,6 @@ export function AdminAttendeeTable({
                 sort={sort}
                 onToggle={toggleSort}
               />
-              <SortTh k="role" label={t("colRole")} sort={sort} onToggle={toggleSort} />
               <SortTh
                 k="district"
                 label={t("colDistrict")}
@@ -377,7 +368,7 @@ export function AdminAttendeeTable({
               />
               <SortTh
                 k="attendance"
-                label={t("colAttendance")}
+                label={t("colPartial")}
                 sort={sort}
                 onToggle={toggleSort}
               />
