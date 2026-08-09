@@ -4,20 +4,29 @@ import { useState, useTransition } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { addPayment, deletePayment } from "@/app/[locale]/admin/actions";
-import { formatUSD, householdBalance } from "@/lib/fees";
+import { formatUSD, householdBalance, paidByAttendee } from "@/lib/fees";
 import { PAYMENT_METHODS, type FeePayment } from "@/lib/types";
 
 const inputClass =
   "mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500";
 
+// 납부 대상 후보 (가구주 + 구성원). fee = 그 사람 몫(null=미산정).
+export interface PaymentPerson {
+  id: string;
+  name: string;
+  fee: number | null;
+}
+
 export function HouseholdPaymentManager({
   headId,
   total,
   payments,
+  people = [],
 }: {
   headId: string;
   total: number;
   payments: FeePayment[];
+  people?: PaymentPerson[];
 }) {
   const t = useTranslations("Admin");
   const tf = useTranslations("Fee");
@@ -27,6 +36,8 @@ export function HouseholdPaymentManager({
 
   const paidTotal = payments.reduce((s, p) => s + p.amount, 0);
   const balance = householdBalance(total, paidTotal);
+  const paidPerson = paidByAttendee(payments);
+  const nameById = new Map(people.map((p) => [p.id, p.name]));
 
   const dateFmt = new Intl.DateTimeFormat(
     locale === "en" ? "en-US" : locale === "es" ? "es-ES" : "ko-KR",
@@ -41,6 +52,21 @@ export function HouseholdPaymentManager({
   const [paidAt, setPaidAt] = useState<string>("");
   const [note, setNote] = useState<string>("");
   const [error, setError] = useState(false);
+  // 납부 대상: "" = 가구 전체, 그 외 = 참석자 id
+  const [target, setTarget] = useState<string>("");
+
+  // 대상 선택 시 금액 기본값을 그 사람의 남은 몫(또는 가구 잔액)으로 맞춘다.
+  function changeTarget(id: string) {
+    setTarget(id);
+    if (!id) {
+      setAmount(balance > 0 ? String(balance) : "");
+      return;
+    }
+    const person = people.find((p) => p.id === id);
+    const remaining =
+      person?.fee == null ? 0 : person.fee - (paidPerson.get(id) ?? 0);
+    setAmount(remaining > 0 ? String(remaining) : "");
+  }
 
   const methodLabel = (m: string) =>
     m === "paypal"
@@ -65,6 +91,7 @@ export function HouseholdPaymentManager({
     start(async () => {
       const r = await addPayment({
         headId,
+        attendeeId: target || null,
         amount: n,
         method: method || null,
         paidAt,
@@ -132,6 +159,66 @@ export function HouseholdPaymentManager({
         </div>
       </div>
 
+      {/* 개인별 현황 — 누가 얼마를 냈고 얼마가 남았는지 */}
+      {people.length > 0 && (
+        <div className="rounded-xl ring-1 ring-slate-200">
+          <p className="border-b border-slate-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+            {t("perPersonTitle")}
+          </p>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs text-slate-500">
+                <th className="px-4 py-1 font-medium">{t("colName")}</th>
+                <th className="px-4 py-1 text-right font-medium">
+                  {t("personShare")}
+                </th>
+                <th className="px-4 py-1 text-right font-medium">
+                  {t("paymentPaid")}
+                </th>
+                <th className="px-4 py-1 text-right font-medium">
+                  {t("paymentBalance")}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100">
+              {people.map((p) => {
+                const paid = paidPerson.get(p.id) ?? 0;
+                const rest = p.fee == null ? null : p.fee - paid;
+                return (
+                  <tr key={p.id}>
+                    <td className="px-4 py-2 text-slate-800">{p.name}</td>
+                    <td className="px-4 py-2 text-right text-slate-600">
+                      {p.fee == null ? tf("pending") : formatUSD(p.fee)}
+                    </td>
+                    <td className="px-4 py-2 text-right text-slate-600">
+                      {formatUSD(paid)}
+                    </td>
+                    <td
+                      className={`px-4 py-2 text-right font-medium ${
+                        rest == null
+                          ? "text-slate-400"
+                          : rest > 0
+                            ? "text-amber-700"
+                            : "text-emerald-700"
+                      }`}
+                    >
+                      {rest == null
+                        ? "—"
+                        : rest < 0
+                          ? `-${formatUSD(-rest)}`
+                          : formatUSD(rest)}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          <p className="border-t border-slate-100 px-4 py-2 text-xs text-slate-500">
+            {t("perPersonNote")}
+          </p>
+        </div>
+      )}
+
       {/* 납입 내역 */}
       <div className="rounded-xl ring-1 ring-slate-200">
         <p className="border-b border-slate-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -149,6 +236,12 @@ export function HouseholdPaymentManager({
                 <span className="text-slate-600">
                   {/* date-only는 정오 기준 파싱 — UTC 자정 해석으로 하루 밀리는 것 방지 */}
                   {dateFmt.format(new Date(`${p.paid_at}T12:00:00`))}
+                  {" · "}
+                  <span className="font-medium text-slate-800">
+                    {p.attendee_id
+                      ? (nameById.get(p.attendee_id) ?? t("payerUnknown"))
+                      : t("payerHousehold")}
+                  </span>
                   {p.method ? ` · ${methodLabel(p.method)}` : ""}
                   {p.note ? ` · ${p.note}` : ""}
                 </span>
@@ -182,6 +275,26 @@ export function HouseholdPaymentManager({
       {/* 기록 폼 */}
       <div className="rounded-xl bg-white p-5 ring-1 ring-slate-200">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          {people.length > 0 && (
+            <div className="sm:col-span-2">
+              <label className="block text-sm font-medium text-slate-700">
+                {t("paymentTarget")}
+              </label>
+              <select
+                value={target}
+                onChange={(e) => changeTarget(e.target.value)}
+                className={inputClass}
+              >
+                <option value="">{t("payerHousehold")}</option>
+                {people.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name}
+                    {p.fee == null ? "" : ` (${formatUSD(p.fee)})`}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-slate-700">
               {t("paymentAmount")}

@@ -2,18 +2,30 @@ import { useTranslations, useLocale } from "next-intl";
 import { formatUSD } from "@/lib/fees";
 import type { FeePayment } from "@/lib/types";
 
+// 개인별 납부 옵션 1건 (본인 몫만 결제).
+export interface PersonPayOption {
+  id: string;
+  name: string;
+  amount: number; // 남은 본인 몫 (가구 잔액으로 상한)
+  payUrl: string | null;
+}
+
 export function HouseholdFeeCard({
   total,
   balance,
   feeDetermined,
   payUrl = null,
   payments = [],
+  people = [],
+  nameById = {},
 }: {
   total: number;
   balance: number; // total - paid_total. 양수=추가납부, 음수=환불
   feeDetermined: boolean; // 회비 금액 확정 여부(객실 타입 선택 또는 부분참석 전용 가구)
   payUrl?: string | null;
   payments?: FeePayment[];
+  people?: PersonPayOption[]; // 개인별 결제 링크 (금액>0인 사람만)
+  nameById?: Record<string, string>; // 납입 내역에 "누구 몫" 표시용
 }) {
   const t = useTranslations("Fee");
   const locale = useLocale();
@@ -90,6 +102,32 @@ export function HouseholdFeeCard({
           >
             {t("payBalanceWithPaypal", { amount: formatUSD(balance) })}
           </a>
+
+          {/* 개인별 납부 — 한 방을 쓰는 가족/구성원이 각자 본인 몫만 낼 수 있게 */}
+          {people.length > 0 && (
+            <div className="mt-4 rounded-xl bg-white/10 px-4 py-3">
+              <p className="text-xs font-medium uppercase tracking-wide text-ivory/70">
+                {t("payIndividually")}
+              </p>
+              <p className="mt-1 text-xs text-ivory/60">{t("payIndividuallyNote")}</p>
+              <ul className="mt-3 space-y-2">
+                {people.map((p) => (
+                  <li key={p.id} className="flex items-center justify-between gap-3">
+                    <span className="text-sm text-ivory/90">{p.name}</span>
+                    <a
+                      href={p.payUrl ?? undefined}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="rounded-full bg-ivory/15 px-4 py-1.5 text-xs font-semibold text-ivory ring-1 ring-ivory/30 transition hover:bg-ivory/25"
+                    >
+                      {t("payPersonAmount", { amount: formatUSD(p.amount) })}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
           <p className="mt-2 text-center text-xs text-ivory/60">{t("payNotice")}</p>
         </div>
       )}
@@ -105,6 +143,10 @@ export function HouseholdFeeCard({
                 <span>
                   {/* date-only는 정오 기준 파싱 — UTC 자정 해석으로 하루 밀리는 것 방지 */}
                   {dateFmt.format(new Date(`${p.paid_at}T12:00:00`))}
+                  {" · "}
+                  {p.attendee_id
+                    ? (nameById[p.attendee_id] ?? t("payerHousehold"))
+                    : t("payerHousehold")}
                   {p.method ? ` · ${methodLabel(p.method)}` : ""}
                 </span>
                 <span className={p.amount < 0 ? "text-rose-300" : "text-ivory"}>

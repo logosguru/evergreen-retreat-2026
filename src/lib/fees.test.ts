@@ -7,6 +7,8 @@ import {
   personFee,
   groupHouseholds,
   withHouseholdRoomType,
+  paidByAttendee,
+  personShares,
   type AttendeeWithRoom,
   type RoomTypeLite,
 } from "./fees.ts";
@@ -159,4 +161,38 @@ test("가구 합계: 타입 미선택 부분 참석 가구는 미산정이 아�
   const [h] = groupHouseholds(withHouseholdRoomType(rows));
   assert.equal(h.total, 200);
   assert.equal(h.unassignedCount, 0);
+});
+
+test("paidByAttendee는 가구 전체(attendee_id=null) 납입을 개인에 귀속시키지 않는다", () => {
+  const m = paidByAttendee([
+    { attendee_id: "a", amount: 200 },
+    { attendee_id: "a", amount: -50 },
+    { attendee_id: "b", amount: 200 },
+    { attendee_id: null, amount: 600 },
+  ]);
+  assert.equal(m.get("a"), 150);
+  assert.equal(m.get("b"), 200);
+  assert.equal(m.size, 2);
+});
+
+test("personShares는 각자 몫에서 본인 납입만 차감한다", () => {
+  const p1 = makeAttendee({ id: "p1", requested_room_type: FOUR });
+  const p2 = makeAttendee({ id: "p2", requested_room_type: FOUR });
+  const baby = makeAttendee({ id: "baby", is_under_6: true });
+  const noType = makeAttendee({ id: "nt" }); // 타입 미선택 → 미산정
+
+  const shares = personShares(
+    [p1, p2, baby, noType],
+    [
+      { attendee_id: "p1", amount: 200 },
+      { attendee_id: "p2", amount: 50 },
+      { attendee_id: null, amount: 100 },
+    ],
+  );
+  const by = new Map(shares.map((s) => [s.person.id, s]));
+  assert.equal(by.get("p1")!.remaining, 0);
+  assert.equal(by.get("p2")!.remaining, 150);
+  assert.equal(by.get("baby")!.remaining, 0);
+  assert.equal(by.get("nt")!.fee, null);
+  assert.equal(by.get("nt")!.remaining, 0);
 });

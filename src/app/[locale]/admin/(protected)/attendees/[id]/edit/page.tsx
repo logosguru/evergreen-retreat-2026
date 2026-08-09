@@ -3,6 +3,11 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { createClient } from "@/lib/supabase/server";
 import { AdminEditForm } from "@/components/AdminEditForm";
 import { displayName } from "@/lib/names";
+import {
+  personFee,
+  withHouseholdRoomType,
+  type AttendeeWithRoom,
+} from "@/lib/fees";
 import type {
   Attendee,
   FeePayment,
@@ -64,9 +69,12 @@ export default async function AdminEditAttendeePage({
   let payment: HouseholdPaymentData | null = null;
   if (headId) {
     const [{ data }, totalRes, payRes] = await Promise.all([
+      // 개인별 납부 대상 목록도 여기서 만든다 → 회비 몫 계산에 필요한 컬럼·객실 타입까지 조회
       supabase
         .from("attendees")
-        .select("id, korean_name, english_name, is_householder, email")
+        .select(
+          "*, requested_room_type:room_types!requested_room_type_id(name, price_per_person, capacity)",
+        )
         .or(`id.eq.${headId},householder_id.eq.${headId}`)
         .order("is_householder", { ascending: false }),
       supabase.rpc("household_total", { head_id: headId }),
@@ -79,10 +87,18 @@ export default async function AdminEditAttendeePage({
     household = data ?? [];
     // 조회 실패 시 $0/빈 내역으로 오인되지 않도록 섹션 자체를 숨긴다.
     if (!totalRes.error && !payRes.error) {
+      const members = withHouseholdRoomType(
+        (data as unknown as AttendeeWithRoom[] | null) ?? [],
+      );
       payment = {
         headId,
         total: (totalRes.data as number | null) ?? 0,
         payments: (payRes.data as FeePayment[] | null) ?? [],
+        people: members.map((m) => ({
+          id: m.id,
+          name: displayName(m),
+          fee: personFee(m),
+        })),
       };
     }
   }

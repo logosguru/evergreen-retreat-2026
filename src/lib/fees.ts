@@ -101,3 +101,42 @@ export function paidByHead(
 export function householdBalance(total: number, paidTotal: number): number {
   return total - paidTotal;
 }
+
+// 참석자 id → 그 사람 몫으로 기록된 납입 합계. attendee_id 가 null(가구 전체 납부)인
+// 행은 특정인에게 귀속되지 않으므로 제외한다.
+export function paidByAttendee(
+  payments: { attendee_id: string | null; amount: number }[],
+): Map<string, number> {
+  const m = new Map<string, number>();
+  for (const p of payments) {
+    if (!p.attendee_id) continue;
+    m.set(p.attendee_id, (m.get(p.attendee_id) ?? 0) + p.amount);
+  }
+  return m;
+}
+
+// 개인 몫 정산 한 줄. fee=null 이면 미산정(객실 타입 미선택).
+export interface PersonShare {
+  person: AttendeeWithRoom;
+  fee: number | null;
+  paid: number; // 본인 앞으로 기록된 납입 합계
+  remaining: number; // max(0, fee - paid). 미산정이면 0
+}
+
+// 가구 구성원별 몫/납입/잔여. 개인 납부 UI(성도 결제 버튼·관리자 현황)의 공통 소스.
+export function personShares(
+  people: AttendeeWithRoom[],
+  payments: { attendee_id: string | null; amount: number }[],
+): PersonShare[] {
+  const paid = paidByAttendee(payments);
+  return people.map((person) => {
+    const fee = personFee(person);
+    const p = paid.get(person.id) ?? 0;
+    return {
+      person,
+      fee,
+      paid: p,
+      remaining: fee == null ? 0 : Math.max(0, fee - p),
+    };
+  });
+}

@@ -52,6 +52,7 @@ export interface ExportLabels {
   p: {
     head: string;
     district: string;
+    payer: string; // 납부 대상(개인) — 가구 전체면 payerHousehold
     date: string;
     amount: string;
     method: string;
@@ -74,6 +75,7 @@ export interface ExportLabels {
   statusOwe: string;
   statusRefund: string;
   statusNoFee: string;
+  payerHousehold: string; // attendee_id 없는(가구 전체) 납입 표시
 }
 
 // 가구 단위 정산 상태 문자열.
@@ -248,9 +250,11 @@ export function buildPaymentSheet(
     )
     .map((p) => {
       const head = byId.get(p.head_id);
+      const person = p.attendee_id ? byId.get(p.attendee_id) : null;
       return [
         head ? displayName(head) : p.head_id,
         head?.district ? L.district(head.district) : "",
+        person ? displayName(person) : L.payerHousehold,
         p.paid_at,
         p.amount,
         p.method ? L.method(p.method) : "",
@@ -264,6 +268,7 @@ export function buildPaymentSheet(
     columns: [
       { header: L.p.head },
       { header: L.p.district },
+      { header: L.p.payer },
       { header: L.p.date },
       { header: L.p.amount, money: true },
       { header: L.p.method },

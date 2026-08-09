@@ -26,6 +26,7 @@ async function isAdminSession(
 // 회비 납입/환불 1건 기록 (관리자 전용). amount 양수=납입, 음수=환불.
 export async function addPayment(input: {
   headId: string;
+  attendeeId?: string | null; // 납부 대상. null/미지정 = 가구 전체
   amount: number;
   method: string | null;
   paidAt: string; // YYYY-MM-DD
@@ -37,8 +38,25 @@ export async function addPayment(input: {
     return { ok: false, error: "validationAmount" };
   }
   if (!input.paidAt) return { ok: false, error: "validationDate" };
+
+  // 대상 참석자는 반드시 그 가구(가구주 본인 또는 구성원)여야 한다. 아니면 가구 전체로 기록.
+  let attendeeId: string | null = null;
+  if (input.attendeeId) {
+    const { data: person } = await supabase
+      .from("attendees")
+      .select("id, householder_id")
+      .eq("id", input.attendeeId)
+      .maybeSingle();
+    const belongs =
+      person &&
+      (person.id === input.headId || person.householder_id === input.headId);
+    if (!belongs) return { ok: false, error: "paymentError" };
+    attendeeId = input.attendeeId;
+  }
+
   const { error } = await supabase.from("fee_payments").insert({
     head_id: input.headId,
+    attendee_id: attendeeId,
     amount: Math.round(input.amount),
     method: clean(input.method),
     note: clean(input.note ?? null),

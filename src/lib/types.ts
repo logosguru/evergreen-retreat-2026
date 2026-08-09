@@ -95,6 +95,8 @@ export type PaymentMethod = (typeof PAYMENT_METHODS)[number];
 export interface FeePayment {
   id: string;
   head_id: string;
+  // 납부 대상 참석자. null = 가구 전체 납부. (0025)
+  attendee_id: string | null;
   amount: number;
   method: string | null;
   note: string | null;
@@ -107,6 +109,8 @@ export interface HouseholdPaymentData {
   headId: string;
   total: number;
   payments: FeePayment[];
+  // 개인별 납부 대상(가구주+구성원)과 각자의 몫. fee=null 이면 미산정.
+  people: { id: string; name: string; fee: number | null }[];
 }
 
 export interface RoomType {
