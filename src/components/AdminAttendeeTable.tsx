@@ -16,6 +16,7 @@ import {
   formatUSD,
   groupHouseholds,
   householdBalance,
+  householdOccupancy,
   type AttendeeWithRoom,
 } from "@/lib/fees";
 import { displayName } from "@/lib/names";
@@ -292,7 +293,7 @@ export function AdminAttendeeTable({
       : "bg-white px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50";
 
   const toggle = (
-    <div className="mb-3 inline-flex overflow-hidden rounded-lg ring-1 ring-slate-300">
+    <div className="inline-flex overflow-hidden rounded-lg ring-1 ring-slate-300">
       <button type="button" onClick={() => changeView("grouped")} className={viewBtn(view === "grouped")}>
         {t("viewGrouped")}
       </button>
@@ -307,9 +308,18 @@ export function AdminAttendeeTable({
     // 가구는 항상 한 덩어리로 유지하고, 가구 사이 순서만 정렬(기준=가구주 행).
     // 기본은 등록일 최신순 — 한 명이라도 최근 등록이면 그 가구가 맨 위로.
     const households = sortHouseholds(groupHouseholds(attendees), sort);
+    // 정원이 다 안 찬 방 수 — 합방/정산 대상을 한눈에
+    const notFull = households.filter((h) => householdOccupancy(h).under).length;
     return (
       <div>
-        {toggle}
+        <div className="mb-3 flex flex-wrap items-center gap-2">
+          {toggle}
+          {notFull > 0 && (
+            <span className="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-800">
+              {trm("notFullRooms", { count: notFull })}
+            </span>
+          )}
+        </div>
         <div className="overflow-x-auto rounded-xl ring-1 ring-slate-200">
           <table className="min-w-full divide-y divide-slate-100 bg-white text-sm">
             <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">
@@ -332,9 +342,20 @@ export function AdminAttendeeTable({
                     a.created_at.localeCompare(b.created_at),
                   ),
                 ];
+                // 방(가구)이 고른 객실 타입 정원 대비 숙박 인원
+                const occ = householdOccupancy(h);
+                const typeName = h.head.requested_room_type?.name;
                 return (
                   <Fragment key={h.head.id}>
-                    <tr className="bg-slate-50">
+                    <tr
+                      className={
+                        occ.under
+                          ? "bg-amber-50"
+                          : occ.over
+                            ? "bg-rose-50"
+                            : "bg-slate-50"
+                      }
+                    >
                       <td colSpan={8} className="px-3 py-2">
                         <div className="flex flex-wrap items-center gap-3">
                           <span className="font-semibold text-slate-900">
@@ -346,6 +367,27 @@ export function AdminAttendeeTable({
                           <span className="text-slate-600">
                             {formatUSD(h.total)}
                           </span>
+                          {/* 정원 미달·초과 방을 구분 (인원 = 6세 미만·부분 참석 제외) */}
+                          {occ.under && (
+                            <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-medium text-amber-800">
+                              {typeName ? `${typeName} · ` : ""}
+                              {trm("occupancy", {
+                                count: occ.occupants,
+                                capacity: occ.capacity ?? 0,
+                              })}
+                              {` · ${trm("openBeds", { count: occ.openBeds })}`}
+                            </span>
+                          )}
+                          {occ.over && (
+                            <span className="rounded bg-rose-100 px-1.5 py-0.5 text-[11px] font-medium text-rose-700">
+                              {typeName ? `${typeName} · ` : ""}
+                              {trm("occupancy", {
+                                count: occ.occupants,
+                                capacity: occ.capacity ?? 0,
+                              })}
+                              {` · ${trm("overCapacity")}`}
+                            </span>
+                          )}
                           {h.unassignedCount > 0 && (
                             <span className="rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-medium text-amber-700">
                               {t("groupPending", { count: h.unassignedCount })}
@@ -385,7 +427,7 @@ export function AdminAttendeeTable({
 
   return (
     <div>
-      {toggle}
+      <div className="mb-3">{toggle}</div>
       <div className="overflow-x-auto rounded-xl ring-1 ring-slate-200">
         <table className="min-w-full divide-y divide-slate-100 bg-white text-sm">
           <thead className="bg-slate-50 text-xs uppercase tracking-wide text-slate-500">

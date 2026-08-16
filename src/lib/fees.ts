@@ -102,6 +102,32 @@ export function groupHouseholds(rows: AttendeeWithRoom[]): Household[] {
   });
 }
 
+// 가구가 고른 객실 타입 정원 대비 실제 숙박 인원.
+// 관리자 화면에서 가구 = "방"이므로, 4인실을 골랐는데 3명뿐인 방(=빈자리 1)을
+// 골라내 합방·정산 대상을 찾는 데 쓴다. 인원 기준은 occupiesRoom(6세 미만·부분 참석 제외).
+export interface HouseholdOccupancy {
+  occupants: number;
+  capacity: number | null; // null = 객실 타입 미선택
+  openBeds: number; // 남은 자리 (미선택·초과면 0)
+  under: boolean; // 정원 미달 (한 명 이상 있고 정원보다 적음)
+  over: boolean;
+}
+
+export function householdOccupancy(h: Household): HouseholdOccupancy {
+  const occupants = [h.head, ...h.members].filter(occupiesRoom).length;
+  const capacity = h.head.requested_room_type?.capacity ?? null;
+  if (capacity == null) {
+    return { occupants, capacity: null, openBeds: 0, under: false, over: false };
+  }
+  return {
+    occupants,
+    capacity,
+    openBeds: Math.max(0, capacity - occupants),
+    under: occupants > 0 && occupants < capacity,
+    over: occupants > capacity,
+  };
+}
+
 // 가구주 id → 납입 합계(net, 환불 반영) 맵. 원장 행들을 head_id로 집계.
 export function paidByHead(
   payments: { head_id: string; amount: number }[],

@@ -9,6 +9,7 @@ import {
   withHouseholdRoomType,
   paidByAttendee,
   personShares,
+  householdOccupancy,
   type AttendeeWithRoom,
   type RoomTypeLite,
 } from "./fees.ts";
@@ -248,4 +249,78 @@ test("personShares는 각자 몫에서 본인 납입만 차감한다", () => {
   assert.equal(by.get("baby")!.remaining, 0);
   assert.equal(by.get("nt")!.fee, null);
   assert.equal(by.get("nt")!.remaining, 0);
+});
+
+// ── householdOccupancy: 방(가구) 정원 대비 숙박 인원 ──
+
+function household(people: AttendeeWithRoom[]) {
+  const [head, ...members] = people;
+  return groupHouseholds(
+    withHouseholdRoomType([
+      { ...head, is_householder: true },
+      ...members.map((m) => ({ ...m, householder_id: head.id })),
+    ]),
+  )[0];
+}
+
+test("householdOccupancy: 4인실에 3명이면 정원 미달 + 빈자리 1", () => {
+  const h = household([
+    makeAttendee({ requested_room_type: FOUR }),
+    makeAttendee(),
+    makeAttendee(),
+  ]);
+  const occ = householdOccupancy(h);
+  assert.equal(occ.occupants, 3);
+  assert.equal(occ.capacity, 4);
+  assert.equal(occ.openBeds, 1);
+  assert.equal(occ.under, true);
+  assert.equal(occ.over, false);
+});
+
+test("householdOccupancy: 정원을 채우면 미달 아님", () => {
+  const h = household([
+    makeAttendee({ requested_room_type: FOUR }),
+    makeAttendee(),
+    makeAttendee(),
+    makeAttendee(),
+  ]);
+  const occ = householdOccupancy(h);
+  assert.equal(occ.occupants, 4);
+  assert.equal(occ.openBeds, 0);
+  assert.equal(occ.under, false);
+  assert.equal(occ.over, false);
+});
+
+test("householdOccupancy: 6세 미만·부분 참석은 정원에 안 잡힌다", () => {
+  const h = household([
+    makeAttendee({ requested_room_type: FOUR }),
+    makeAttendee(),
+    makeAttendee({ is_under_6: true }),
+    makeAttendee({ attendance: "partial" }),
+  ]);
+  const occ = householdOccupancy(h);
+  assert.equal(occ.occupants, 2); // 4명 중 2명만 숙박
+  assert.equal(occ.openBeds, 2);
+  assert.equal(occ.under, true);
+});
+
+test("householdOccupancy: 정원 초과는 over", () => {
+  const TWO: RoomTypeLite = { name: "double", price_per_person: 300, capacity: 2 };
+  const h = household([
+    makeAttendee({ requested_room_type: TWO }),
+    makeAttendee(),
+    makeAttendee(),
+  ]);
+  const occ = householdOccupancy(h);
+  assert.equal(occ.over, true);
+  assert.equal(occ.under, false);
+  assert.equal(occ.openBeds, 0);
+});
+
+test("householdOccupancy: 타입 미선택이면 미달 판정을 하지 않는다", () => {
+  const h = household([makeAttendee(), makeAttendee()]);
+  const occ = householdOccupancy(h);
+  assert.equal(occ.capacity, null);
+  assert.equal(occ.under, false);
+  assert.equal(occ.over, false);
 });
