@@ -1,5 +1,6 @@
 import {
   groupHouseholds,
+  occupiesRoom,
   withHouseholdRoomType,
   type AttendeeWithRoom,
   type Household,
@@ -32,13 +33,9 @@ export interface HotelEstimate {
   assumedCapacity: AssumedCapacity;
 }
 
-// 정원에 집계되는 가구원 = 실제로 방에서 자는 사람.
-// - 6세 미만: 회비·정원 규정상 제외 (호텔엔 별도 고지)
-// - 부분 참석: 주일 당일만 왔다 가고 숙박하지 않음 → 방 산정 제외
+// 정원에 집계되는 가구원 = 실제로 방에서 자는 사람 (기준은 fees.occupiesRoom).
 export function householdOccupants(h: Household): AttendeeWithRoom[] {
-  return [h.head, ...h.members].filter(
-    (p) => !p.is_under_6 && p.attendance !== "partial",
-  );
+  return [h.head, ...h.members].filter(occupiesRoom);
 }
 
 // 성별 합방 가능 여부. 전원 동일 성별일 때만 그 성별을 반환.

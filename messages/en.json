@@ -340,6 +340,8 @@
     "unassigned": "Unassigned",
     "occupancy": "{count}/{capacity}",
     "overCapacity": "Over capacity",
+    "openBeds": "{count} open",
+    "notFullRooms": "{count} not full",
     "assignTo": "Assign",
     "noRoom": "— Unassigned —"
   },

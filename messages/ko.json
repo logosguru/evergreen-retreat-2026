@@ -340,6 +340,8 @@
     "unassigned": "미배정",
     "occupancy": "{count}/{capacity}명",
     "overCapacity": "정원 초과",
+    "openBeds": "빈자리 {count}",
+    "notFullRooms": "미충원 {count}개 방",
     "assignTo": "배정",
     "noRoom": "— 미배정 —"
   },

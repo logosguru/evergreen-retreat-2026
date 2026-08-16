@@ -7,6 +7,17 @@ export type RoomTypeLite = {
   price_per_person: number;
   capacity: number;
 };
+// 실제로 방에서 자는 사람 = 객실 정원에 집계되는 인원.
+// - 6세 미만: 회비·정원 규정상 제외 (호텔엔 별도 고지)
+// - 부분 참석: 주일 당일만 왔다 가고 숙박하지 않음 → 방 산정 제외
+// (정의는 여기 한 곳 — householdOccupants·AssignmentBoard가 공유한다)
+export function occupiesRoom(p: {
+  is_under_6: boolean;
+  attendance: Attendee["attendance"];
+}): boolean {
+  return !p.is_under_6 && p.attendance !== "partial";
+}
+
 export type AttendeeWithRoom = Attendee & {
   rooms:
     | {

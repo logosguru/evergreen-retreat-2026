@@ -24,24 +24,48 @@ import {
   sortHouseholds,
   buildHeads,
   headOf,
+  SORT_KEYS,
   type SortKey,
   type SortState,
 } from "@/lib/attendee-sort";
 
 const VIEW_STORAGE_KEY = "admin-attendee-view";
+const SORT_STORAGE_KEY = "admin-attendee-sort";
+// 기본 정렬: 등록일 최신순 (최근 등록자가 위로)
+const DEFAULT_SORT: SortState = { key: "registered", dir: "desc" };
 
-// localStorage의 저장된 보기 모드를 hydration 안전하게 구독 (SSR에선 null).
+// localStorage 값을 hydration 안전하게 구독 (SSR/hydration 시엔 null).
 function subscribeStorage(cb: () => void) {
   window.addEventListener("storage", cb);
   return () => window.removeEventListener("storage", cb);
 }
-function useStoredView(): "list" | "grouped" | null {
-  const v = useSyncExternalStore(
+function useStoredRaw(key: string): string | null {
+  return useSyncExternalStore(
     subscribeStorage,
-    () => window.localStorage.getItem(VIEW_STORAGE_KEY),
+    () => window.localStorage.getItem(key),
     () => null,
   );
-  return v === "list" || v === "grouped" ? v : null;
+}
+function parseView(raw: string | null): "list" | "grouped" | null {
+  return raw === "list" || raw === "grouped" ? raw : null;
+}
+function parseSort(raw: string | null): SortState | null {
+  if (!raw) return null;
+  try {
+    const p: unknown = JSON.parse(raw);
+    if (p && typeof p === "object") {
+      const { key, dir } = p as { key?: unknown; dir?: unknown };
+      if (
+        SORT_KEYS.includes(key as SortKey) &&
+        (dir === "asc" || dir === "desc")
+      ) {
+        return { key: key as SortKey, dir };
+      }
+    }
+  } catch {
+    // 손상된 값은 무시하고 기본 정렬 사용
+  }
+  return null;
 }
 
 function SortTh({
@@ -101,15 +125,10 @@ export function AdminAttendeeTable({
   );
   const router = useRouter();
   const [, start] = useTransition();
-  // 기본 정렬: 등록일 최신순 (최근 등록자가 위로)
-  const [sort, setSort] = useState<SortState>({
-    key: "registered",
-    dir: "desc",
-  });
-  // 보기 모드: 기본 가구별. 마지막 선택을 localStorage에 보존해
-  // 편집 페이지에서 돌아와도(어떤 경로든) 이전 보기로 복원된다.
+  // 보기 모드·정렬 모두 마지막 선택을 localStorage에 보존해
+  // 편집 페이지에서 돌아와도(어떤 경로든) 이전 상태로 복원된다.
   // 세션 내 전환은 override(state), 초기값은 저장소 구독 — SSR은 기본값.
-  const storedView = useStoredView();
+  const storedView = parseView(useStoredRaw(VIEW_STORAGE_KEY));
   const [viewOverride, setViewOverride] = useState<"list" | "grouped" | null>(
     null,
   );
@@ -119,12 +138,16 @@ export function AdminAttendeeTable({
     window.localStorage.setItem(VIEW_STORAGE_KEY, v);
   }
 
+  const storedSort = parseSort(useStoredRaw(SORT_STORAGE_KEY));
+  const [sortOverride, setSortOverride] = useState<SortState | null>(null);
+  const sort = sortOverride ?? storedSort ?? DEFAULT_SORT;
   function toggleSort(key: SortKey) {
-    setSort((s) =>
-      s.key === key
-        ? { key, dir: s.dir === "asc" ? "desc" : "asc" }
-        : { key, dir: "asc" },
-    );
+    const next: SortState =
+      sort.key === key
+        ? { key, dir: sort.dir === "asc" ? "desc" : "asc" }
+        : { key, dir: "asc" };
+    setSortOverride(next);
+    window.localStorage.setItem(SORT_STORAGE_KEY, JSON.stringify(next));
   }
 
   function changeLang(id: string, language: Language) {
