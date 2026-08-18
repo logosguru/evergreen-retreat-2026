@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { clean, rowFor, validatePerson } from "@/lib/attendee-rows";
+import { REGISTRATION_OPEN } from "@/lib/types";
 
 // PersonInput 은 공유 lib 로 이동 — 기존 import 경로 호환을 위해 재노출.
 export type { PersonInput } from "@/lib/attendee-rows";
@@ -22,6 +23,10 @@ export async function insertRegistration(
   payload: RegistrationPayload,
   turnstileToken: string | null,
 ): Promise<RegistrationResult> {
+  // 등록 마감 — 폼은 숨겨져 있지만 서버 액션도 직접 호출을 거부한다.
+  if (!REGISTRATION_OPEN) {
+    return { ok: false, error: "closedTitle" };
+  }
   if (!(await verifyTurnstile(turnstileToken))) {
     return { ok: false, error: "captchaFailed" };
   }

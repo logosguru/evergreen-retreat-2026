@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
+import { REGISTRATION_OPEN } from "@/lib/types";
 
 export function MobileNav({
   links,
@@ -58,17 +59,23 @@ export function MobileNav({
               {l.label}
             </Link>
           ))}
-          <Link
-            href="/register"
-            onClick={() => setOpen(false)}
-            className="block px-4 py-2 text-sm font-semibold text-moss hover:bg-mist"
-          >
-            {registerLabel}
-          </Link>
+          {REGISTRATION_OPEN && (
+            <Link
+              href="/register"
+              onClick={() => setOpen(false)}
+              className="block px-4 py-2 text-sm font-semibold text-moss hover:bg-mist"
+            >
+              {registerLabel}
+            </Link>
+          )}
           <Link
             href="/edit"
             onClick={() => setOpen(false)}
-            className="block px-4 py-2 text-sm text-bark hover:bg-mist"
+            className={
+              REGISTRATION_OPEN
+                ? "block px-4 py-2 text-sm text-bark hover:bg-mist"
+                : "block px-4 py-2 text-sm font-semibold text-moss hover:bg-mist"
+            }
           >
             {editLabel}
           </Link>

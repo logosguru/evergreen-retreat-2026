@@ -1,3 +1,8 @@
+// 신규 등록 접수 여부. false = 마감 (등록 폼·CTA 숨김, 서버 액션도 거부).
+// 성도 본인 수정(/edit)과 이메일/이름 확인 흐름은 마감 후에도 계속 열려 있다.
+// 다시 열려면 true 로 바꿔 배포하면 된다.
+export const REGISTRATION_OPEN = false;
+
 // 수련회 기간 (부분 참석 도착/출발 datepicker 범위 제한에 사용)
 export const RETREAT_START = "2026-09-05";
 export const RETREAT_END = "2026-09-07";

@@ -11,6 +11,7 @@
 - **완료**: Phase 1~4 ✅ + Spanish(es) UI ✅ + **출시 준비 코드 ✅**(Turnstile 봇 방지 · keep-alive cron · 배포 설정 — `docs/superpowers/{specs,plans}/2026-06-30-deploy-prep*`) — 모두 `main` 병합·배포됨.
 - **배포 구성 요약**: Supabase 마이그레이션 0001~0007 + Access Token Hook(Postgres `custom_access_token_hook`) 활성화 / Google OAuth(관리자, 첫 관리자 logosguru@gmail.com) / Resend SMTP(`send.nyevergreen.com`, sender `noreply@send.nyevergreen.com`) + 매직링크 템플릿(ko/en/es, token_hash→`/auth/confirm`) / URL Config(Site URL=배포 URL) / Turnstile hostnames=retreat.nyevergreen.com+localhost / Route53 CNAME `retreat`→Vercel / Vercel Deployment Protection=Standard(커스텀 도메인 공개).
 - **Vercel env(6)**: `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`·`SUPABASE_SECRET_KEY`·`CRON_SECRET`(All) + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`·`TURNSTILE_SECRET_KEY`(Production만). ⚠️ **env 추가/수정 후 반드시 Redeploy** (안 하면 반영 안 됨; 값에 따옴표/공백 섞이면 서버 Supabase 쿼리가 조용히 500).
+- **🔒 신규 등록 마감 (2026-08-18)**: `lib/types.ts` 의 `REGISTRATION_OPEN = false` 하나로 제어 — 헤더/모바일/Hero/CtaBand 의 등록 CTA 숨김(수정 CTA만 노출), `/register` 는 마감 안내 + 수정 링크, `insertRegistration()` 서버 액션도 거부. **이메일/이름 확인 + 이메일 신청 흐름과 `/edit` 는 계속 열려 있음.** 다시 열려면 상수를 `true` 로 바꿔 배포.
 - **다음(선택)**: 실제 매직링크 수신 최종 확인, 필요 시 실 등록 데이터 관리. 새 기능은 **brainstorming → spec → writing-plans → subagent-driven** 패턴 유지.
 - **로컬 개발 재기동**: `supabase start` → `npm run dev` (http://localhost:3000). 로컬 키는 `.env.local`(로컬 Supabase + Turnstile 키). 매직링크 메일은 Mailpit http://127.0.0.1:54324. 로컬은 로컬 Supabase를 가리키며 프로덕션과 분리됨.
 

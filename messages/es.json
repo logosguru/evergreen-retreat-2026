@@ -84,7 +84,10 @@
     "requestPhoneHint": "Nos ayuda a verificar su identidad.",
     "requestEmailSubmit": "Solicitar registro de correo",
     "requestEmailDone": "Solicitud enviada. Podrá usar el enlace de edición una vez que un administrador la confirme.",
-    "requestDuplicate": "Ya hay una solicitud pendiente. Por favor espere la confirmación del administrador."
+    "requestDuplicate": "Ya hay una solicitud pendiente. Por favor espere la confirmación del administrador.",
+    "closedTitle": "El registro está cerrado",
+    "closedBody": "Ya no aceptamos nuevos registros. Si ya se registró, puede revisar y actualizar su información en «Editar mi registro».",
+    "closedNotRegisteredHint": "Los nuevos registros están cerrados, por lo que no es posible registrarse ahora. Si tiene alguna pregunta, por favor contacte a la ministra Joyce Kim."
   },
   "Edit": {
     "title": "Editar mi registro",

@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useLocale, useTranslations } from "next-intl";
 import type { CSSProperties } from "react";
 import { Link } from "@/i18n/navigation";
+import { REGISTRATION_OPEN } from "@/lib/types";
 import { TopoRings } from "./TopoField";
 
 const rise = (ms: number) => ({ "--delay": `${ms}ms` }) as CSSProperties;
@@ -79,15 +80,21 @@ export function Hero() {
             className="animate-rise mt-9 flex flex-col gap-3 sm:flex-row"
             style={rise(520)}
           >
-            <Link
-              href="/register"
-              className="inline-flex items-center justify-center rounded-full bg-gold px-8 py-4 text-base font-semibold text-pine-deep shadow-lg shadow-black/25 transition hover:-translate-y-0.5 hover:bg-gold-soft"
-            >
-              {t("registerCta")}
-            </Link>
+            {REGISTRATION_OPEN && (
+              <Link
+                href="/register"
+                className="inline-flex items-center justify-center rounded-full bg-gold px-8 py-4 text-base font-semibold text-pine-deep shadow-lg shadow-black/25 transition hover:-translate-y-0.5 hover:bg-gold-soft"
+              >
+                {t("registerCta")}
+              </Link>
+            )}
             <Link
               href="/edit"
-              className="inline-flex items-center justify-center rounded-full border border-ivory/35 bg-white/5 px-8 py-4 text-base font-semibold text-ivory backdrop-blur-sm transition hover:bg-white/15"
+              className={
+                REGISTRATION_OPEN
+                  ? "inline-flex items-center justify-center rounded-full border border-ivory/35 bg-white/5 px-8 py-4 text-base font-semibold text-ivory backdrop-blur-sm transition hover:bg-white/15"
+                  : "inline-flex items-center justify-center rounded-full bg-gold px-8 py-4 text-base font-semibold text-pine-deep shadow-lg shadow-black/25 transition hover:-translate-y-0.5 hover:bg-gold-soft"
+              }
             >
               {t("editCta")}
             </Link>

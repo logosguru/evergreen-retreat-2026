@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { REGISTRATION_OPEN } from "@/lib/types";
 import { Reveal } from "./Reveal";
 import { TopoRings } from "./TopoField";
 
@@ -29,10 +30,10 @@ export function CtaBand() {
           </p>
           <div className="mt-10">
             <Link
-              href="/register"
+              href={REGISTRATION_OPEN ? "/register" : "/edit"}
               className="inline-flex items-center justify-center rounded-full bg-gold px-9 py-4 text-base font-semibold text-pine-deep shadow-lg shadow-black/30 transition hover:-translate-y-0.5 hover:bg-gold-soft"
             >
-              {t("registerCta")}
+              {t(REGISTRATION_OPEN ? "registerCta" : "editCta")}
             </Link>
           </div>
         </Reveal>

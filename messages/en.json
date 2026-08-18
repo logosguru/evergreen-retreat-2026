@@ -84,7 +84,10 @@
     "requestPhoneHint": "Helps us verify it is you.",
     "requestEmailSubmit": "Request email registration",
     "requestEmailDone": "Request submitted. You can use the edit link once an administrator confirms it.",
-    "requestDuplicate": "A request is already pending. Please wait for administrator confirmation."
+    "requestDuplicate": "A request is already pending. Please wait for administrator confirmation.",
+    "closedTitle": "Registration is closed",
+    "closedBody": "We are no longer accepting new registrations. If you already registered, you can review and update your information under “Edit my registration.”",
+    "closedNotRegisteredHint": "New registrations are closed, so you cannot register at this time. If you have any questions, please contact Minister Joyce Kim."
   },
   "Edit": {
     "title": "Edit my registration",

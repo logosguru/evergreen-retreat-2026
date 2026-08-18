@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
+import { REGISTRATION_OPEN } from "@/lib/types";
 
 // 데스크톱 top nav 전용: "등록" 드롭다운 (등록하기 / 내 등록 수정)
 export function RegisterMenu() {
@@ -32,6 +33,18 @@ export function RegisterMenu() {
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, [open]);
+
+  // 등록 마감 시엔 드롭다운 없이 '내 등록 수정' 단일 버튼만 노출
+  if (!REGISTRATION_OPEN) {
+    return (
+      <Link
+        href="/edit"
+        className="inline-flex items-center gap-1 rounded-full bg-gold px-4 py-1.5 text-sm font-semibold text-pine-deep transition hover:bg-gold-soft"
+      >
+        {t("edit")}
+      </Link>
+    );
+  }
 
   return (
     <div className="relative" ref={ref}>

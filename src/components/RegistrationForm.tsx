@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { TurnstileWidget } from "./TurnstileWidget";
 import { PersonFields, emptyPerson } from "./PersonFields";
 import { RoomTypeSelect } from "./RoomTypeSelect";
-import type { RoomType } from "@/lib/types";
+import { REGISTRATION_OPEN, type RoomType } from "@/lib/types";
 import {
   insertRegistration,
   checkEmail,
@@ -52,6 +52,8 @@ export function RegistrationForm({ roomTypes }: { roomTypes: RoomType[] }) {
   // 1단계: 이메일 확인
   const [emailError, setEmailError] = useState<string | null>(null);
   const [registered, setRegistered] = useState(false);
+  // 마감 후: 등록 내역이 없는 이메일 (새 등록 불가 안내)
+  const [closedNotFound, setClosedNotFound] = useState(false);
   const [checking, startCheck] = useTransition();
 
   // 1단계: 이름으로 확인 (확인 전용 — 폼 진행은 이메일 탭에서만)
@@ -78,6 +80,7 @@ export function RegistrationForm({ roomTypes }: { roomTypes: RoomType[] }) {
     e.preventDefault();
     setEmailError(null);
     setRegistered(false);
+    setClosedNotFound(false);
     startCheck(async () => {
       const res = await checkEmail(email);
       if (!res.ok) {
@@ -86,6 +89,10 @@ export function RegistrationForm({ roomTypes }: { roomTypes: RoomType[] }) {
       }
       if (res.registered) {
         setRegistered(true);
+        return;
+      }
+      if (!REGISTRATION_OPEN) {
+        setClosedNotFound(true);
         return;
       }
       setPhase("form");
@@ -220,6 +227,7 @@ export function RegistrationForm({ roomTypes }: { roomTypes: RoomType[] }) {
                   setEmail(e.target.value);
                   setRegistered(false);
                   setEmailError(null);
+                  setClosedNotFound(false);
                 }}
                 className={inputClass}
                 placeholder="you@example.com"
@@ -261,6 +269,15 @@ export function RegistrationForm({ roomTypes }: { roomTypes: RoomType[] }) {
                     {t("useAnotherEmail")}
                   </button>
                 </div>
+              </div>
+            ) : closedNotFound ? (
+              <div className="rounded-2xl bg-mist p-5 ring-1 ring-line">
+                <p className="text-base font-semibold text-pine">
+                  {t("closedTitle")}
+                </p>
+                <p className="mt-1 text-sm text-bark-soft">
+                  {t("closedNotRegisteredHint")}
+                </p>
               </div>
             ) : (
               <button
@@ -396,15 +413,21 @@ export function RegistrationForm({ roomTypes }: { roomTypes: RoomType[] }) {
                   {t("nameNotFoundTitle")}
                 </p>
                 <p className="mt-1 text-sm text-bark-soft">
-                  {t("nameNotFoundHint")}
+                  {t(
+                    REGISTRATION_OPEN
+                      ? "nameNotFoundHint"
+                      : "closedNotRegisteredHint",
+                  )}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => setCheckTab("email")}
-                  className="mt-4 inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
-                >
-                  {t("goRegisterByEmail")}
-                </button>
+                {REGISTRATION_OPEN && (
+                  <button
+                    type="button"
+                    onClick={() => setCheckTab("email")}
+                    className="mt-4 inline-flex items-center justify-center rounded-lg bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700"
+                  >
+                    {t("goRegisterByEmail")}
+                  </button>
+                )}
               </div>
             ) : (
               <button
