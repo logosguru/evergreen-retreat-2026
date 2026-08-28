@@ -95,6 +95,7 @@ src/
     fees.ts                      # 회비 계산: personFee, groupHouseholds, formatUSD, AttendeeWithRoom
     schedule.ts                  # 스케줄 날짜 그룹/요일·시간 포맷: groupByDay, formatDayLabel, formatTime
     schedule-now.ts              # QR 일정 '지금/다음' 판정(순수): etWallClock(America/New_York), findNowNext
+    poster.ts                    # 벽보 이중언어 표기(순수): bilingual(item, field) → {ko, en, same}
     dashboard.ts                 # 대시보드 집계(순수): computeDashboard → DashboardStats (fees 재사용)
     xlsx.ts                      # 의존성 없는 최소 XLSX 작성기(무압축 ZIP + inlineStr): buildXlsx(XlsxSheet[])
     attendee-export.ts           # 참석자 Excel 시트 데이터(순수): buildAttendeeWorkbook — 라벨은 ExportLabels로 주입
@@ -103,6 +104,8 @@ src/
     [locale]/
       layout.tsx                 # <html> + 폰트 + NextIntlClientProvider 만 (루트 레이아웃)
       schedule/page.tsx          # ★ 이름표 QR 전용 언어별 일정 (PublicSchedule) — (site) 밖이라 헤더/푸터 없음
+      schedule/poster/page.tsx   # ★ 장소 벽보용 대형 이중언어(한+영) 일정표 (SchedulePoster)
+                                 #   Tabloid 가로 17×11in · 브라우저 인쇄 → PDF 저장. 관리자 일정 페이지에서 링크
       (site)/                    # 라우트 그룹: SiteHeader + <main> + SiteFooter 공통 껍데기 (URL엔 영향 없음)
         layout.tsx               # 사이트 헤더/푸터
         page.tsx                 # 홈 (hero + CTA + #about/#schedule/#speakers/#faq 섹션)
@@ -185,6 +188,15 @@ supabase/migrations/
 - **인쇄된 QR 링크의 로케일은 고정**이어야 한다. `localePrefix: 'as-needed'` 라 prefix 없는 한국어 경로는
   next-intl의 accept-language 감지에 걸려 `/en/...`으로 튄다 → `proxy.ts`에서 해당 경로만 rewrite로 ko 고정.
   QR 경로를 추가/변경하면 `proxy.ts`의 `KO_SCHEDULE_PATHS`와 `scripts/generate-qr.mjs`를 같이 고칠 것.
+- **벽보 포스터(`/schedule/poster`)는 색 면을 쓰지 않는다.** 브라우저는 인쇄에서 배경 그래픽을
+  기본으로 빼기 때문에 색 띠에 의존하면 '배경 그래픽' 체크를 잊은 출력물이 망가진다 → 획·글자색만 사용.
+  `@page { size: 17in 11in }` 는 선택자로 범위를 못 잡으므로 **globals.css 에 두지 말 것**
+  (모든 인쇄, 특히 `/admin/schedule` 실무용 표의 용지가 바뀐다) — 포스터 컴포넌트 안의 `<style>` 로만 넣는다.
+  항목 블록은 하루 최대 개수에 따라 `--u` 로 자동 축소해 일정이 늘어도 한 장을 유지한다.
+  검증은 Playwright `page.pdf()` 로 실제 PDF를 만들어 **페이지 수 1 · 잘린 텍스트 0 · 300dpi 에서 QR 디코딩**을 확인.
+- **`by_language` 항목은 언어별로 실제 세션이 다르다** (성경공부: ko `Conference Room` / en `Pacific Ballroom`,
+  강사도 다름). 이중언어 벽보는 `lib/poster.ts` 의 `bilingual()` 로 양쪽을 모두 표기해야 한다 —
+  "나는 어디로 가나"가 벽 일정표의 존재 이유다.
 - **QR 라벨은 국기 대신 언어 이름**(한국어/English/Español). 스페인어·영어는 특정 국가에 매이지 않는다.
   라벨 버전은 **PNG만** 만든다 — SVG `<text>`는 인쇄처에 한글 폰트가 없으면 깨지므로 글자를 픽셀로 굽는다
   (sharp + fontconfig). QR 이미지를 손대면 **반드시 디코딩 재검증**할 것(축소 180px까지 통과 확인 완료).

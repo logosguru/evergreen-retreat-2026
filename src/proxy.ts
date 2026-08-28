@@ -7,16 +7,20 @@ import { updateSession } from "@/lib/supabase/middleware";
 // next-intl 로케일 라우팅을 먼저 처리한 뒤, 그 응답에 Supabase 세션 갱신 쿠키를 얹는다.
 const handleI18nRouting = createMiddleware(routing);
 
-// 이름표 QR로 인쇄되는 한국어 일정 링크. localePrefix: 'as-needed' 라 prefix가 없어서
-// 그대로 두면 next-intl 의 브라우저 언어 감지(accept-language)에 걸려 /en/schedule 로
-// 리다이렉트된다 — 인쇄된 QR이 약속한 언어와 달라지므로 로케일을 ko로 고정한다.
-// (/en/schedule · /es/schedule 은 prefix가 명시적이라 감지보다 우선하므로 손댈 필요 없음)
-const KO_SCHEDULE_PATHS = new Set(["/schedule", "/schedule/"]);
+// 인쇄물(이름표 QR·벽 포스터)에 박히는 한국어 일정 링크. localePrefix: 'as-needed' 라
+// prefix가 없어서 그대로 두면 next-intl 의 브라우저 언어 감지(accept-language)에 걸려
+// /en/... 으로 리다이렉트된다 — 인쇄된 링크가 약속한 언어와 달라지므로 ko로 고정한다.
+// /schedule 하위 전체(/schedule/poster 등)에 적용. prefix가 붙은 /en/... · /es/... 는
+// 감지보다 경로가 우선하므로 손댈 필요 없다.
+function isKoSchedulePath(pathname: string): boolean {
+  return pathname === "/schedule" || pathname.startsWith("/schedule/");
+}
 
 export async function proxy(request: NextRequest) {
-  if (KO_SCHEDULE_PATHS.has(request.nextUrl.pathname)) {
+  if (isKoSchedulePath(request.nextUrl.pathname)) {
     const url = request.nextUrl.clone();
-    url.pathname = `/${routing.defaultLocale}/schedule`;
+    // 뒤 슬래시만 정리하고 하위 경로는 그대로 유지
+    url.pathname = `/${routing.defaultLocale}${request.nextUrl.pathname.replace(/\/$/, "")}`;
     const response = NextResponse.rewrite(url);
     // 이 QR로 들어온 사람은 이후 사이트 이동도 한국어로 — next-intl이 읽는 쿠키를 맞춰준다.
     response.cookies.set("NEXT_LOCALE", routing.defaultLocale, {

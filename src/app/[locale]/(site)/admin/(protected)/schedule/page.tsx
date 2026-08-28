@@ -26,9 +26,20 @@ export default async function AdminSchedulePage({
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <div className="mb-6 flex items-center justify-between gap-3 print:hidden">
+      <div className="mb-6 flex flex-wrap items-center justify-between gap-3 print:hidden">
         <h1 className="text-2xl font-bold text-slate-900">{t("manageTitle")}</h1>
-        <PrintScheduleButton />
+        <div className="flex items-center gap-2">
+          {/* 장소 벽에 붙일 대형 이중언어 포스터 (새 탭 — 인쇄 전용 화면) */}
+          <a
+            href="/schedule/poster"
+            target="_blank"
+            rel="noreferrer"
+            className="rounded-md border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+          >
+            {t("posterLink")}
+          </a>
+          <PrintScheduleButton />
+        </div>
       </div>
       <div className="print:hidden">
         <ScheduleManager items={items} />
