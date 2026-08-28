@@ -78,7 +78,7 @@ npm run build    # 프로덕션 빌드
 npm run lint     # ESLint (Next 16엔 next lint 없음 → eslint 직접 실행)
 npx tsc --noEmit # 타입체크
 npm test         # node --test (src/**/*.test.ts)
-npm run qr       # 이름표용 언어별 일정 QR 재생성 → public/qr/schedule-{ko,en,es}.{svg,png}
+npm run qr       # 이름표용 언어별 일정 QR 재생성 → public/qr/ (라벨 없음 svg·png + -labeled.png)
 ```
 
 > 실제 동작에는 Supabase 설정이 필요. **`SETUP.md`** 참고 (현재 `.env.local`은 placeholder).
@@ -131,8 +131,10 @@ src/
           faq-actions.ts           # upsert/deleteFaq — 관리자 전용
     auth/{callback,confirm,signout}/route.ts  # [locale] 밖, proxy matcher에서 제외
   components/                    # SiteHeader, MobileNav, RegisterMenu, LocaleSwitcher, *Form, AdminAttendeeTable, AdminDashboard, PersonFields, RoomManager, AssignmentBoard, HouseholdFeeCard, ScheduleManager, FaqManager, ScheduleView, PublicSchedule
-scripts/generate-qr.mjs          # `npm run qr` — 이름표용 언어별 일정 QR (devDep: qrcode)
-public/qr/schedule-{ko,en,es}.{svg,png}   # 인쇄용 QR (커밋됨; URL 바뀌면 npm run qr 재생성)
+scripts/generate-qr.mjs          # `npm run qr` — 이름표용 언어별 일정 QR (devDep: qrcode, sharp)
+public/qr/schedule-{ko,en,es}.svg|.png    # 라벨 없는 QR (벡터/1200px) — 라벨을 직접 디자인할 때
+public/qr/schedule-{ko,en,es}-labeled.png # QR 아래 언어명(한국어/English/Español) — 인쇄용 기본
+                                 #   전부 커밋됨. URL 바뀌면 npm run qr 재생성 + 디코딩 재확인
 messages/{ko,en}.json            # i18n (…/Admin/…/Rooms/Fee/About/Schedule/Speakers/Faq/Language). 언어 라벨=Language(ko/en만, es UI 번역은 후속)
 supabase/migrations/
   0001_init.sql                  # attendees/admins + RLS + 트리거 + access token hook + 첫 관리자
@@ -183,6 +185,9 @@ supabase/migrations/
 - **인쇄된 QR 링크의 로케일은 고정**이어야 한다. `localePrefix: 'as-needed'` 라 prefix 없는 한국어 경로는
   next-intl의 accept-language 감지에 걸려 `/en/...`으로 튄다 → `proxy.ts`에서 해당 경로만 rewrite로 ko 고정.
   QR 경로를 추가/변경하면 `proxy.ts`의 `KO_SCHEDULE_PATHS`와 `scripts/generate-qr.mjs`를 같이 고칠 것.
+- **QR 라벨은 국기 대신 언어 이름**(한국어/English/Español). 스페인어·영어는 특정 국가에 매이지 않는다.
+  라벨 버전은 **PNG만** 만든다 — SVG `<text>`는 인쇄처에 한글 폰트가 없으면 깨지므로 글자를 픽셀로 굽는다
+  (sharp + fontconfig). QR 이미지를 손대면 **반드시 디코딩 재검증**할 것(축소 180px까지 통과 확인 완료).
 - 관리자 권한 클레임은 **로그인 시점**에 굳어짐 → `admins`에 나중에 추가된 사람은 **재로그인** 필요.
 - 새 컴포넌트/페이지는 위 i18n·Supabase 패턴을 그대로 따를 것. `useTranslations`는 콜백 안에서 호출 금지(컴포넌트 상단에서).
 
