@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { setAttendeeAdmin } from "@/app/[locale]/admin/actions";
+import { setAttendeeAdmin } from "@/app/[locale]/(site)/admin/actions";
 
 export type AdminRow = {
   id: string;

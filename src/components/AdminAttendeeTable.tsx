@@ -9,7 +9,7 @@ import {
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import { Link } from "@/i18n/navigation";
-import { setLanguage } from "@/app/[locale]/admin/actions";
+import { setLanguage } from "@/app/[locale]/(site)/admin/actions";
 import { LANGUAGES, type Language } from "@/lib/types";
 import {
   personFee,

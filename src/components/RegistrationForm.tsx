@@ -15,7 +15,7 @@ import {
   requestEmail,
   type PersonInput,
   type RegistrationPayload,
-} from "@/app/[locale]/register/actions";
+} from "@/app/[locale]/(site)/register/actions";
 
 const labelClass = "block text-sm font-medium text-bark";
 const inputClass =

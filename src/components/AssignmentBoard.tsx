@@ -6,7 +6,7 @@ import { useRouter } from "@/i18n/navigation";
 import type { Room, RoomGrade, RoomType } from "@/lib/types";
 import { occupiesRoom, type AttendeeWithRoom } from "@/lib/fees";
 import { gradeUsage } from "@/lib/rooms";
-import { assignRoom } from "@/app/[locale]/admin/assignment-actions";
+import { assignRoom } from "@/app/[locale]/(site)/admin/assignment-actions";
 import { displayName } from "@/lib/names";
 
 type RoomWithType = Room & { room_types: RoomType };

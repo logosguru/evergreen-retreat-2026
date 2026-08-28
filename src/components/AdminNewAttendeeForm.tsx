@@ -7,7 +7,7 @@ import { PersonFields, emptyPerson } from "./PersonFields";
 import {
   adminInsertAttendee,
   type AdminInsertPayload,
-} from "@/app/[locale]/admin/actions";
+} from "@/app/[locale]/(site)/admin/actions";
 import { LANGUAGES, type Language, type Attendee } from "@/lib/types";
 import type { PersonInput } from "@/lib/attendee-rows";
 import { displayName } from "@/lib/names";

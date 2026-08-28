@@ -10,7 +10,7 @@ import {
   adminSetHouseholder,
   setAttendeeAdmin,
   type AdminEditInput,
-} from "@/app/[locale]/admin/actions";
+} from "@/app/[locale]/(site)/admin/actions";
 import { RoomTypeSelect } from "./RoomTypeSelect";
 import { HouseholdPaymentManager } from "./HouseholdPaymentManager";
 import {

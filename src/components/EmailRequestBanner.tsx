@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
-import { setEmailRequestProcessed } from "@/app/[locale]/admin/actions";
+import { setEmailRequestProcessed } from "@/app/[locale]/(site)/admin/actions";
 
 export type EmailRequest = {
   id: string;

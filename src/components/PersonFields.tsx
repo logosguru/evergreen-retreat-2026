@@ -10,7 +10,7 @@ import {
   RETREAT_END,
   type Attendance,
 } from "@/lib/types";
-import type { PersonInput } from "@/app/[locale]/register/actions";
+import type { PersonInput } from "@/app/[locale]/(site)/register/actions";
 
 const inputClass =
   "mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm focus:border-moss focus:outline-none focus:ring-1 focus:ring-moss";

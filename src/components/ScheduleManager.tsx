@@ -8,7 +8,7 @@ import { groupByDay, formatDayLabel, formatTime } from "@/lib/schedule";
 import {
   upsertScheduleItem,
   deleteScheduleItem,
-} from "@/app/[locale]/admin/schedule-actions";
+} from "@/app/[locale]/(site)/admin/schedule-actions";
 
 const input =
   "rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500";

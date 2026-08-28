@@ -430,7 +430,13 @@
     "delete": "Eliminar",
     "byLanguageBadge": "Por idioma",
     "byLanguageLabel": "Por idioma",
-    "subjectToChange": "El programa anterior está sujeto a cambios."
+    "subjectToChange": "El programa anterior está sujeto a cambios.",
+    "nowBadge": "Ahora",
+    "nextBadge": "Siguiente",
+    "jumpToNow": "Ir a ahora",
+    "otherLanguages": "Ver en otro idioma",
+    "backToHome": "Sitio del retiro",
+    "qrMetaTitle": "Programa del retiro · Encuentro Bendito 2026"
   },
   "Speakers": {
     "title": "Predicadores",

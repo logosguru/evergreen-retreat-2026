@@ -430,7 +430,13 @@
     "delete": "삭제",
     "byLanguageBadge": "언어별 진행",
     "byLanguageLabel": "언어별 진행",
-    "subjectToChange": "상기 일정은 사정에 따라 변경될 수 있습니다."
+    "subjectToChange": "상기 일정은 사정에 따라 변경될 수 있습니다.",
+    "nowBadge": "지금",
+    "nextBadge": "다음",
+    "jumpToNow": "지금 순서 보기",
+    "otherLanguages": "다른 언어로 보기",
+    "backToHome": "수련회 홈페이지",
+    "qrMetaTitle": "수련회 일정 · 복된 만남 2026"
   },
   "Speakers": {
     "title": "강사 소개",

@@ -430,7 +430,13 @@
     "delete": "Delete",
     "byLanguageBadge": "By Language",
     "byLanguageLabel": "By language",
-    "subjectToChange": "The schedule above is subject to change."
+    "subjectToChange": "The schedule above is subject to change.",
+    "nowBadge": "Now",
+    "nextBadge": "Next",
+    "jumpToNow": "Jump to now",
+    "otherLanguages": "View in another language",
+    "backToHome": "Retreat website",
+    "qrMetaTitle": "Retreat Schedule · Blessed Encounter 2026"
   },
   "Speakers": {
     "title": "Speakers",

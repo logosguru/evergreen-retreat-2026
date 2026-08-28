@@ -10,8 +10,8 @@ import {
   updateMyRoomType,
   addMyMember,
   removeMyMember,
-} from "@/app/[locale]/edit/actions";
-import type { PersonInput } from "@/app/[locale]/register/actions";
+} from "@/app/[locale]/(site)/edit/actions";
+import type { PersonInput } from "@/app/[locale]/(site)/register/actions";
 import type { Attendee, RoomType } from "@/lib/types";
 import { displayName } from "@/lib/names";
 

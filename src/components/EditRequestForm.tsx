@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { TurnstileWidget } from "./TurnstileWidget";
-import { requestEditMagicLink } from "@/app/[locale]/edit/actions";
+import { requestEditMagicLink } from "@/app/[locale]/(site)/edit/actions";
 
 const inputClass =
   "mt-1 block w-full rounded-lg border border-line bg-white px-3 py-2 text-sm shadow-sm focus:border-moss focus:outline-none focus:ring-1 focus:ring-moss";

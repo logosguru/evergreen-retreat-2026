@@ -4,7 +4,7 @@ import { useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
 import type { Faq } from "@/lib/types";
-import { upsertFaq, deleteFaq } from "@/app/[locale]/admin/faq-actions";
+import { upsertFaq, deleteFaq } from "@/app/[locale]/(site)/admin/faq-actions";
 
 const input =
   "rounded-md border border-slate-300 px-2 py-1 text-sm focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500";

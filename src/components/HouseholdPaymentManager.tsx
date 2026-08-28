@@ -3,7 +3,7 @@
 import { useState, useTransition } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/navigation";
-import { addPayment, deletePayment } from "@/app/[locale]/admin/actions";
+import { addPayment, deletePayment } from "@/app/[locale]/(site)/admin/actions";
 import { formatUSD, householdBalance, paidByAttendee } from "@/lib/fees";
 import { PAYMENT_METHODS, type FeePayment } from "@/lib/types";
 
