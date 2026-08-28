@@ -105,7 +105,8 @@ src/
       layout.tsx                 # <html> + 폰트 + NextIntlClientProvider 만 (루트 레이아웃)
       schedule/page.tsx          # ★ 이름표 QR 전용 언어별 일정 (PublicSchedule) — (site) 밖이라 헤더/푸터 없음
       schedule/poster/page.tsx   # ★ 장소 벽보용 대형 이중언어(한+영) 일정표 (SchedulePoster)
-                                 #   Tabloid 가로 17×11in · 브라우저 인쇄 → PDF 저장. 관리자 일정 페이지에서 링크
+                                 #   18×24in 세로 · full bleed · ?theme=light|dark · 브라우저 인쇄 → PDF 저장
+                                 #   교회 로고 + 티셔츠 엠블럼 + 주제 말씀 + QR 3개. 관리자 일정 페이지에서 링크
       (site)/                    # 라우트 그룹: SiteHeader + <main> + SiteFooter 공통 껍데기 (URL엔 영향 없음)
         layout.tsx               # 사이트 헤더/푸터
         page.tsx                 # 홈 (hero + CTA + #about/#schedule/#speakers/#faq 섹션)
@@ -188,12 +189,22 @@ supabase/migrations/
 - **인쇄된 QR 링크의 로케일은 고정**이어야 한다. `localePrefix: 'as-needed'` 라 prefix 없는 한국어 경로는
   next-intl의 accept-language 감지에 걸려 `/en/...`으로 튄다 → `proxy.ts`에서 해당 경로만 rewrite로 ko 고정.
   QR 경로를 추가/변경하면 `proxy.ts`의 `KO_SCHEDULE_PATHS`와 `scripts/generate-qr.mjs`를 같이 고칠 것.
-- **벽보 포스터(`/schedule/poster`)는 색 면을 쓰지 않는다.** 브라우저는 인쇄에서 배경 그래픽을
-  기본으로 빼기 때문에 색 띠에 의존하면 '배경 그래픽' 체크를 잊은 출력물이 망가진다 → 획·글자색만 사용.
-  `@page { size: 17in 11in }` 는 선택자로 범위를 못 잡으므로 **globals.css 에 두지 말 것**
+- **벽보 포스터(`/schedule/poster`)는 18×24in 세로, `?theme=light|dark` 두 버전.**
+  `light` 는 색 면을 쓰지 않아 '배경 그래픽' 체크 없이도 그대로 나온다(기본·권장).
+  `dark` 는 사이트 테마(파인그린 바탕)로 **배경 인쇄가 필수** — 페이지 상단에 경고를 띄운다.
+  `@page { margin: 0 }` + 포스터 안쪽 padding 으로 **full bleed** 처리(어두운 배경이 종이 끝까지).
+  색은 `--paper/--ink/--ink-2/--ink-3/--accent/--hair` 의미 토큰으로만 쓰고 `.theme-dark` 에서 값만 교체.
+  QR 은 어두운 테마에서도 흰 바탕을 유지해야 스캔된다(`.qr img { background:#fff }`).
+  한글은 아무 곳에서나 꺾이므로 루트에 `word-break: keep-all`.
+  `@page { size: 18in 24in }` 는 선택자로 범위를 못 잡으므로 **globals.css 에 두지 말 것**
   (모든 인쇄, 특히 `/admin/schedule` 실무용 표의 용지가 바뀐다) — 포스터 컴포넌트 안의 `<style>` 로만 넣는다.
   항목 블록은 하루 최대 개수에 따라 `--u` 로 자동 축소해 일정이 늘어도 한 장을 유지한다.
-  검증은 Playwright `page.pdf()` 로 실제 PDF를 만들어 **페이지 수 1 · 잘린 텍스트 0 · 300dpi 에서 QR 디코딩**을 확인.
+  검증은 Playwright `page.pdf()`(margin 0, printBackground) 로 실제 PDF를 만들어
+  **페이지 수 1 · 정확히 18×24in · 잘린 텍스트 0 · 200dpi 렌더에서 QR 디코딩**을 두 테마 모두 확인.
+- **포스터 이미지 자산**: 교회 로고 원본(`evergreen-logo.webp`)은 **흰색**이라 밝은 배경에서 안 보인다 →
+  `scripts/make-poster-assets.mjs` 로 파인그린 틴트 변형(`evergreen-logo-pine.png`)을 만들어 라이트에 쓴다.
+  티셔츠 엠블럼(`retreat-emblem-2026.png`, 공모 당선작)은 남색+금색이라 어두운 바탕에서 묻히므로
+  **색을 바꾸지 않고 아이보리 원형 패널 위에 얹는다**(당선작 훼손 금지).
 - **`by_language` 항목은 언어별로 실제 세션이 다르다** (성경공부: ko `Conference Room` / en `Pacific Ballroom`,
   강사도 다름). 이중언어 벽보는 `lib/poster.ts` 의 `bilingual()` 로 양쪽을 모두 표기해야 한다 —
   "나는 어디로 가나"가 벽 일정표의 존재 이유다.
