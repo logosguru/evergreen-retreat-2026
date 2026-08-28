@@ -169,6 +169,17 @@ supabase/migrations/
 - 부분 참석 도착/출발은 **날짜만**(`date` 컬럼, 0011) + **선택 사항**(추후 확정 가능, partial이어도 null 허용). date input `min/max`=수련회 기간(`RETREAT_START/END` in lib/types). 폼 초기값은 `slice(0,10)`.
 - **사이트 껍데기는 `(site)` 라우트 그룹**에 있다. 헤더/푸터 없는 화면(현재 QR `/schedule`)을 추가할 땐
   `(site)` **밖**에 두면 되고, `(site)` 안의 서버 액션을 컴포넌트에서 import할 땐 경로에 `(site)/`가 들어간다.
+- **폰트 스택에 next/font 변수를 그대로 쓰면 안 되는 경우가 있다.** `var(--font-myeongjo)` 는
+  `"Nanum Myeongjo", "Nanum Myeongjo Fallback"` 로 펼쳐진다. 뒤의 별칭은 next/font 가 CLS 완화용으로
+  자동 생성한 `local("Times New Roman")` 이고 **`unicode-range` 가 없어** 명조에 없는 글리프(á í ñ …)를
+  전부 가로챈다. `font-weight` 서술자도 없어 굵은 제목에서 **합성 볼드**가 걸려 그 한 글자만 튄다
+  (스페인어 `sáb` 의 `á` 사례). 그래서 `--font-display*` 스택은 실제 패밀리명 `"Nanum Myeongjo"` 를
+  직접 쓴다. `adjustFontFallback: false` 는 **Turbopack 이 무시**하므로(webpack 로더 전용) 믿지 말 것.
+- **제목 폰트는 문서 언어에 따라 갈린다.** `font-display-ko`(명조 우선)는 한국어에서 숫자·괄호까지
+  한글과 같은 명조로 붙이기 위한 스택이고, `html[lang="en"|"es"]` 에서는 globals.css 가 라틴 우선
+  (`--font-display` 순서)으로 뒤집는다. `@theme inline` 이라 유틸리티가 값을 인라인하므로
+  **변수 재정의로는 안 되고 클래스를 덮어써야** 한다. 검증은 Playwright + CDP
+  `CSS.getPlatformFontsForNode` 로 글자별 실제 폰트를 세는 것이 확실하다(Times New Roman 이 0이어야 함).
 - **인쇄된 QR 링크의 로케일은 고정**이어야 한다. `localePrefix: 'as-needed'` 라 prefix 없는 한국어 경로는
   next-intl의 accept-language 감지에 걸려 `/en/...`으로 튄다 → `proxy.ts`에서 해당 경로만 rewrite로 ko 고정.
   QR 경로를 추가/변경하면 `proxy.ts`의 `KO_SCHEDULE_PATHS`와 `scripts/generate-qr.mjs`를 같이 고칠 것.

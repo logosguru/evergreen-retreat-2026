@@ -31,12 +31,20 @@
   --font-sans:
     var(--font-pretendard), "Apple SD Gothic Neo", "Malgun Gothic",
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  /* Latin→Fraunces, 한글은 없으니 나눔명조로 자동 폴백 */
+  /* display 스택에서는 나눔명조를 var(--font-myeongjo) 대신 실제 패밀리명으로 쓴다.
+     var 는 "Nanum Myeongjo", "Nanum Myeongjo Fallback" 로 펼쳐지는데, 그 Fallback 은
+     next/font 가 CLS 완화용으로 자동 생성한 local("Times New Roman") 별칭이고
+     unicode-range 가 없어서 명조에 없는 글리프(á í ñ …)를 전부 가로챈다. font-weight
+     서술자도 없어 굵은 제목에서는 합성 볼드가 걸려 그 한 글자만 튄다. 별칭을 스택에서
+     빼면 해당 글리프가 다음에 선언한 실제 폰트(Fraunces)로 제대로 넘어간다.
+     (fonts.ts 의 adjustFontFallback:false 는 Turbopack 이 무시하므로 이 스택이 실질 방어선.
+      한글에는 애초에 Times 별칭이 적용될 수 없어 CLS 손실은 사실상 없다.) */
+  /* Latin→Fraunces, 한글은 없으니 나눔명조로 폴백 */
   --font-display:
-    var(--font-fraunces), var(--font-myeongjo), Georgia, "Times New Roman",
-    serif;
-  --font-display-ko:
-    var(--font-myeongjo), var(--font-fraunces), Georgia, serif;
+    var(--font-fraunces), "Nanum Myeongjo", Georgia, "Times New Roman", serif;
+  /* 한국어 제목: 숫자·괄호까지 한글과 같은 명조로 붙도록 명조 우선.
+     en/es 문서에서는 아래 html[lang] 규칙이 순서를 뒤집는다. */
+  --font-display-ko: "Nanum Myeongjo", var(--font-fraunces), Georgia, serif;
 }
 
 html {
@@ -53,6 +61,16 @@ body {
 .font-display,
 .font-display-ko {
   font-optical-sizing: auto;
+}
+
+/* font-display-ko 는 "한국어 제목" 스택(명조 우선)이다. 한국어 문서에서는 숫자·괄호까지
+   명조로 붙어야 하므로 명조가 앞에 와야 하지만, 영어/스페인어 문서에서는 그 반대다 —
+   명조에 á í ñ 같은 라틴 확장 글리프가 없어서 제목 한 줄 안에서 폰트가 갈린다.
+   (@theme inline 이라 유틸리티가 스택 값을 인라인해 버린다 → --font-display-ko 변수를
+    다시 정의하는 방식은 통하지 않고 클래스를 덮어써야 한다.) */
+html[lang="en"] .font-display-ko,
+html[lang="es"] .font-display-ko {
+  font-family: var(--font-fraunces), "Nanum Myeongjo", Georgia, serif;
 }
 
 /* eyebrow / label utility */

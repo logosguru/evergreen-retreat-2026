@@ -15,6 +15,12 @@ export const myeongjo = Nanum_Myeongjo({
   preload: false,
   display: "swap",
   variable: "--font-myeongjo",
+  // 자동 생성되는 "Nanum Myeongjo Fallback"(= local("Times New Roman"), unicode-range 없음)을
+  // 끄려는 의도. ⚠️ 이 옵션은 webpack 폰트 로더만 처리하고 **Turbopack(Next 16 기본)은 무시**한다
+  // (검증: 빌드 산출 CSS에 별칭이 그대로 남음). 그래서 실제 방어는 globals.css 의 display 스택에서
+  // var(--font-myeongjo) 대신 "Nanum Myeongjo" 를 직접 써서 별칭을 배제하는 쪽으로 한다.
+  // 여기 남겨두는 이유는 의도 표시 + webpack 으로 되돌릴 경우를 위해서다.
+  adjustFontFallback: false,
 });
 
 // 본문(한/영): Pretendard 자체 호스팅 (지금까진 실제로 로딩 안 되고 있었음)
