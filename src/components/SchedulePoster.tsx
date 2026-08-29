@@ -38,7 +38,6 @@ export async function SchedulePoster({
   const tEn = await getTranslations({ locale: "en", namespace: "Schedule" });
   const hKo = await getTranslations({ locale: "ko", namespace: "Home" });
   const hEn = await getTranslations({ locale: "en", namespace: "Home" });
-  const fKo = await getTranslations({ locale: "ko", namespace: "Footer" });
 
   const groups = groupByDay(items);
 
@@ -54,28 +53,13 @@ export async function SchedulePoster({
       className={`poster-root theme-${theme}`}
       style={{ "--u": unit } as React.CSSProperties}
     >
-      {/* ── 교회 정체성 바 ── */}
-      <div className="church">
-        <Image src={churchLogo} alt="" className="church-mark" priority />
-        <div className="church-name">
-          <p className="church-ko">늘푸른교회</p>
-          <p className="church-en">New York Evergreen Presbyterian Church</p>
-        </div>
-      </div>
-
-      <div className="rule rule-hair" />
-
       {/* ── 마스트헤드: 주제 + 티셔츠 엠블럼 ── */}
       <header className="masthead">
         <div className="masthead-text">
-          <p className="kicker">2026 전교인 하계 수련회 · Summer Retreat</p>
+          <p className="kicker">2026 Evergreen Summer Retreat</p>
           <h1 className="theme-ko">{hKo("theme")}</h1>
           <p className="theme-en">{hEn("theme")}</p>
           <p className="meta-dates">{hEn("dates")}</p>
-          <p className="meta-venue">
-            {hEn("location")}
-            <span className="meta-addr">{hEn("address")}</span>
-          </p>
         </div>
         {/* 공모로 정한 티셔츠 엠블럼. 어두운 테마에서는 원본 남색이 묻히므로
             아이보리 패널 위에 얹는다(당선작 색을 임의로 바꾸지 않는다). */}
@@ -210,7 +194,7 @@ export async function SchedulePoster({
           {tKo("subjectToChange")}
           <span className="foot-note-en">{tEn("subjectToChange")}</span>
         </p>
-        <p className="foot-church">{fKo("copyright")}</p>
+        <Image src={churchLogo} alt="Evergreen Church" className="foot-mark" priority />
       </footer>
 
       {/* @page 는 선택자로 범위를 못 잡는다 → globals.css 에 두면 모든 인쇄(관리자 실무용
@@ -269,33 +253,19 @@ const POSTER_CSS = `
   .poster-root { zoom: 0.42; box-shadow: 0 4px 40px rgba(20,52,43,.28); }
 }
 
-/* ── 교회 정체성 바 ── */
-.church { display: flex; align-items: center; gap: 16pt; }
-.church-mark { width: 2.3in; height: auto; }
-.church-name { line-height: 1.15; }
-.church-ko {
-  font-family: "Nanum Myeongjo", serif;
-  font-size: 19pt; font-weight: 800; margin: 0; color: var(--ink);
-}
-.church-en {
-  font-family: var(--font-fraunces), Georgia, serif;
-  font-size: 10.5pt; font-weight: 500; letter-spacing: 0.07em;
-  margin: 3pt 0 0; color: var(--ink-3);
-}
-
 .rule { border-top-style: solid; }
-.rule-hair { border-top-width: 0.5pt; border-top-color: var(--hair); margin: 13pt 0 0; }
 .rule-accent { border-top-width: 2pt; border-top-color: var(--accent); margin: 16pt 0 0; }
 .rule-bottom { margin: 18pt 0 0; }
 
 /* ── 마스트헤드 ── */
 .masthead {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 0.5in; padding-top: 18pt;
+  gap: 0.5in;
 }
 .masthead-text { min-width: 0; }
 .kicker {
-  font-size: 11pt; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase;
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 19pt; font-weight: 700; letter-spacing: 0.13em; text-transform: uppercase;
   color: var(--accent); margin: 0;
 }
 .theme-ko {
@@ -312,8 +282,6 @@ const POSTER_CSS = `
   font-family: var(--font-fraunces), Georgia, serif;
   font-size: 20pt; font-weight: 700; margin: 17pt 0 0; color: var(--ink);
 }
-.meta-venue { font-size: 13pt; font-weight: 600; color: var(--ink-2); margin: 5pt 0 0; }
-.meta-addr { display: block; font-size: 11pt; font-weight: 400; color: var(--ink-3); margin-top: 2pt; }
 
 .emblem { margin: 0; flex: 0 0 auto; }
 .emblem img { display: block; width: 3.5in; height: auto; }
@@ -438,5 +406,6 @@ const POSTER_CSS = `
 .foot-note-en {
   display: block; font-family: var(--font-fraunces), Georgia, serif; font-style: italic;
 }
-.foot-church { font-size: 10pt; color: var(--ink-3); margin: 0; text-align: right; }
+/* 푸터 오른쪽 교회 로고 — 워드마크가 교회명 역할을 하므로 별도 텍스트를 두지 않는다 */
+.foot-mark { width: 2.5in; height: auto; flex: 0 0 auto; }
 `;
