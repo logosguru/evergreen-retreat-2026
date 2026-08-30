@@ -26,6 +26,7 @@ const L: ExportLabels = {
     under6: "6세 미만",
     child612: "6~12세",
     feeWaived: "회비 면제",
+    feeDiscount: "회비 지원",
     tshirt: "티셔츠",
     language: "언어",
     partial: "부분참석",

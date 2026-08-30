@@ -14,6 +14,7 @@ export function HouseholdFeeCard({
   total,
   balance,
   feeDetermined,
+  discounted = false,
   payUrl = null,
   payments = [],
   people = [],
@@ -22,6 +23,7 @@ export function HouseholdFeeCard({
   total: number;
   balance: number; // total - paid_total. 양수=추가납부, 음수=환불
   feeDetermined: boolean; // 회비 금액 확정 여부(객실 타입 선택 또는 부분참석 전용 가구)
+  discounted?: boolean; // 교회 회비 지원이 적용된 사람이 있는지 (합계가 정가와 다른 이유 안내)
   payUrl?: string | null;
   payments?: FeePayment[];
   people?: PersonPayOption[]; // 개인별 결제 링크 (금액>0인 사람만)
@@ -75,6 +77,10 @@ export function HouseholdFeeCard({
 
       {!feeDetermined && (
         <p className="mt-3 text-xs text-ivory/60">{t("selectTypeNotice")}</p>
+      )}
+
+      {discounted && (
+        <p className="mt-3 text-xs text-gold/90">{t("discountApplied")}</p>
       )}
 
       {owe && (

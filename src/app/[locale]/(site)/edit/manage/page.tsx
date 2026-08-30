@@ -4,7 +4,11 @@ import { createClient } from "@/lib/supabase/server";
 import { EditForm } from "@/components/EditForm";
 import { HouseholdFeeCard } from "@/components/HouseholdFeeCard";
 import { buildDonateUrl, PAYPAL_ITEM_NAME } from "@/lib/paypal";
-import { personShares, type AttendeeWithRoom } from "@/lib/fees";
+import {
+  personShares,
+  hasFeeDiscount,
+  type AttendeeWithRoom,
+} from "@/lib/fees";
 import { displayName } from "@/lib/names";
 import type { Attendee } from "@/lib/types";
 
@@ -145,6 +149,7 @@ export default async function ManagePage({
           total={fee.total}
           balance={fee.balance}
           feeDetermined={fee.fee_determined}
+          discounted={withType.some(hasFeeDiscount)}
           payUrl={payUrl}
           payments={payments}
           people={people}

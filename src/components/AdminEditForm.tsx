@@ -21,6 +21,7 @@ import {
   type RoomType,
 } from "@/lib/types";
 import { displayName } from "@/lib/names";
+import { FEE_DISCOUNT_PCT } from "@/lib/fees";
 
 type HeadOption = Pick<Attendee, "id" | "korean_name" | "english_name">;
 
@@ -50,6 +51,7 @@ function toInput(a: Attendee): AdminEditInput {
     requested_room_type_id: a.requested_room_type_id ?? "",
     tshirt_size: a.tshirt_size ?? "",
     fee_waived: a.fee_waived,
+    fee_discount_pct: a.fee_discount_pct ?? 0,
   };
 }
 
@@ -267,6 +269,23 @@ export function AdminEditForm({
               {t("feeWaived")}
             </label>
             <p className="mt-1 text-xs text-slate-500">{t("feeWaivedHint")}</p>
+          </div>
+          {/* 교회 지원(감면). 면제와 같이 걸면 면제가 우선이므로 그 땐 비활성화. */}
+          <div>
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                disabled={!!data.fee_waived}
+                checked={(data.fee_discount_pct ?? 0) > 0}
+                onChange={(e) =>
+                  patch({ fee_discount_pct: e.target.checked ? FEE_DISCOUNT_PCT : 0 })
+                }
+              />
+              {t("feeDiscount", { pct: FEE_DISCOUNT_PCT })}
+            </label>
+            <p className="mt-1 text-xs text-slate-500">
+              {data.fee_waived ? t("feeDiscountWaivedNote") : t("feeDiscountHint")}
+            </p>
           </div>
         </div>
 

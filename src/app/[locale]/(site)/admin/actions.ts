@@ -91,11 +91,19 @@ export type AdminEditInput = PersonInput & {
   requested_room_type_id?: string | null;
   tshirt_size?: TshirtSize | ""; // "" = 미지정
   fee_waived?: boolean; // 회비 면제 (강사 등)
+  fee_discount_pct?: number; // 회비 지원 비율 % (0=없음, 50=반액)
 };
 
 // 클라이언트 값 불신: enum 토큰 외(빈값 포함)는 null(미지정)로 정규화.
 function cleanTshirt(v?: string | null): TshirtSize | null {
   return TSHIRT_SIZES.includes(v as TshirtSize) ? (v as TshirtSize) : null;
+}
+
+// 회비 지원 비율: 0~100 정수로 클램프 (DB check 제약과 동일).
+function cleanDiscount(v?: number | null): number {
+  const n = Math.round(Number(v));
+  if (!Number.isFinite(n) || n <= 0) return 0;
+  return Math.min(100, n);
 }
 
 // 관리자 수동 입력(가구주 + 가족 일괄). 공개 등록과 달리 Turnstile 없음, admin 필드 포함.
@@ -306,6 +314,7 @@ export async function adminUpdateAttendee(
       requested_room_type_id: clean(input.requested_room_type_id),
       tshirt_size: cleanTshirt(input.tshirt_size),
       fee_waived: !!input.fee_waived,
+      fee_discount_pct: cleanDiscount(input.fee_discount_pct),
     })
     .eq("id", id);
 

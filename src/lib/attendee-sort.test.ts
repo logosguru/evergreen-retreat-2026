@@ -27,6 +27,7 @@ function makeAttendee(over: Partial<AttendeeWithRoom> = {}): AttendeeWithRoom {
     is_under_6: false,
     is_child_6_12: false,
     fee_waived: false,
+    fee_discount_pct: 0,
     tshirt_size: null,
     attendance: "full",
     pickup_location: null,

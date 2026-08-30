@@ -13,6 +13,8 @@ import { setLanguage } from "@/app/[locale]/(site)/admin/actions";
 import { LANGUAGES, type Language } from "@/lib/types";
 import {
   personFee,
+  personBaseFee,
+  hasFeeDiscount,
   formatUSD,
   groupHouseholds,
   householdBalance,
@@ -163,6 +165,20 @@ export function AdminAttendeeTable({
     if (a.fee_waived) return tf("waived");
     if (a.is_under_6) return tf("exempt");
     if (f == null) return tf("pending");
+    // 교회 지원이 걸린 사람은 정가 → 실제 금액을 같이 보여준다.
+    if (hasFeeDiscount(a)) {
+      const base = personBaseFee(a);
+      return (
+        <span className="whitespace-nowrap">
+          {base != null && (
+            <span className="mr-1 text-slate-400 line-through">
+              {formatUSD(base)}
+            </span>
+          )}
+          {formatUSD(f)}
+        </span>
+      );
+    }
     return formatUSD(f);
   }
 
@@ -227,6 +243,11 @@ export function AdminAttendeeTable({
         {a.fee_waived && (
           <span className="ml-2 rounded bg-teal-100 px-1.5 py-0.5 text-[11px] font-medium text-teal-700">
             {tf("waived")}
+          </span>
+        )}
+        {hasFeeDiscount(a) && (
+          <span className="ml-2 rounded bg-lime-100 px-1.5 py-0.5 text-[11px] font-medium text-lime-800">
+            {tf("discountBadge", { pct: a.fee_discount_pct })}
           </span>
         )}
       </>

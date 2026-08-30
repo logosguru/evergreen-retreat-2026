@@ -5,6 +5,10 @@ import {
   CHILD_PARTIAL_FEE,
   CHILD_FULL_FEE,
   personFee,
+  personBaseFee,
+  hasFeeDiscount,
+  applyFeeDiscount,
+  FEE_DISCOUNT_PCT,
   groupHouseholds,
   withHouseholdRoomType,
   paidByAttendee,
@@ -38,6 +42,7 @@ function makeAttendee(over: Partial<AttendeeWithRoom> = {}): AttendeeWithRoom {
     is_under_6: false,
     is_child_6_12: false,
     fee_waived: false,
+    fee_discount_pct: 0,
     tshirt_size: null,
     attendance: "full",
     pickup_location: null,
@@ -215,6 +220,94 @@ test("방 합계: 면제자는 합계에서 빠지고 미산정으로도 세지 
   );
   assert.equal(mixed.total, 200 + 200);
   assert.equal(mixed.unassignedCount, 0);
+});
+
+test("회비 지원 50%: 4인실 $200 → $100", () => {
+  const a = makeAttendee({
+    requested_room_type: FOUR,
+    fee_discount_pct: FEE_DISCOUNT_PCT,
+  });
+  assert.equal(FEE_DISCOUNT_PCT, 50);
+  assert.equal(personBaseFee(a), 200);
+  assert.equal(personFee(a), 100);
+  assert.equal(hasFeeDiscount(a), true);
+});
+
+test("회비 지원은 정액 회비(부분 참석·6~12세)에도 적용", () => {
+  assert.equal(
+    personFee(makeAttendee({ attendance: "partial", fee_discount_pct: 50 })),
+    50,
+  );
+  assert.equal(
+    personFee(
+      makeAttendee({ is_child_6_12: true, fee_discount_pct: 50 }),
+    ),
+    50,
+  );
+  // 6~12세 부분 $50 의 절반 = $25 (홀수 금액 반올림 없음)
+  assert.equal(
+    personFee(
+      makeAttendee({
+        is_child_6_12: true,
+        attendance: "partial",
+        fee_discount_pct: 50,
+      }),
+    ),
+    25,
+  );
+});
+
+test("회비 지원 + 타입 미선택은 여전히 미산정(null)", () => {
+  assert.equal(personFee(makeAttendee({ fee_discount_pct: 50 })), null);
+});
+
+test("면제·6세 미만이 지원보다 우선이고 배지도 안 뜬다", () => {
+  const waived = makeAttendee({
+    fee_waived: true,
+    fee_discount_pct: 50,
+    requested_room_type: FOUR,
+  });
+  assert.equal(personFee(waived), 0);
+  assert.equal(hasFeeDiscount(waived), false);
+
+  const baby = makeAttendee({ is_under_6: true, fee_discount_pct: 50 });
+  assert.equal(personFee(baby), 0);
+  assert.equal(hasFeeDiscount(baby), false);
+});
+
+test("applyFeeDiscount: 반올림(half-up) + 0~100 클램프", () => {
+  assert.equal(applyFeeDiscount(125, 50), 63); // 62.5 → 63 (SQL round()와 동일)
+  assert.equal(applyFeeDiscount(200, 0), 200);
+  assert.equal(applyFeeDiscount(200, null), 200);
+  assert.equal(applyFeeDiscount(200, 100), 0);
+  assert.equal(applyFeeDiscount(200, 150), 0);
+  assert.equal(applyFeeDiscount(200, -10), 200);
+});
+
+test("가구 합계: 지원받는 사람 몫만 감면된다", () => {
+  const head = makeAttendee({
+    is_householder: true,
+    requested_room_type: FOUR,
+  });
+  const rows = [
+    head, // 200
+    makeAttendee({ householder_id: head.id, fee_discount_pct: 50 }), // → 100
+    makeAttendee({ householder_id: head.id }), // 200
+  ];
+  const [h] = groupHouseholds(withHouseholdRoomType(rows));
+  assert.equal(h.total, 200 + 100 + 200);
+  assert.equal(h.unassignedCount, 0);
+});
+
+test("personShares: 개인 결제 금액도 감면가 기준", () => {
+  const head = makeAttendee({
+    is_householder: true,
+    requested_room_type: FOUR,
+    fee_discount_pct: 50,
+  });
+  const [share] = personShares(withHouseholdRoomType([head]), []);
+  assert.equal(share.fee, 100);
+  assert.equal(share.remaining, 100);
 });
 
 test("paidByAttendee는 가구 전체(attendee_id=null) 납입을 개인에 귀속시키지 않는다", () => {

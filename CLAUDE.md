@@ -30,7 +30,11 @@
   - **6~12세 전일 참석**: **$100 정액** — 방 종류 무관 (객실 인원에는 집계).
   - **회비 면제**(`attendees.fee_waived`, 관리자 지정 — 초청 강사 등): **$0**, 객실 인원에는 집계.
     우선순위 = 면제 → 6세 미만 → 6~12세 → 부분/전일.
-  - 구현: TS `lib/fees.ts` `personFee()` ↔ SQL `household_total()` (0024·0028). **두 곳을 항상 같이 고칠 것.**
+  - **회비 지원**(`attendees.fee_discount_pct`, 관리자 지정 — 형편이 어려운 성도): 위 규칙으로 정해진
+    기본 회비에 **마지막으로** `(100-pct)%` 를 곱한다(반올림). 예) 4인실 $200 + 50% → $100.
+    컬럼은 0~100 을 허용하지만 **관리자 UI 체크박스는 50%만** 준다(`FEE_DISCOUNT_PCT`).
+    면제·6세 미만이 우선(그 경우 $0). 객실 인원 집계엔 영향 없음. PayPal 금액도 이 계산을 그대로 쓴다.
+  - 구현: TS `lib/fees.ts` `personFee()` ↔ SQL `household_total()` (0024·0028·0029). **두 곳을 항상 같이 고칠 것.**
 - 두 사용자군:
   - **성도(Member)**: 등록, 본인 정보 수정, (추후) 수련회 소개·스케줄·강사·공지·연락처 열람
   - **관리자(교역자/준비위원)**: 대시보드, 참석자 관리, 방 배치, 스케줄 관리
@@ -148,6 +152,8 @@ supabase/migrations/
   0005_email_check.sql           # email_registered(text) SECURITY DEFINER RPC (등록 이메일 중복 확인, 명단 비노출)
   0006_email_unique.sql          # attendees.email partial unique 인덱스(lower(email), 중복 등록 DB 차단)
   0007_language.sql              # attendees.language enum(ko/en/es, 기본 ko) + guard 트리거 보호(관리자 전용)
+  # 0008~0028 생략 (파일명이 곧 요약)
+  0029_fee_discount.sql          # attendees.fee_discount_pct(회비 지원 %) + guard 트리거 + household_total 사람별 계산으로 재작성
 ```
 
 > **회비/방 규칙**: 회비 금액은 저장하지 않고 배정 호실의 타입 단가로 계산(6세미만 $0, 미배정 미산정). 납부는 가구주(head) 행의 `paid`를 가구 단위로 사용. 방 테이블(room_types/rooms)·`attendees.room_id`는 관리자 전용(RLS + guard 트리거), 성도는 `my_household_fee()` RPC로 금액만.

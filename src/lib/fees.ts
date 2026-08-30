@@ -40,14 +40,31 @@ export const PARTIAL_FEE = 100; // 성인 부분 참석(주일만) — 숙박 �
 export const CHILD_PARTIAL_FEE = 50; // 6~12세 부분 참석
 export const CHILD_FULL_FEE = 100; // 6~12세 전일 참석 (방 종류 무관)
 
+// 교회 지원(감면) 기본 비율. 현재 관리자 UI가 주는 유일한 선택지.
+// 컬럼(fee_discount_pct)은 0~100 이라 나중에 다른 비율을 더해도 스키마는 그대로다.
+export const FEE_DISCOUNT_PCT = 50;
+
+// 기본 회비에 감면 비율을 적용. SQL 쪽 round()와 같은 반올림(양수라 half-up 동일).
+export function applyFeeDiscount(base: number, pct: number | null | undefined): number {
+  const p = Math.min(100, Math.max(0, pct ?? 0));
+  return Math.round((base * (100 - p)) / 100);
+}
+
 // 사람별 회비. 우선순위:
 //   면제(fee_waived, 강사 등) → $0
 //   6세 미만 → $0 (면제)
 //   6~12세   → 부분 $50 / 전일 $100
 //   성인     → 부분 $100 / 전일 = 가구주 선택 타입 단가 (미선택이면 null=미산정)
+//   마지막에 fee_discount_pct(교회 지원) 만큼 감면 — 예) 4인실 $200 + 50% → $100
 // (requested_room_type는 withHouseholdRoomType로 가구원 행에도 채워져 있어야 정확)
-// SQL 쪽 동일 규칙: supabase/migrations/0028_fee_waived.sql household_total()
+// SQL 쪽 동일 규칙: supabase/migrations/0029_fee_discount.sql household_total()
 export function personFee(a: AttendeeWithRoom): number | null {
+  const base = personBaseFee(a);
+  return base == null ? null : applyFeeDiscount(base, a.fee_discount_pct);
+}
+
+// 감면 전 정가. 관리자 화면에서 "$200 → $100" 처럼 원가를 같이 보여줄 때 쓴다.
+export function personBaseFee(a: AttendeeWithRoom): number | null {
   if (a.fee_waived) return 0;
   if (a.is_under_6) return 0;
   if (a.is_child_6_12)
@@ -55,6 +72,12 @@ export function personFee(a: AttendeeWithRoom): number | null {
   if (a.attendance === "partial") return PARTIAL_FEE;
   const price = a.requested_room_type?.price_per_person;
   return price == null ? null : price;
+}
+
+// 실제로 감면이 걸려 금액이 줄어든 사람인지 (배지·안내 문구 표시용).
+export function hasFeeDiscount(a: AttendeeWithRoom): boolean {
+  if (a.fee_waived || a.is_under_6) return false;
+  return (a.fee_discount_pct ?? 0) > 0;
 }
 
 export function formatUSD(n: number): string {

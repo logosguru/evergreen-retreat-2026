@@ -29,6 +29,7 @@ export interface ExportLabels {
     under6: string;
     child612: string;
     feeWaived: string;
+    feeDiscount: string; // 회비 지원 비율(%) 열
     tshirt: string;
     language: string;
     partial: string; // 부분 참석 여부 (Y / 공란)
@@ -197,6 +198,7 @@ export function buildAttendeeSheet(
       bool(a.is_under_6, L),
       bool(a.is_child_6_12, L),
       a.fee_waived ? L.yes : "",
+      a.fee_discount_pct ? `${a.fee_discount_pct}%` : "",
       a.tshirt_size ? L.tshirt(a.tshirt_size) : "",
       L.language(a.language),
       a.attendance === "partial" ? "Y" : "",
@@ -235,6 +237,7 @@ export function buildAttendeeSheet(
       { header: L.h.under6 },
       { header: L.h.child612 },
       { header: L.h.feeWaived },
+      { header: L.h.feeDiscount },
       { header: L.h.tshirt },
       { header: L.h.language },
       { header: L.h.partial },

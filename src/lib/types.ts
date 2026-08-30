@@ -99,6 +99,7 @@ export interface Attendee {
   is_under_6: boolean; // 6세 미만 (회비 면제·객실 인원 제외)
   is_child_6_12: boolean; // 6~12세 (회비 정액: 부분 $50 / 전일 $100. 객실 인원엔 집계)
   fee_waived: boolean; // 회비 면제 (관리자 지정, 강사 등. 객실 인원엔 집계)
+  fee_discount_pct: number; // 회비 지원 비율 % (관리자 지정, 0=없음 / 50=반액). 객실 인원엔 영향 없음
   tshirt_size: TshirtSize | null; // 티셔츠 사이즈 (관리자 지정, null=미지정)
   attendance: Attendance;
   pickup_location: PickupLocation | null; // 차량(교회 밴) 픽업 장소. null=불필요

@@ -86,6 +86,7 @@ export async function GET(request: Request) {
       under6: t("under6"),
       child612: t("child612"),
       feeWaived: t("colFeeWaived"),
+      feeDiscount: t("colFeeDiscount"),
       tshirt: t("colTshirt"),
       language: t("colLanguage"),
       partial: t("colPartial"),
