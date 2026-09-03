@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test \"src/**/*.test.ts\"",
-    "qr": "node scripts/generate-qr.mjs"
+    "qr": "node scripts/generate-qr.mjs",
+    "icebreaker:01": "node scripts/icebreaker/01-rps.mjs",
+    "icebreaker:02": "node scripts/icebreaker/02-groupup.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.0",
@@ -25,6 +27,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "pptxgenjs": "^4.0.1",
     "qrcode": "^1.5.4",
     "sharp": "^0.35.4",
     "tailwindcss": "^4",
