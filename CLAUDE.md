@@ -9,8 +9,6 @@
 
 - **🚀 배포 LIVE**: **https://retreat.nyevergreen.com** (2026-06-30). Vercel(프로젝트/GitHub repo = `evergreen-retreat-2026`) + Supabase 호스팅(ref `gkdhifnworjtnnubrpft`). 공개 등록·Turnstile·Supabase·관리자 Google 로그인·keep-alive cron 전부 검증 완료.
 - **완료**: Phase 1~4 ✅ + Spanish(es) UI ✅ + **출시 준비 코드 ✅**(Turnstile 봇 방지 · keep-alive cron · 배포 설정 — `docs/superpowers/{specs,plans}/2026-06-30-deploy-prep*`) — 모두 `main` 병합·배포됨.
-- **배포 구성 요약**: Supabase 마이그레이션 0001~0007 + Access Token Hook(Postgres `custom_access_token_hook`) 활성화 / Google OAuth(관리자, 첫 관리자 logosguru@gmail.com) / Resend SMTP(`send.nyevergreen.com`, sender `noreply@send.nyevergreen.com`) + 매직링크 템플릿(ko/en/es, token_hash→`/auth/confirm`) / URL Config(Site URL=배포 URL) / Turnstile hostnames=retreat.nyevergreen.com+localhost / Route53 CNAME `retreat`→Vercel / Vercel Deployment Protection=Standard(커스텀 도메인 공개).
-- **Vercel env(6)**: `NEXT_PUBLIC_SUPABASE_URL`·`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`·`SUPABASE_SECRET_KEY`·`CRON_SECRET`(All) + `NEXT_PUBLIC_TURNSTILE_SITE_KEY`·`TURNSTILE_SECRET_KEY`(Production만). ⚠️ **env 추가/수정 후 반드시 Redeploy** (안 하면 반영 안 됨; 값에 따옴표/공백 섞이면 서버 Supabase 쿼리가 조용히 500).
 - **🔒 신규 등록 마감 (2026-08-18)**: `lib/types.ts` 의 `REGISTRATION_OPEN = false` 하나로 제어 — 헤더/모바일/Hero/CtaBand 의 등록 CTA 숨김(수정 CTA만 노출), `/register` 는 마감 안내 + 수정 링크, `insertRegistration()` 서버 액션도 거부. **이메일/이름 확인 + 이메일 신청 흐름과 `/edit` 는 계속 열려 있음.** 다시 열려면 상수를 `true` 로 바꿔 배포.
 - **📱 이름표 QR 일정 (2026-08-28)**: 이름표 뒷면 인쇄용 **언어별 공개 일정 페이지** 3개 —
   `retreat.nyevergreen.com/schedule` (한국어) · `/en/schedule` · `/es/schedule`.
@@ -18,7 +16,7 @@
   설명·장소 항상 노출, 수련회 기간 중 **'지금/다음' 순서 강조 + 자동 스크롤**(`lib/schedule-now.ts`, 뉴욕 시각 기준).
   기존 홈 `#schedule` 섹션과 헤더 나브는 그대로. 인쇄용 QR = `public/qr/schedule-{ko,en,es}.{svg,png}` (`npm run qr`).
 - **다음(선택)**: 실제 매직링크 수신 최종 확인, 필요 시 실 등록 데이터 관리. 새 기능은 **brainstorming → spec → writing-plans → subagent-driven** 패턴 유지.
-- **로컬 개발 재기동**: `supabase start` → `npm run dev` (http://localhost:3000). 로컬 키는 `.env.local`(로컬 Supabase + Turnstile 키). 매직링크 메일은 Mailpit http://127.0.0.1:54324. 로컬은 로컬 Supabase를 가리키며 프로덕션과 분리됨.
+- **배포·로컬 운영 상세(Supabase/Resend/Turnstile/Route53 구성, Vercel env 6개, 로컬 재기동, prod 덤프)** → 스킬 `deploy-ops`. ⚠️ Vercel env 추가/수정 후 반드시 Redeploy.
 
 ## 프로젝트
 
@@ -38,7 +36,6 @@
 - 두 사용자군:
   - **성도(Member)**: 등록, 본인 정보 수정, (추후) 수련회 소개·스케줄·강사·공지·연락처 열람
   - **관리자(교역자/준비위원)**: 대시보드, 참석자 관리, 방 배치, 스케줄 관리
-- 완성 후 교회 도메인의 **서브도메인**으로 이전 예정.
 - UI 언어: **한국어 기본 + 영어 전환(i18n)**.
 
 ## 확정된 제품 결정사항
@@ -60,15 +57,8 @@
 
 > 데이터 모델/인증은 후속 단계를 수용하도록 설계됨.
 
-## 스택 (2026-06 공식 문서 검증)
+## 스택 — ⚠️ 버전 주의 (옛 튜토리얼과 다름; 버전은 package.json)
 
-- **Next.js 16.2.9** App Router (Turbopack 기본, Node ≥ 20.9)
-- **Supabase** (Postgres + Auth) — `@supabase/ssr` + `@supabase/supabase-js`
-- **next-intl v4** (i18n)
-- **Tailwind CSS v4**
-- 배포: **Vercel** + **Supabase** 무료 티어
-
-⚠️ **버전 주의 (옛 튜토리얼과 다름)**
 - Next 16: 미들웨어는 **`proxy.ts` / `proxy()`** (구 `middleware.ts`). matcher는 `config` export로 읽음.
 - Supabase: **`@supabase/auth-helpers-nextjs`는 deprecated** — `@supabase/ssr`만 사용. 쿠키 API는 `getAll()`/`setAll()`.
 - 서버 세션 검증은 **`supabase.auth.getClaims()`** 사용 (`getSession()` 신뢰 금지).
@@ -83,9 +73,9 @@ npm run lint     # ESLint (Next 16엔 next lint 없음 → eslint 직접 실행)
 npx tsc --noEmit # 타입체크
 npm test         # node --test (src/**/*.test.ts)
 npm run qr       # 이름표용 언어별 일정 QR 재생성 → public/qr/ (라벨 없음 svg·png + -labeled.png)
+npm run icebreaker:01 / icebreaker:02 # 아이스브레이커 Game 01(가위바위보)·02(Group Up!) pptx → out/icebreaker/ (한/영/서)
+sh scripts/icebreaker/render.sh out/icebreaker/icebreaker-01-rps.pptx   # LibreOffice+pdftoppm 로 슬라이드별 PNG 검증
 ```
-
-> 실제 동작에는 Supabase 설정이 필요. **`SETUP.md`** 참고 (현재 `.env.local`은 placeholder).
 
 ## 디렉토리 구조 (핵심)
 
@@ -103,7 +93,6 @@ src/
     dashboard.ts                 # 대시보드 집계(순수): computeDashboard → DashboardStats (fees 재사용)
     xlsx.ts                      # 의존성 없는 최소 XLSX 작성기(무압축 ZIP + inlineStr): buildXlsx(XlsxSheet[])
     attendee-export.ts           # 참석자 Excel 시트 데이터(순수): buildAttendeeWorkbook — 라벨은 ExportLabels로 주입
-    supabase/{client,server,middleware}.ts  # 브라우저/서버/proxy용 클라이언트
   app/
     [locale]/
       layout.tsx                 # <html> + 폰트 + NextIntlClientProvider 만 (루트 레이아웃)
@@ -112,10 +101,8 @@ src/
                                  #   18×24in 세로 · full bleed · ?theme=light|dark · 브라우저 인쇄 → PDF 저장
                                  #   교회 로고 + 티셔츠 엠블럼 + 주제 말씀 + QR 3개. 관리자 일정 페이지에서 링크
       (site)/                    # 라우트 그룹: SiteHeader + <main> + SiteFooter 공통 껍데기 (URL엔 영향 없음)
-        layout.tsx               # 사이트 헤더/푸터
         page.tsx                 # 홈 (hero + CTA + #about/#schedule/#speakers/#faq 섹션)
         about|speakers/page.tsx  # 정적 콘텐츠(소개·강사, i18n). about에 장소 사진(public/honors-haven.webp)+홈페이지 링크·준비물
-        faq/page.tsx             # 공개 FAQ(질문/답변, 정렬순) — faqs 공개읽기
         register/{page,actions}.tsx   # 공개 등록(이메일 먼저 확인 단계: 중복이면 차단+/edit 안내) + insertRegistration()/checkEmail() 서버 액션
         edit/
           page.tsx               # 매직링크 요청 (EditRequestForm)
@@ -128,32 +115,15 @@ src/
             page.tsx               # 대시보드 (AdminDashboard, computeDashboard 집계)
             attendees/page.tsx     # 참석자 정렬 표(사람당 1행, 참석·방타입·언어 정렬, 구역 열, 회비·납부·언어 인라인) — AdminAttendeeTable + lib/attendee-sort
                                    #   + [Excel 내보내기] → /api/admin/attendees/export?locale=
-            rooms/page.tsx         # 객실 타입/호실 관리 (RoomManager)
-            assignments/page.tsx   # 호실 배치 보드 + 정원경고 + 현황표 (AssignmentBoard)
-            schedule/page.tsx      # 일정 CRUD (ScheduleManager)
-            faq/page.tsx           # FAQ CRUD (FaqManager)
-          actions.ts               # setPaid(), setLanguage() — 관리자 전용
-          rooms-actions.ts         # 객실 타입/호실 CRUD
-          assignment-actions.ts    # assignRoom() — 호실 배치
-          schedule-actions.ts      # upsert/deleteScheduleItem — 관리자 전용
-          faq-actions.ts           # upsert/deleteFaq — 관리자 전용
-    auth/{callback,confirm,signout}/route.ts  # [locale] 밖, proxy matcher에서 제외
-  components/                    # SiteHeader, MobileNav, RegisterMenu, LocaleSwitcher, *Form, AdminAttendeeTable, AdminDashboard, PersonFields, RoomManager, AssignmentBoard, HouseholdFeeCard, ScheduleManager, FaqManager, ScheduleView, PublicSchedule
+            rooms|assignments|schedule|faq/page.tsx   # 관리자 CRUD 화면
+          *-actions.ts             # 관리자 서버 액션 (setPaid/setLanguage · 객실 · assignRoom · 일정 · FAQ)
 scripts/generate-qr.mjs          # `npm run qr` — 이름표용 언어별 일정 QR (devDep: qrcode, sharp)
-public/qr/schedule-{ko,en,es}.svg|.png    # 라벨 없는 QR (벡터/1200px) — 라벨을 직접 디자인할 때
-public/qr/schedule-{ko,en,es}-labeled.png # QR 아래 언어명(한국어/English/Español) — 인쇄용 기본
-                                 #   전부 커밋됨. URL 바뀌면 npm run qr 재생성 + 디코딩 재확인
-messages/{ko,en}.json            # i18n (…/Admin/…/Rooms/Fee/About/Schedule/Speakers/Faq/Language). 언어 라벨=Language(ko/en만, es UI 번역은 후속)
-supabase/migrations/
-  0001_init.sql                  # attendees/admins + RLS + 트리거 + access token hook + 첫 관리자
-  0002_rooms.sql                 # room_types/rooms + attendees.room_id + my_household_fee() RPC + RLS
-  0003_content.sql               # schedule_items/announcements + 공개읽기 RLS + 관리자쓰기 (announcements는 0004에서 제거)
-  0004_faq.sql                   # faqs(공개읽기 RLS + 관리자쓰기) 신설 + announcements 제거(공지→FAQ 교체)
-  0005_email_check.sql           # email_registered(text) SECURITY DEFINER RPC (등록 이메일 중복 확인, 명단 비노출)
-  0006_email_unique.sql          # attendees.email partial unique 인덱스(lower(email), 중복 등록 DB 차단)
-  0007_language.sql              # attendees.language enum(ko/en/es, 기본 ko) + guard 트리거 보호(관리자 전용)
-  # 0008~0028 생략 (파일명이 곧 요약)
-  0029_fee_discount.sql          # attendees.fee_discount_pct(회비 지원 %) + guard 트리거 + household_total 사람별 계산으로 재작성
+scripts/icebreaker/              # 첫날 저녁 아이스브레이커 슬라이드(pptxgenjs). theme.mjs = 사이트 다크 테마 토큰 + 3개 언어 빌더
+                                 #   (한국어 아이보리 → English 골드 → Español 미스트, 순서·색 고정), 01-rps.mjs = 가위바위보 덱 콘텐츠.
+                                 #   폰트는 Google Fonts 이름(Fraunces·Nanum Myeongjo·Noto Sans KR)만 써서 Google Slides 업로드 시 그대로 매핑.
+                                 #   이모지는 글자 대신 assets/emoji-*.png(Noto Emoji) 이미지 — 앱마다 그림이 달라지는 것 방지.
+                                 #   render.sh: brew LibreOffice 는 헤드리스에서 macOS 사용자 폰트를 못 보므로 전용 프로필 user/fonts 에 복사해 렌더.
+supabase/migrations/             # 0001~0029, 파일명이 곧 요약. 회비 SQL = 0024·0028·0029 (household_total)
 ```
 
 > **회비/방 규칙**: 회비 금액은 저장하지 않고 배정 호실의 타입 단가로 계산(6세미만 $0, 미배정 미산정). 납부는 가구주(head) 행의 `paid`를 가구 단위로 사용. 방 테이블(room_types/rooms)·`attendees.room_id`는 관리자 전용(RLS + guard 트리거), 성도는 `my_household_fee()` RPC로 금액만.
@@ -181,47 +151,10 @@ supabase/migrations/
 - 부분 참석 도착/출발은 **날짜만**(`date` 컬럼, 0011) + **선택 사항**(추후 확정 가능, partial이어도 null 허용). date input `min/max`=수련회 기간(`RETREAT_START/END` in lib/types). 폼 초기값은 `slice(0,10)`.
 - **사이트 껍데기는 `(site)` 라우트 그룹**에 있다. 헤더/푸터 없는 화면(현재 QR `/schedule`)을 추가할 땐
   `(site)` **밖**에 두면 되고, `(site)` 안의 서버 액션을 컴포넌트에서 import할 땐 경로에 `(site)/`가 들어간다.
-- **폰트 스택에 next/font 변수를 그대로 쓰면 안 되는 경우가 있다.** `var(--font-myeongjo)` 는
-  `"Nanum Myeongjo", "Nanum Myeongjo Fallback"` 로 펼쳐진다. 뒤의 별칭은 next/font 가 CLS 완화용으로
-  자동 생성한 `local("Times New Roman")` 이고 **`unicode-range` 가 없어** 명조에 없는 글리프(á í ñ …)를
-  전부 가로챈다. `font-weight` 서술자도 없어 굵은 제목에서 **합성 볼드**가 걸려 그 한 글자만 튄다
-  (스페인어 `sáb` 의 `á` 사례). 그래서 `--font-display*` 스택은 실제 패밀리명 `"Nanum Myeongjo"` 를
-  직접 쓴다. `adjustFontFallback: false` 는 **Turbopack 이 무시**하므로(webpack 로더 전용) 믿지 말 것.
-- **제목 폰트는 문서 언어에 따라 갈린다.** `font-display-ko`(명조 우선)는 한국어에서 숫자·괄호까지
-  한글과 같은 명조로 붙이기 위한 스택이고, `html[lang="en"|"es"]` 에서는 globals.css 가 라틴 우선
-  (`--font-display` 순서)으로 뒤집는다. `@theme inline` 이라 유틸리티가 값을 인라인하므로
-  **변수 재정의로는 안 되고 클래스를 덮어써야** 한다. 검증은 Playwright + CDP
-  `CSS.getPlatformFontsForNode` 로 글자별 실제 폰트를 세는 것이 확실하다(Times New Roman 이 0이어야 함).
+- **인쇄물(벽보 포스터·이름표 QR)·폰트 함정 상세** → 스킬 `print-assets`. 요지: next/font 변수의 "… Fallback" 별칭이 라틴 확장 글리프를 가로채므로 display 스택엔 실제 패밀리명을 쓰고, `@page { size }`는 globals.css에 두지 말 것(포스터 컴포넌트 안 `<style>`만).
 - **인쇄된 QR 링크의 로케일은 고정**이어야 한다. `localePrefix: 'as-needed'` 라 prefix 없는 한국어 경로는
   next-intl의 accept-language 감지에 걸려 `/en/...`으로 튄다 → `proxy.ts`에서 해당 경로만 rewrite로 ko 고정.
   QR 경로를 추가/변경하면 `proxy.ts`의 `KO_SCHEDULE_PATHS`와 `scripts/generate-qr.mjs`를 같이 고칠 것.
-- **벽보 포스터(`/schedule/poster`)는 18×24in 세로, `?theme=light|dark` 두 버전.**
-  `light` 는 색 면을 쓰지 않아 '배경 그래픽' 체크 없이도 그대로 나온다(기본·권장).
-  `dark` 는 사이트 테마(파인그린 바탕)로 **배경 인쇄가 필수** — 페이지 상단에 경고를 띄운다.
-  `@page { margin: 0 }` + 포스터 안쪽 padding 으로 **full bleed** 처리(어두운 배경이 종이 끝까지).
-  색은 `--paper/--ink/--ink-2/--ink-3/--accent/--hair` 의미 토큰으로만 쓰고 `.theme-dark` 에서 값만 교체.
-  QR 은 어두운 테마에서도 흰 바탕을 유지해야 스캔된다(`.qr img { background:#fff }`).
-  한글은 아무 곳에서나 꺾이므로 루트에 `word-break: keep-all`.
-  `@page { size: 18in 24in }` 는 선택자로 범위를 못 잡으므로 **globals.css 에 두지 말 것**
-  (모든 인쇄, 특히 `/admin/schedule` 실무용 표의 용지가 바뀐다) — 포스터 컴포넌트 안의 `<style>` 로만 넣는다.
-  항목 블록은 하루 최대 개수에 따라 `--u` 로 자동 축소해 일정이 늘어도 한 장을 유지한다.
-  검증은 Playwright `page.pdf()`(margin 0, printBackground) 로 실제 PDF를 만들어
-  **페이지 수 1 · 정확히 18×24in · 잘린 텍스트 0 · 200dpi 렌더에서 QR 디코딩**을 두 테마 모두 확인.
-- **포스터 이미지 자산**: 교회 로고 원본(`evergreen-logo.webp`)은 **흰색**이라 밝은 배경에서 안 보인다 →
-  `scripts/make-poster-assets.mjs` 로 파인그린 틴트 변형(`evergreen-logo-pine.png`)을 만들어 라이트에 쓴다.
-  티셔츠 엠블럼(`retreat-emblem-2026.png`, 공모 당선작)은 남색+금색이라 어두운 바탕에서 묻히므로
-  **색을 바꾸지 않고 아이보리 원형 패널 위에 얹는다**(당선작 훼손 금지).
-- **`by_language` 항목은 언어별로 실제 세션이 다르다** (성경공부: ko `Conference Room` / en `Pacific Ballroom`,
-  강사도 다름). 이중언어 벽보는 `lib/poster.ts` 의 `bilingual()` 로 양쪽을 모두 표기해야 한다 —
-  "나는 어디로 가나"가 벽 일정표의 존재 이유다.
-- **QR 라벨은 국기 대신 언어 이름**(한국어/English/Español). 스페인어·영어는 특정 국가에 매이지 않는다.
-  라벨 버전은 **PNG만** 만든다 — SVG `<text>`는 인쇄처에 한글 폰트가 없으면 깨지므로 글자를 픽셀로 굽는다
-  (sharp + fontconfig). QR 이미지를 손대면 **반드시 디코딩 재검증**할 것(축소 180px까지 통과 확인 완료).
 - 관리자 권한 클레임은 **로그인 시점**에 굳어짐 → `admins`에 나중에 추가된 사람은 **재로그인** 필요.
 - 새 컴포넌트/페이지는 위 i18n·Supabase 패턴을 그대로 따를 것. `useTranslations`는 콜백 안에서 호출 금지(컴포넌트 상단에서).
 
-## 미완 / 후속 (Phase 1 출시 전)
-
-- **Cloudflare Turnstile** 미적용 — 공개 등록 폼 스팸 방지 (`register/actions.ts` TODO).
-- **Custom SMTP(Resend)** + 매직링크 이메일 템플릿(token_hash) 설정 필요 — `SETUP.md` 참고. 내장 메일은 시간당 ~2통 제한.
-- 무료 Supabase는 DB 7일 무활동 시 일시정지 → 수련회 전 keep-alive cron 권장.
