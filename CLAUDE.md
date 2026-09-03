@@ -15,6 +15,7 @@
   사이트 헤더/푸터 없는 전용 화면(`[locale]/schedule/page.tsx` + `PublicSchedule`), 모바일 우선,
   설명·장소 항상 노출, 수련회 기간 중 **'지금/다음' 순서 강조 + 자동 스크롤**(`lib/schedule-now.ts`, 뉴욕 시각 기준).
   기존 홈 `#schedule` 섹션과 헤더 나브는 그대로. 인쇄용 QR = `public/qr/schedule-{ko,en,es}.{svg,png}` (`npm run qr`).
+- **🎤 아이스브레이커 덱 (2026-09-03)**: Game 01 가위바위보·02 Group Up! pptx 완료 → `docs/icebreaker/`. **다음 = Game 03 Who Is It? · 04 Generations Challenge** 를 `scripts/icebreaker/0N-*.mjs` 로 같은 빌더(`theme.mjs`)·3언어 규칙으로. 기획 PDF는 사용자 ~/Downloads.
 - **다음(선택)**: 실제 매직링크 수신 최종 확인, 필요 시 실 등록 데이터 관리. 새 기능은 **brainstorming → spec → writing-plans → subagent-driven** 패턴 유지.
 - **배포·로컬 운영 상세(Supabase/Resend/Turnstile/Route53 구성, Vercel env 6개, 로컬 재기동, prod 덤프)** → 스킬 `deploy-ops`. ⚠️ Vercel env 추가/수정 후 반드시 Redeploy.
 
