@@ -285,10 +285,24 @@ const POSTER_CSS = `
 
 .emblem { margin: 0; flex: 0 0 auto; }
 .emblem img { display: block; width: 3.5in; height: auto; }
-/* 어두운 바탕에서 엠블럼 남색이 묻히므로 아이보리 패널 위에 얹는다 */
+/* 어두운 바탕에서 엠블럼 남색이 묻히므로 아이보리 원판 위에 얹는다.
+   패널(원판) 때문에 엠블럼이 실제보다 커 보이므로 어두운 테마에서만 조금 줄인다.
+
+   ⚠ 원판은 padding + border-radius:50% 로 만들면 안 된다. 원본 PNG 는
+   1335×1402(정사각형이 아님)이라 그 상자는 세로로 긴 '타원'이 되고,
+   게다가 배지 링의 중심이 캔버스 중심에서 (+27.7, −3.7)px 어긋나 있어
+   로고가 원 안에서 오른쪽으로 밀려 보인다.
+   → 정사각 상자로 진짜 원을 만들고, 링 중심이 원 중심에 오도록 이미지를 옮긴다.
+   측정값(최소자승 원 피팅, scripts 없이 sharp 로 1회 측정):
+     링 중심 (695.2, 697.3) · 반지름 554.6 (원본 1335×1402 픽셀 기준)
+     보정량 = 27.7/1335 × 2.9in ≈ 0.060in (왼쪽) , 3.7/1402 × 3.046in ≈ 0.008in (아래)
+   엠블럼 PNG 를 교체하면 이 두 값도 다시 재야 한다. */
 .theme-dark .emblem {
-  background: var(--panel); border-radius: 50%; padding: 0.16in;
+  width: 3.2in; height: 3.2in;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--panel); border-radius: 50%;
 }
+.theme-dark .emblem img { width: 2.9in; transform: translate(-0.060in, 0.008in); }
 
 /* ── 3열 ── */
 .days { display: grid; grid-template-columns: repeat(3, 1fr); flex: 1; padding-top: 20pt; }
